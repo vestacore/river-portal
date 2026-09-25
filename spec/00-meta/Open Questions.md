@@ -38,7 +38,6 @@ Unresolved questions collected from across the vault. Each entry links to the no
 - [ ] **Live location for volunteer carriers.** Proposal: no, only coarse checkpoints. — [[Transport and Logistics Flow]]
 
 ## Product and UX
-- [ ] **Russian-language intake page** as an option for organisations. Default: no Russian interface, but free text in any language is accepted. — [[Multilingual Experience]]
 - [ ] **Map tile provider**, and handling changes to oblast boundaries. — [[Flow Map]]
 - [ ] **Category alignment** with humanitarian cluster or sector codes for exchange with partners. — [[Category]]
 - [ ] **Is "first human contact within 48 hours" a floor?** The settings registry lets an organisation promise a reply within 1–14 days. The state-programme profile promises 3 days, which the rule in [[Canonical Parameters]] allows, because only values marked *floor* are protected. Proposal: make 48 hours a floor for the *promise*, and let a large programme show a queue position instead. — [[Canonical Parameters]], [[Help Seeker Section]]

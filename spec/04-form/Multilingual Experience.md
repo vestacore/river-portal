@@ -26,13 +26,9 @@ How the portal speaks each visitor's language, how translations are made and tru
 
 ### A note on Russian
 
-Many people in eastern and southern Ukraine, and some older recipients, are more comfortable writing Russian. At the same time, Russian UI on a Ukrainian aid portal can be hurtful and politically charged. The default is:
 - **No Russian UI and no Russian public content.**
 - **Recipients may always write in Russian** (or any language) in free-text fields and by SMS, and are answered in Ukrainian or English plainly and respectfully. Nobody is corrected, judged or deprioritised for the language they write in.
-- An organisation may enable a Russian-language *intake* page if its context requires it, as a deliberate [[Admin Studio]] decision with a logged reason.
 
-> [!question]
-> Should a Russian-language intake page be available as an optional locale for organisations serving Russian-speaking communities (e.g. in Moldova or the Baltics), and who decides? See [[Open Questions]].
 
 ## Language switcher
 

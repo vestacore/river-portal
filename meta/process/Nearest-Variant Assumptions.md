@@ -16,7 +16,7 @@ Product questions from `spec/00-meta/Open Questions.md` that code now depends on
 | Vertex v1 scope | Feed snippet suggestions only (plus a redaction pre-pass) | ADR-0013 | After first editor feedback |
 | Payments at Tier 1 | Pledges recorded; receipt marked by a coordinator; no payment provider yet | `@river/gifts` | Before real fundraising |
 | Crypto-shredding | Not implemented; personal data isolated in `private` documents | ADR-0011 | Before real personal data (hard gate) |
-| Russian intake page | Not offered | `@river/i18n` | — |
+| No Russian intake page | Not offered | `@river/i18n` | — |
 | Map / Flow Map | Not in iteration 1 | — | Iteration 3 |
 | 72-hour delay for public aggregates | Counters update immediately | `@river/pages` sitePageProjector | Before real data (TD-08) |
 | Firebase features | Firestore only (server-side). Firebase Auth arrives with giver and recipient accounts | ADR-0011 | Iteration adding accounts |
