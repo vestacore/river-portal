@@ -1,0 +1,21 @@
+{
+  "name": "@river/feed",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Public feed items composed from reports with AI suggestions and human approval.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/assist": "0.0.0",
+    "@river/content": "0.0.0",
+    "@river/i18n": "0.0.0",
+    "@river/kernel": "0.0.0",
+    "@river/log": "0.0.0",
+    "@river/privacy": "0.0.0",
+    "@river/reports": "0.0.0",
+    "@river/store": "0.0.0"
+  }
+}

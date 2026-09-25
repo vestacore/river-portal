@@ -1,0 +1,7 @@
+name: river-portal
+description: River Portal on Google Cloud — Cloud Run behind an external Application Load Balancer with Cloud Armor and IAP, Firestore, Artifact Registry, Cloud Build.
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+    typescript: true

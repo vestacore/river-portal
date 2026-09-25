@@ -344,3 +344,14 @@ Every [[Log Event]] type, grouped by aggregate. This is the **complete** list: a
 | `system.LogExported` / `system.ArchiveSegmentSealed` | segment, range, hash | team | audit |
 
 AI events accompany, never replace, the human decision event (e.g. `flow.Committed` cites `aiSuggestionId`). See [[Vertex AI Integration]].
+
+## Added in engineering iteration 01 (2026-09-24)
+
+| Event | Aggregate | Payload (summary) | Default visibility | Projections |
+|---|---|---|---|---|
+| `content.BlockEdited` | content | `blockId`, `locale`, Tiptap `doc`, server-rendered `html` | public | content blocks, site document |
+| `publication.Drafted` (`publicationKind: feedItem`) | publication | `kind`, `text` (en-GB, uk), `reportId`, `source` (vertex / fallback / editor), `model` | team | feed (studio) |
+| `publication.Published` / `publication.Withdrawn` (`publicationKind: report` or `feedItem`) | publication | report: `safetyOverride`, `daysSinceDelivery`; feed item: final `text` | public | reports, feed, site document, campaign page |
+
+Naming rules: [[Canonical Parameters]].
+

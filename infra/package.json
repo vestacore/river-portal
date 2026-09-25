@@ -1,0 +1,13 @@
+{
+  "name": "@river/infra",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Google Cloud infrastructure for River Portal (Pulumi, TypeScript). The owner runs `pulumi up`.",
+  "main": "index.ts",
+  "dependencies": {
+    "@pulumi/pulumi": "3.262.0",
+    "@pulumi/gcp": "9.35.1",
+    "@pulumi/command": "1.0.5"
+  }
+}

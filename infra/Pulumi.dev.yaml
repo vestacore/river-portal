@@ -1,0 +1,17 @@
+# Stack `dev`. Set the project before the first run:
+#   pulumi config set gcp:project <your-project-id>
+config:
+  gcp:region: europe-west1
+  river-portal:firestoreLocation: eur3
+  river-portal:orgId: open-river-aid
+  river-portal:seed: demo
+  river-portal:aiModel: gemini-2.5-flash
+  river-portal:aiLocation: europe-west4
+  # Optional: a real domain; otherwise <ip>.sslip.io is used (adr/records/ADR-0016).
+  # river-portal:domain: portal.example.org
+  # Who may open the studio (IAP): users or groups.
+  # river-portal:iapMembers:
+  #   - user:you@example.org
+  #   - group:coordinators@example.org
+  # Optional role overrides for staff e-mails: "a@x:administrator,b@y:editor".
+  # river-portal:staffRoles: ""

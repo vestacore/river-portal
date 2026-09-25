@@ -13,6 +13,10 @@ A modern, bright, positive and businesslike visual system: *a sunny morning at a
 > [!principle]
 > Dignity in every pixel ([[Guiding Principles#P10. Dignity in every pixel]]). We show movement, competence and people acting together. We never show helplessness staged for emotion.
 
+
+> [!decision] Revision 2026-09-24 — the drafting table
+> The visual language is now the **open plan**: flat paper and graphite, straight hairlines that overshoot their corners, bevelled plates and buttons, dimension lines for numbers, numbered sections, and Fig. 1 (the river as a technical drawing). Typography is IBM Plex Sans with IBM Plex Mono annotations. Where the sections below describe rounded shapes, soft shadows, gradients, waves or other fonts, **this revision takes precedence**. Engineering record: `adr/records/ADR-0018 Drafting-Table Visual Language.md`.
+
 ## Character
 
 | We are | We are not |

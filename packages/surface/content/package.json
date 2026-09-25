@@ -1,0 +1,17 @@
+{
+  "name": "@river/content",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Editable site content blocks and safe rich-text rendering.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/i18n": "0.0.0",
+    "@river/store": "0.0.0",
+    "@river/log": "0.0.0"
+  }
+}

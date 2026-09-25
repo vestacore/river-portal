@@ -1,0 +1,16 @@
+{
+  "name": "@river/log",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Append-only event log: event envelope, commit with projectors.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/store": "0.0.0",
+    "@river/privacy": "0.0.0"
+  }
+}

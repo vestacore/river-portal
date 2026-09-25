@@ -1,0 +1,12 @@
+import type { GiftKind } from './GiftKind.ts';
+import type { GiverDisplay } from './GiverDisplay.ts';
+
+export type PledgeInput = {
+  kind: GiftKind;
+  amountMinor: number | null;
+  description: string;
+  campaignId: string | null;
+  name: string;
+  email: string;
+  giverDisplay: GiverDisplay;
+};

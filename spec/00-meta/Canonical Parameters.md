@@ -55,7 +55,7 @@ All values are **per-organisation defaults**. An [[Administrator]] can make them
 
 The canonical list of events is in [[Event Catalogue]]. The rules:
 
-- `aggregate.PastTenseVerb`, with the aggregate name in camelCase: `need`, `offer`, `gift`, `flow`, `campaign`, `programme`, `consignment`, `item`, `leg`, `hub`, `costRecord`, `deliveryConfirmation`, `gratitudeNote`, `publication`, `article`, `report`, `mediaAsset`, `translation`, `person`, `organisation`, `role`, `consent`, `verification`, `visibility`, `reputation`, `intent`, `partner`, `location`, `category`, `safeguarding`, `dispute`, `whistleblow`, `ai`, `system`.
+- `aggregate.PastTenseVerb`, with the aggregate name in camelCase: `need`, `offer`, `gift`, `flow`, `campaign`, `programme`, `consignment`, `item`, `leg`, `hub`, `costRecord`, `deliveryConfirmation`, `gratitudeNote`, `publication`, `article`, `report`, `mediaAsset`, `translation`, `person`, `organisation`, `role`, `consent`, `verification`, `visibility`, `reputation`, `intent`, `partner`, `location`, `category`, `content`, `safeguarding`, `dispute`, `whistleblow`, `ai`, `system`.
 - These synonyms are fixed:
 
 | Use | Not |
@@ -69,3 +69,7 @@ The canonical list of events is in [[Event Catalogue]]. The rules:
 | `costRecord.*` | `cost.*` |
 | `role.Granted` (role: auditor) | `auditor.AccessGranted` |
 | `reputation.ContestRaised` / `reputation.SignalCorrected` / `reputation.ContestRejected` | `reputation.SignalContested`, `reputation.Adjusted` |
+
+## Publication kinds (added 2026-09-24, engineering iteration 01)
+Reports and feed items are **publications**. Their publishing events use the `publication` aggregate with `payload.publicationKind` set to `report` or `feedItem`: `publication.Drafted`, `publication.ConsentChecked`, `publication.Published`, `publication.Withdrawn`. AI help is logged as `ai.SuggestionMade`, `ai.SuggestionAccepted` and `ai.SuggestionRejected`. Editable site texts use the `content` aggregate: `content.BlockEdited`.
+

@@ -1,0 +1,12 @@
+{
+  "name": "@river/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Locales, formatters and oblast names with Ukrainian grammatical cases.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,30 @@
+import type { Oblast } from '../types/Oblast.ts';
+
+/** Regions offered in forms. Public texts never go below this level (see spec Canonical Parameters). */
+export const oblasts: readonly Oblast[] = [
+  { id: 'cherkasy', en: 'Cherkasy oblast', ukStem: 'Черкаськ' },
+  { id: 'chernihiv', en: 'Chernihiv oblast', ukStem: 'Чернігівськ' },
+  { id: 'chernivtsi', en: 'Chernivtsi oblast', ukStem: 'Чернівецьк' },
+  { id: 'dnipropetrovsk', en: 'Dnipropetrovsk oblast', ukStem: 'Дніпропетровськ' },
+  { id: 'donetsk', en: 'Donetsk oblast', ukStem: 'Донецьк' },
+  { id: 'ivano-frankivsk', en: 'Ivano-Frankivsk oblast', ukStem: 'Івано-Франківськ' },
+  { id: 'kharkiv', en: 'Kharkiv oblast', ukStem: 'Харківськ' },
+  { id: 'kherson', en: 'Kherson oblast', ukStem: 'Херсонськ' },
+  { id: 'khmelnytskyi', en: 'Khmelnytskyi oblast', ukStem: 'Хмельницьк' },
+  { id: 'kirovohrad', en: 'Kirovohrad oblast', ukStem: 'Кіровоградськ' },
+  { id: 'kyiv', en: 'Kyiv oblast', ukStem: 'Київськ' },
+  { id: 'kyiv-city', en: 'Kyiv', ukForms: { nom: 'Київ', gen: 'Києва', loc: 'Києві' } },
+  { id: 'luhansk', en: 'Luhansk oblast', ukStem: 'Луганськ' },
+  { id: 'lviv', en: 'Lviv oblast', ukStem: 'Львівськ' },
+  { id: 'mykolaiv', en: 'Mykolaiv oblast', ukStem: 'Миколаївськ' },
+  { id: 'odesa', en: 'Odesa oblast', ukStem: 'Одеськ' },
+  { id: 'poltava', en: 'Poltava oblast', ukStem: 'Полтавськ' },
+  { id: 'rivne', en: 'Rivne oblast', ukStem: 'Рівненськ' },
+  { id: 'sumy', en: 'Sumy oblast', ukStem: 'Сумськ' },
+  { id: 'ternopil', en: 'Ternopil oblast', ukStem: 'Тернопільськ' },
+  { id: 'vinnytsia', en: 'Vinnytsia oblast', ukStem: 'Вінницьк' },
+  { id: 'volyn', en: 'Volyn oblast', ukStem: 'Волинськ' },
+  { id: 'zakarpattia', en: 'Zakarpattia oblast', ukStem: 'Закарпатськ' },
+  { id: 'zaporizhzhia', en: 'Zaporizhzhia oblast', ukStem: 'Запорізьк' },
+  { id: 'zhytomyr', en: 'Zhytomyr oblast', ukStem: 'Житомирськ' },
+];

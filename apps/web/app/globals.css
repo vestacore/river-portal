@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — "drafting table" language (adr/records/ADR-0018): warm paper, graphite hairlines,
+ * non-photo-blue construction lines, one warm accent. Flat: no radii, no shadows, no gradients.
+ * An organisation theme overrides these variables.
+ */
+@theme {
+  --color-paper: #f7f5ef;
+  --color-paper-deep: #efebe1;
+  --color-graphite: #2a3137;
+  --color-blueline: #9ccbe0;
+
+  --color-sky-50: #f7f5ef;
+  --color-ink-900: #1c2228;
+  --color-ink-700: #333b42;
+  --color-ink-500: #5c656d;
+  --color-ink-300: #9aa1a6;
+  --color-line: #d3d2c9;
+
+  --color-river-950: #0f2233;
+  --color-river-900: #16324a;
+  --color-river-800: #1c3f5d;
+  --color-river-700: #234f74;
+  --color-river-600: #2d6590;
+  --color-river-200: #c5d8e6;
+  --color-river-100: #e3edf3;
+  --color-teal-600: #0e7a76;
+  --color-teal-500: #13968f;
+  --color-teal-300: #7fcbc4;
+  --color-teal-100: #dcefeb;
+  --color-sunrise-600: #d27a10;
+  --color-sunrise-500: #f0962a;
+  --color-sunrise-300: #f6c47e;
+  --color-sunrise-100: #fbecd6;
+  --color-attention-500: #b83c0c;
+  --color-attention-100: #fbe6da;
+
+  --font-display: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, 'SFMono-Regular', monospace;
+
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+  --shadow-soft: none;
+  --shadow-lift: none;
+
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-flow: flow 2.4s linear infinite;
+  --animate-glow: glow 3s ease-in-out infinite;
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes flow { to { stroke-dashoffset: -40; } }
+  @keyframes glow { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { @apply bg-paper font-sans text-ink-700 antialiased; font-feature-settings: 'ss02'; }
+  h1, h2, h3, h4 { @apply font-display text-ink-900; letter-spacing: -0.02em; }
+  :focus-visible { outline: 2px solid var(--color-sunrise-500); outline-offset: 3px; }
+  ::selection { background: var(--color-sunrise-100); color: var(--color-ink-900); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .motion-only { display: none !important; }
+}
+@media (prefers-reduced-motion: no-preference) { .still-only { display: none !important; } }
+
+/* ── Drafting primitives ─────────────────────────────────────────────────────────── */
+
+/* Annotation text: technical lettering. */
+.annot { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.3; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* A sketched frame: hairlines that overshoot the corners, top-right corner bevelled. */
+.sketch { position: relative; --o: 7px; --c: 16px; }
+.sketch::before {
+  --l: var(--sketch-line, var(--color-graphite));
+  content: ""; position: absolute; inset: calc(var(--o) * -1); pointer-events: none; opacity: var(--sketch-opacity, 0.5);
+  background:
+    linear-gradient(var(--l), var(--l)) left 0 top var(--o) / calc(100% - var(--o) - var(--c)) 1px no-repeat,
+    linear-gradient(var(--l), var(--l)) right var(--o) bottom 0 / 1px calc(100% - var(--o) - var(--c)) no-repeat,
+    linear-gradient(to top right, transparent calc(50% - 0.8px), var(--l) calc(50% - 0.3px), var(--l) calc(50% + 0.3px), transparent calc(50% + 0.8px)) right var(--o) top var(--o) / var(--c) var(--c) no-repeat,
+    linear-gradient(var(--l), var(--l)) left var(--o) top 0 / 1px 100% no-repeat,
+    linear-gradient(var(--l), var(--l)) left 0 bottom var(--o) / 100% 1px no-repeat;
+}
+
+/* A flat fill with bevelled corners (the fill is a pseudo-element, so focus outlines are not clipped). */
+.chamfer { position: relative; isolation: isolate; --cut: 10px; }
+.chamfer::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--fill, var(--color-ink-900)); transition: background-color 0.2s;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+
+/* A dimension line with extension lines and oblique architectural ticks. */
+.dim { position: relative; height: 11px; color: var(--color-graphite); }
+.dim::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 1px; background: currentColor; opacity: 0.55; }
+.dim::after {
+  content: ""; position: absolute; inset: 0; opacity: 0.8;
+  background:
+    linear-gradient(currentColor, currentColor) left 5px top 0 / 1px 11px no-repeat,
+    linear-gradient(currentColor, currentColor) right 5px top 0 / 1px 11px no-repeat,
+    linear-gradient(to top right, transparent calc(50% - 0.8px), currentColor calc(50% - 0.3px), currentColor calc(50% + 0.3px), transparent calc(50% + 0.8px)) left 0 top 0 / 11px 11px no-repeat,
+    linear-gradient(to top right, transparent calc(50% - 0.8px), currentColor calc(50% - 0.3px), currentColor calc(50% + 0.3px), transparent calc(50% + 0.8px)) right 0 top 0 / 11px 11px no-repeat;
+}
+
+/* Hatching, as for sections and "pledged, not yet received". */
+.hatch { background-image: repeating-linear-gradient(-45deg, currentColor 0 1px, transparent 1px 5px); }
+
+/* Graph paper in non-photo blue, fading out towards the bottom. */
+.paper-grid { position: relative; isolation: isolate; }
+.paper-grid::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgb(156 203 224 / 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(156 203 224 / 0.45) 1px, transparent 1px),
+    linear-gradient(to right, rgb(156 203 224 / 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(156 203 224 / 0.2) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+/* Lines that draw themselves like a pencil (paths use pathLength="1"). */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.8s cubic-bezier(0.45, 0, 0.2, 1) forwards; }
+
+/* ── Rich text rendered from Tiptap JSON ─────────────────────────────────────────── */
+@layer components {
+  .prose-river { @apply text-[1.0625rem] leading-relaxed; } /* colour is inherited, so utilities can set it */
+  .prose-river > * + * { margin-top: 0.9em; }
+  .prose-river h2 { @apply text-2xl font-semibold text-ink-900; margin-top: 1.4em; }
+  .prose-river h3 { @apply text-xl font-semibold text-ink-900; margin-top: 1.2em; }
+  .prose-river ul { @apply list-disc pl-6; }
+  .prose-river ol { @apply list-decimal pl-6; }
+  .prose-river li + li { margin-top: 0.3em; }
+  .prose-river a { @apply font-medium text-river-700 underline decoration-sunrise-500 decoration-2 underline-offset-4 hover:decoration-river-700; }
+  .prose-river blockquote { @apply border-l-2 border-sunrise-500 pl-4 italic; }
+  .prose-river strong { @apply font-semibold text-ink-900; }
+
+  .tiptap { outline: none; }
+  .tiptap p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; pointer-events: none; color: var(--color-ink-300); }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@river/web",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@river/content": "0.0.0",
+    "@river/feed": "0.0.0",
+    "@river/flows": "0.0.0",
+    "@river/gifts": "0.0.0",
+    "@river/i18n": "0.0.0",
+    "@river/kernel": "0.0.0",
+    "@river/log": "0.0.0",
+    "@river/needs": "0.0.0",
+    "@river/pages": "0.0.0",
+    "@river/privacy": "0.0.0",
+    "@river/reports": "0.0.0",
+    "@river/runtime": "0.0.0",
+    "@tiptap/core": "3.30.6",
+    "@tiptap/pm": "3.30.6",
+    "@tiptap/react": "3.30.6",
+    "@tiptap/starter-kit": "3.30.6",
+    "next": "16.3.5",
+    "react": "19.1.9",
+    "react-dom": "19.1.9"
+  },
+  "devDependencies": {
+    "tailwindcss": "4.1.18",
+    "@tailwindcss/postcss": "4.1.18",
+    "@types/react": "19.1.17",
+    "@types/react-dom": "19.1.11"
+  }
+}

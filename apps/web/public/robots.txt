@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /en-gb/track/
+Disallow: /uk/track/
+Disallow: /en-gb/studio/
+Disallow: /uk/studio/

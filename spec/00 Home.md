@@ -53,6 +53,8 @@ flowchart LR
 
 See [[The River Concept]] for the full metaphor and [[Guiding Principles]] for the ethics that shape every design decision.
 
+> Licence: CC BY-NC 4.0; commercial use by agreement. See `LICENSE-DOCS.md` in the repository root.
+
 ## Status
 
 - Phase: **Specification (vault structuring)**

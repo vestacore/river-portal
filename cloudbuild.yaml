@@ -1,0 +1,9 @@
+# Builds the web image; invoked by Pulumi (infra/src/buildImage.ts) with _IMAGE=<registry>/web:<content-hash>.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--pull', '-t', '${_IMAGE}', '-f', 'Dockerfile', '.']
+images: ['${_IMAGE}']
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+timeout: 1200s

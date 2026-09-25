@@ -1,0 +1,15 @@
+{
+  "name": "@river/privacy",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Visibility levels, PII redaction and public pseudonymisation.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/i18n": "0.0.0"
+  }
+}

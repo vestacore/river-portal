@@ -1,0 +1,17 @@
+{
+  "name": "@river/assist",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "AI assistance via Vertex AI (Gemini) with an offline extractive fallback.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/i18n": "0.0.0",
+    "@river/privacy": "0.0.0",
+    "@google/genai": "2.22.0"
+  }
+}

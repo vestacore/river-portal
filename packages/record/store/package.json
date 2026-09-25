@@ -1,0 +1,15 @@
+{
+  "name": "@river/store",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Document store interface with memory and Firestore drivers.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "firebase-admin": "14.3.0"
+  }
+}

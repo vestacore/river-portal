@@ -1,0 +1,64 @@
+{
+  "name": "river-portal",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "River Portal \u2014 an open-source portal where needs and gifts meet, built as a research project in AI-driven development.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vestacore/river-portal.git"
+  },
+  "homepage": "https://github.com/vestacore/river-portal#readme",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "workspaces": [
+    "packages/*/*",
+    "apps/*",
+    "infra"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @river/web",
+    "build": "npm run build --workspace @river/web",
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspace @river/web",
+    "test": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"packages/**/*.test.ts\"",
+    "topology": "node tools/check-topology.mjs",
+    "check": "npm run typecheck && npm run topology && npm test",
+    "pick-version": "node tools/pick-version.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/node": "22.18.13"
+  },
+  "overrides": {
+    "uuid": "11.1.1",
+    "@tiptap/core": "3.30.6",
+    "@tiptap/extension-blockquote": "3.30.6",
+    "@tiptap/extension-bold": "3.30.6",
+    "@tiptap/extension-bubble-menu": "3.30.6",
+    "@tiptap/extension-bullet-list": "3.30.6",
+    "@tiptap/extension-code": "3.30.6",
+    "@tiptap/extension-code-block": "3.30.6",
+    "@tiptap/extension-document": "3.30.6",
+    "@tiptap/extension-dropcursor": "3.30.6",
+    "@tiptap/extension-floating-menu": "3.30.6",
+    "@tiptap/extension-gapcursor": "3.30.6",
+    "@tiptap/extension-hard-break": "3.30.6",
+    "@tiptap/extension-heading": "3.30.6",
+    "@tiptap/extension-horizontal-rule": "3.30.6",
+    "@tiptap/extension-italic": "3.30.6",
+    "@tiptap/extension-link": "3.30.6",
+    "@tiptap/extension-list": "3.30.6",
+    "@tiptap/extension-list-item": "3.30.6",
+    "@tiptap/extension-list-keymap": "3.30.6",
+    "@tiptap/extension-ordered-list": "3.30.6",
+    "@tiptap/extension-paragraph": "3.30.6",
+    "@tiptap/extension-strike": "3.30.6",
+    "@tiptap/extension-text": "3.30.6",
+    "@tiptap/extension-underline": "3.30.6",
+    "@tiptap/extensions": "3.30.6",
+    "@tiptap/pm": "3.30.6",
+    "@tiptap/react": "3.30.6",
+    "@tiptap/starter-kit": "3.30.6"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@river/gifts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Campaigns, offers and gifts.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/kernel": "0.0.0",
+    "@river/log": "0.0.0",
+    "@river/privacy": "0.0.0",
+    "@river/store": "0.0.0"
+  }
+}
