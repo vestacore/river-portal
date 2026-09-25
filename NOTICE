@@ -1,0 +1,19 @@
+River Portal
+Copyright 2026 VestaCore and the River Portal contributors
+
+This product includes software developed by the River Portal project
+(https://github.com/vestacore/river-portal), a research project in
+AI-driven software development.
+
+The source code is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The specification (spec/), the architecture decision records (adr/) and the
+process notes (meta/) are licensed separately under the Creative Commons
+Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0); commercial
+use requires a separate agreement. See LICENSE-DOCS.md.
+
+The Oleshky fact sheet (docs/oleshky-fact-sheet.md) is licensed under the
+Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+Typefaces: IBM Plex Sans and IBM Plex Mono, Copyright IBM Corp., licensed under
+the SIL Open Font License, Version 1.1; fetched from Google Fonts at build time.

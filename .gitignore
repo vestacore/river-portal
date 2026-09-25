@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env*
+!.env.example
+infra/bin/
+.DS_Store
+spec/.obsidian/workspace*.json
+adr/.obsidian/workspace*.json
+meta/.obsidian/workspace*.json
+/.claude
