@@ -1,3 +1,4 @@
+import { configProjector } from '@river/config';
 import { contentProjector } from '@river/content';
 import { feedProjector } from '@river/feed';
 import { flowProjector } from '@river/flows';
@@ -13,6 +14,7 @@ import { reportProjector } from '@river/reports';
  */
 export function allProjectors(): readonly Projector[] {
   return [
+    configProjector,
     needProjector, giftProjector, campaignProjector, flowProjector,
     contentProjector, reportProjector, feedProjector,
     sitePageProjector, campaignPageProjector,

@@ -1,19 +1,23 @@
 import { formatMoney, formatNumber, type Locale } from '@river/i18n';
 import type { Counters } from '@river/pages';
+import { settingList, settingText, type SettingsSnapshot } from '@river/settings';
 import type { Dictionary } from '@/lib/dictionary/types';
 import { Container } from '../ui/Container';
 
 /** Live counters as measurements on a bevelled plate: value over a dimension line, label in technical lettering. */
-export function CountersBand({ counters, locale, dict }: { counters: Counters; locale: Locale; dict: Dictionary }) {
+export function CountersBand({ counters, settings, locale, dict }: { counters: Counters; settings: SettingsSnapshot; locale: Locale; dict: Dictionary }) {
   const t = dict.home.counters;
-  const items = [
-    { value: formatNumber(counters.needsReceived, locale), label: t.needsReceived },
-    { value: formatNumber(counters.households, locale), label: t.households },
-    { value: formatNumber(counters.deliveries, locale), label: t.deliveries },
-    { value: formatNumber(counters.giftsPledged, locale), label: t.giftsPledged },
-    { value: formatMoney(counters.moneyReceivedGbpMinor, 'GBP', locale), label: t.moneyReceived },
-    { value: formatMoney(counters.costsGbpMinor, 'GBP', locale), label: t.costs },
-  ];
+  const currency = settingText(settings, 'money.reportingCurrency');
+  const all = {
+    needsReceived: { value: formatNumber(counters.needsReceived, locale), label: t.needsReceived },
+    households: { value: formatNumber(counters.households, locale), label: t.households },
+    deliveries: { value: formatNumber(counters.deliveries, locale), label: t.deliveries },
+    giftsPledged: { value: formatNumber(counters.giftsPledged, locale), label: t.giftsPledged },
+    moneyReceived: { value: formatMoney(counters.moneyReceivedMinor, currency, locale), label: t.moneyReceived },
+    costs: { value: formatMoney(counters.costsMinor, currency, locale), label: t.costs },
+  };
+  const items = settingList<keyof typeof all>(settings, 'home.counters').filter((k) => k in all).map((k) => all[k]);
+  if (items.length === 0) return null;
   return (
     <section className="pt-16">
       <Container>

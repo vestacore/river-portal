@@ -8,6 +8,7 @@ const statusBy: Record<string, GiftStatus> = {
   'gift.Received': 'received',
   'gift.Allocated': 'allocated',
   'gift.Delivered': 'delivered',
+  'gift.Acknowledged': 'acknowledged',
 };
 
 async function project(event: LogEvent, tx: Parameters<Projector['project']>[1]): Promise<void> {

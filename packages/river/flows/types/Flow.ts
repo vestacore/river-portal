@@ -11,7 +11,7 @@ export type Flow = {
   campaignId: string | null;
   oblastId: string;
   lead: string;
-  carrier: { kind: CarrierKind; name: string } | null;
+  carrier: { kind: CarrierKind; name: string; personId: string | null } | null;
   fromLabel: string | null;
   costs: CostLine[];
   confirmations: Array<{ needId: string; by: string; at: string }>;

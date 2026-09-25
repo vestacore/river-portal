@@ -7,7 +7,8 @@ export type CostSubmittedPayload = {
   kind: CostKind;
   amountMinor: number;
   currency: string;
-  fxRateToGbp: number;
-  gbpMinor: number;
+  fxRate: number;
+  reportingCurrency: string;
+  reportingMinor: number;
   note: string;
 };

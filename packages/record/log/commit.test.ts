@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { resolveSettings } from '@river/settings';
 import { createMemoryStore } from '@river/store';
 import { commit } from './commit.ts';
 import type { Projector } from './types/Projector.ts';
@@ -14,7 +15,7 @@ test('commit appends events and runs matching projectors atomically', async () =
       tx.set(`orgs/${event.orgId}/views/counter`, { n: doc.n + 1 });
     },
   };
-  const env = { store, projectors: [counter], ctx: { orgId: 'o', actor: { personId: null, role: 'system' as const, via: 'system' as const } } };
+  const env = { store, projectors: [counter], settings: resolveSettings('small-nationwide'), ctx: { orgId: 'o', actor: { personId: null, role: 'system' as const, via: 'system' as const } } };
   const events = await commit(env, [
     { type: 'thing.Happened', aggregate: { kind: 'thing', id: 't1' }, payload: {}, visibility: 'team' },
     { type: 'thing.Happened', aggregate: { kind: 'thing', id: 't1' }, payload: {}, visibility: 'team' },

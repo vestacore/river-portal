@@ -9,12 +9,13 @@ import type { NeedSubmittedPayload } from './types/NeedSubmittedPayload.ts';
  * Records a request for help. Access is always open (spec ADR-005): no account, no history check.
  * Personal details go to a `private` document, never into the log. The request is acknowledged
  * automatically at once (spec: Canonical Parameters, under 1 hour).
- * Returns the tracking token, shown to the recipient exactly once.
+ * Returns the tracking token, shown to the recipient exactly once. A signed-in recipient's person id
+ * links the request to their own page (`as`).
  */
-export async function submitNeed(env: CommandEnv, input: NeedInput): Promise<{ needId: string; trackingToken: string }> {
+export async function submitNeed(env: CommandEnv, input: NeedInput, as?: { personId: string }): Promise<{ needId: string; trackingToken: string }> {
   const at = env.ctx.at ? new Date(env.ctx.at) : new Date();
   const needId = newId('need', at);
-  const personId = newId('person', at);
+  const personId = as?.personId ?? newId('person', at);
   const trackingToken = newToken();
   const aggregate = { kind: 'need', id: needId };
   const details: NeedPrivate = {

@@ -38,7 +38,7 @@ export default async function CampaignPage({ params }: Props) {
   const stats = [
     { value: money(page.receivedMinor), label: dict.campaign.raised },
     { value: money(page.pledgedMinor), label: dict.campaign.pledged },
-    { value: money(page.spentGbpMinor), label: dict.campaign.spent },
+    { value: money(page.spentMinor), label: dict.campaign.spent },
     { value: String(page.deliveries), label: dict.campaign.deliveries },
   ];
   return (
@@ -76,7 +76,7 @@ export default async function CampaignPage({ params }: Props) {
           <section className="sketch p-7 sm:p-8">
             <h2 className="text-2xl font-semibold">{dict.campaign.costsTitle}</h2>
             <p className="mb-7 mt-2 text-ink-500">{dict.campaign.costsLead}</p>
-            <CostBreakdown breakdown={page.costBreakdown} locale={locale} dict={dict} />
+            <CostBreakdown breakdown={page.costBreakdown} currency={page.currency} locale={locale} dict={dict} />
           </section>
           <section>
             <h2 className="mb-5 text-2xl font-semibold">{dict.campaign.reports}</h2>

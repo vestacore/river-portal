@@ -4,7 +4,7 @@ import { findBlockDefinition } from './findBlockDefinition.ts';
 import { isRichDoc } from './isRichDoc.ts';
 import { renderRichText } from './renderRichText.ts';
 
-/** An editor changes a site text in place. HTML is rendered here, never accepted from the browser. */
+/** An editor changes a site text in the studio (ADR-0022). HTML is rendered here, never accepted from the browser. */
 export async function editContentBlock(env: CommandEnv, input: { blockId: string; locale: Locale; doc: unknown }): Promise<void> {
   const definition = findBlockDefinition(input.blockId);
   if (!definition) throw new Error(`Unknown block ${input.blockId}`);

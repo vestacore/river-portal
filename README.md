@@ -50,22 +50,35 @@ River Portal treats help as a river. **Needs** stand on one bank and **gifts** o
 |---|---|
 | **Ask for help** | A very simple form in English or Ukrainian. No account and no proof required. It returns a private tracking link that shows the request's journey in plain words. |
 | **Give** | Money, goods, transport, a service or time, shaped by real needs. A gift is a gift: it buys no status, and nobody is ranked by amount. |
-| **Coordinate** | A studio for staff behind Identity-Aware Proxy: a needs queue ordered by declared urgency and waiting time; matching; dispatch with carriers and multi-currency costs; delivery. |
+| **Coordinate** | A studio for staff behind Identity-Aware Proxy, arranged along the river: inflow of needs and gifts, deliveries, costs, confirmations, publishing and settings. Each role sees its own stages; an auditor sees everything and changes nothing. |
 | **Close the circle** | The recipient confirms receipt and can send thanks to everyone who helped. Each use of the thanks needs its own consent. |
-| **Report honestly** | A private report is generated from the flow's records, edited in place, and published only after a consent check and a safety delay for conflict zones. |
+| **Report honestly** | A private report is generated from the flow's records, edited in the studio, and published only after a consent check and a safety delay for conflict zones. |
 | **Tell the story with AI, carefully** | Vertex AI (Gemini) proposes short feed items from a report. People edit, accept or reject each one. AI never publishes. |
-| **Show the numbers** | Counters, campaign pages with an honest cost breakdown, the feed and a thank-you wall. The public sees oblast-level places only and no personal data. |
+| **Show the numbers** | Counters, campaign pages with an honest cost breakdown, an open ledger, the feed and a thank-you wall. The public sees oblast-level places only and no personal data. |
+| **Set it up for your organisation** | Every parameter lives in one settings registry, with floors that cannot be lowered: currency, approval limits, safety delays, texts, contacts, the order of the home page. Three profiles set it up for a state programme, a city foundation or a small organisation working across the country. |
+| **Walk every role** | Locally, act as any of nine demo people (a recipient, a giver, a sponsor, a carrier, a coordinator, a Finance Steward, an editor, an administrator, an auditor) and follow a guided walk of ten steps from a request to the thanks. |
 
 ## Screenshots
 
+<p align="center"><img src="docs/images/profiles.png" alt="Three home pages side by side: One River, a state programme in yellow; Warm Bridge, a city foundation in teal; and Open River Aid, a small organisation in orange. Each has its own headline, colour and order of sections." width="100%"></p>
+<p align="center"><sub><strong>One code base, three organisations.</strong> The same texts, written once with settings tokens, become a national programme, a city foundation and a small volunteer group.</sub></p>
+
 <table>
   <tr>
-    <td width="67%"><img src="docs/images/studio-report.png" alt="Studio: a private report edited in place, with publish controls and an AI panel that proposes feed items"></td>
+    <td width="67%"><img src="docs/images/studio-stages.png" alt="Studio overview for a coordinator: the river today, with counts of what waits at each stage (needs and gifts, deliveries, costs, confirmations, publishing)"></td>
     <td width="33%"><img src="docs/images/home-mobile-uk.png" alt="The home page on a phone, in Ukrainian"></td>
   </tr>
   <tr>
-    <td><sub><strong>Studio.</strong> A report drafted from the records, edited in place (Tiptap); publishing and AI-assisted feed items stay under human control.</sub></td>
+    <td><sub><strong>Studio.</strong> The river today for a coordinator: what waits at each stage, and which stages are theirs.</sub></td>
     <td><sub><strong>Mobile, Ukrainian.</strong> Both languages are first-class.</sub></td>
+  </tr>
+  <tr>
+    <td width="67%"><img src="docs/images/studio-settings.png" alt="Studio settings: the home page group, with sections that can be shown, hidden and reordered, and a label showing whether each value comes from the profile, the default or the organisation"></td>
+    <td width="33%"><img src="docs/images/my-river-giver.png" alt="My river for a giver: a gift of £500 traced from promised to thanked, with the region, the report and the recipient's thanks"></td>
+  </tr>
+  <tr>
+    <td><sub><strong>Settings.</strong> Generated from the registry; every value shows where it comes from.</sub></td>
+    <td><sub><strong>My river.</strong> A giver follows a gift to the thanks, without seeing anyone's name.</sub></td>
   </tr>
 </table>
 
@@ -106,8 +119,9 @@ flowchart LR
 
 | Layer | Choice |
 |---|---|
-| UI | Next.js 16 (App Router, Server Components, Server Actions), React 19, Tailwind CSS 4, Tiptap 3 for in-place editing, IBM Plex |
-| Domain | 14 TypeScript packages behind `gate.ts` entry points: `foundation` → `record` → `river` / `assist` → `surface` → `compose` ([`TOPOLOGY.md`](TOPOLOGY.md)) |
+| UI | Next.js 16 (App Router, Server Components, Server Actions), React 19, Tailwind CSS 4, Tiptap 3 for editing in the studio, IBM Plex |
+| Domain | 17 TypeScript packages behind `gate.ts` entry points: `foundation` → `record` → `river` / `steward` / `assist` → `surface` → `compose` ([`TOPOLOGY.md`](TOPOLOGY.md)) |
+| Settings and identity | A typed settings registry with three organisation profiles; roles and signed sessions (IAP for staff, demo people locally) |
 | Data | Firestore: append-only log plus projections written in the same transaction; public pages read pre-shaped documents |
 | Edge and security | Global external Application Load Balancer, Cloud Armor Standard (OWASP CRS 3.3), Identity-Aware Proxy for the studio, Cloud Run reachable only through the balancer |
 | AI | Gemini on Vertex AI with PII redaction before prompts and an offline fallback; every suggestion is logged and reviewed by a person |
@@ -120,8 +134,8 @@ Each folder is an [Obsidian](https://obsidian.md) vault with linked notes. Toget
 
 | Vault | Question it answers | Contents |
 |---|---|---|
-| [`spec/`](spec/00%20Home.md) | *What* are we building, and why? | 146 notes (~137,000 words): business description, entities, relationships, the portal's form, publications, achievements, decision points and responsibility, architecture, privacy and ethics, bilingual demo content. Sources of truth: the Vault Map, Canonical Parameters and an event catalogue of 361 events. |
-| [`adr/`](adr/00%20ADR%20Home.md) | *How* do we build it, and what did we decide? | 19 architecture decision records, with amendments where reality changed them (for example, security advisories overriding the version policy). |
+| [`spec/`](spec/00%20Home.md) | *What* are we building, and why? | 146 notes (~137,000 words): business description, entities, relationships, the portal's form, publications, achievements, decision points and responsibility, architecture, privacy and ethics, bilingual demo content. Sources of truth: the Vault Map, Canonical Parameters and an event catalogue of more than 360 events. |
+| [`adr/`](adr/00%20ADR%20Home.md) | *How* do we build it, and what did we decide? | 23 architecture decision records, with amendments where reality changed them (for example, security advisories overriding the version policy, or editing moving from public pages into the studio). |
 | [`meta/`](meta/00%20Meta%20Home.md) | *How* are we working, and what did we learn? | Iterations, observations, working agreements, the dependency register, technical debt with repay triggers, and assumptions taken while questions were open. |
 
 Practices you can reuse:
@@ -143,13 +157,21 @@ sfw npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Locally the app uses an in-memory store seeded with bilingual demo data, and you act as a development staff member, so `/en-gb/studio` and **Edit this site** work.
+Open http://localhost:3000/en-gb/demo and choose who to be, or follow **Walk the river**. Locally the app uses an in-memory store seeded with bilingual demo data. The demo organisation starts from the `small-nationwide` profile; start with another one, or switch on the demo page (this starts the demo data again):
+
+```bash
+RIVER_PROFILE=city-foundation npm run dev
+```
+
+The profiles are `state-programme`, `city-foundation` and `small-nationwide`.
+
+<p align="center"><img src="docs/images/demo-personas.png" alt="The demo sign-in page: 'Try River Portal as…', with people grouped by the banks of the river: Olena, who asked for help, on the left bank; James and Harbour Print Ltd, who give, on the right bank" width="70%"></p>
 
 ```bash
 npm run check
 ```
 
-`npm run check` runs the type check, the topology check and the unit tests. For design reviews, `node tools/design-shot.mjs <url> <width> <out.png> [--mobile] [--reduce]` takes full-page screenshots with device emulation in your local Chrome.
+`npm run check` runs the type check, the topology check and the unit tests, including the demo seed of every profile. For design reviews, `node tools/design-shot.mjs <url> <width> <out.png> [--mobile] [--reduce] [--cookie=river-session=…]` takes full-page screenshots with device emulation in your local Chrome, also as a demo person.
 
 ## Deploying to Google Cloud
 
@@ -171,6 +193,16 @@ pulumi config set gcp:project <project-id>
 pulumi config set --path 'river-portal:iapMembers[0]' user:you@example.org
 ```
 
+Optionally, choose the profile the organisation starts from, and give staff their roles (everyone else admitted by IAP coordinates):
+
+```bash
+pulumi config set river-portal:profile city-foundation
+```
+
+```bash
+pulumi config set river-portal:staffRoles 'you@example.org:administrator|editor'
+```
+
 ```bash
 pulumi preview
 ```
@@ -188,13 +220,13 @@ Without a configured domain, the URLs are `https://<ip>.sslip.io` and `https://s
 
 ## Status
 
-**Research preview.** The first full thread works end to end: ask, triage, match, dispatch, deliver, confirm with thanks, private report, publication, and AI-assisted feed items.
+**Research preview.** The whole river can be walked by every role: ask, triage, give, match, dispatch, hand over, record and approve costs, confirm with thanks, report, publish, and AI-assisted feed items. The last iteration and its evaluation of the three profiles: [`meta/iterations/Iteration 04 — Identity, Trust and Settings.md`](meta/iterations/Iteration%2004%20%E2%80%94%20Identity%2C%20Trust%20and%20Settings.md).
 
 Before real use:
 - per-person encryption of personal free text (TD-01);
 - delayed public aggregates (TD-08);
 - payments;
-- accounts for givers and recipients (Firebase Authentication).
+- real sign-in for givers, recipients and carriers (Firebase Authentication, TD-15). Until then, "My river" works only with the demo people.
 
 See the [technical debt register](meta/process/Technical%20Debt%20Register.md) and [open questions](spec/00-meta/Open%20Questions.md).
 

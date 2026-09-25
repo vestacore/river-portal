@@ -13,7 +13,7 @@ export function CampaignCard({ campaign, locale, dict }: { campaign: Campaign; l
   const facts = [
     [dict.campaign.raised, money(campaign.receivedMinor)],
     [dict.campaign.goal, money(campaign.goalMinor)],
-    [dict.campaign.spent, money(campaign.spentGbpMinor)],
+    [dict.campaign.spent, money(campaign.spentMinor)],
     [dict.campaign.gifts, String(campaign.giftsCount)],
   ];
   return (

@@ -10,7 +10,7 @@ export type CampaignCard = {
   currency: string;
   pledgedMinor: number;
   receivedMinor: number;
-  spentGbpMinor: number;
+  spentMinor: number;
   giftsCount: number;
   status: 'active' | 'paused' | 'closed';
 };

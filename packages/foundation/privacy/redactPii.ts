@@ -17,10 +17,11 @@ export function redactPii(text: string, names: readonly string[] = []): string {
   for (const name of names) {
     for (const word of name.trim().split(/\s+/)) {
       if (word.length < 2) continue;
-      // Ukrainian names and places inflect (Балаклія → Балаклії, Олена → Олені): match on the stem.
-      const stem = word.length >= 5 ? word.slice(0, word.length - 2) : word;
+      // Ukrainian names and places inflect (Балаклія → Балаклії, Олена → Олені): match a stem of at
+      // least four letters plus an ending of up to four, so "Peter" does not swallow "petrol".
+      const stem = word.length >= 6 ? word.slice(0, -2) : word.length === 5 ? word.slice(0, -1) : word;
       const escaped = stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      out = out.replace(new RegExp(`(?<![\\p{L}])${escaped}[\\p{L}'’]*`, 'giu'), '[…]');
+      out = out.replace(new RegExp(`(?<![\\p{L}])${escaped}[\\p{L}'’]{0,4}(?![\\p{L}])`, 'giu'), '[…]');
     }
   }
   return out;

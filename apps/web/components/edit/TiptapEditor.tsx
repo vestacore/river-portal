@@ -46,7 +46,9 @@ export default function TiptapEditor({ initialDoc, mode, labels, onSave, onCance
   async function save() {
     if (!editor) return;
     setStatus('saving');
-    const ok = await onSave(editor.getJSON());
+    // ProseMirror keeps node attributes in null-prototype objects, which Server Actions cannot
+    // receive (headings arrive as temporary client references); send plain JSON instead.
+    const ok = await onSave(JSON.parse(JSON.stringify(editor.getJSON())) as object);
     setStatus(ok ? 'saved' : 'failed');
   }
 

@@ -1,0 +1,17 @@
+{
+  "name": "@river/config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The organisation's stored settings: profile, overrides, commands and projection.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/log": "0.0.0",
+    "@river/settings": "0.0.0",
+    "@river/store": "0.0.0"
+  }
+}

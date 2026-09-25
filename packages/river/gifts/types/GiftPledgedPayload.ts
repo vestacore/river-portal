@@ -10,4 +10,5 @@ export type GiftPledgedPayload = {
   campaignId: string | null;
   giverDisplay: GiverDisplay;
   displayName: string | null;
+  giverId: string | null;
 };

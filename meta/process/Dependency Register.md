@@ -40,3 +40,7 @@ Every **direct** dependency, the version chosen and why. Policy: ADR-0007 (two m
 ## Supply-chain gaps (tracked)
 - The Docker build runs `npm ci` from the lockfile (integrity-checked, `--ignore-scripts`) but not through `sfw`. See [[Technical Debt Register]] TD-09.
 - Pulumi provider plugins (gcp, command) are downloaded by the Pulumi CLI, not through `sfw`. TD-10.
+
+## Changes
+
+- **2026-09-25 (iteration 04):** no new external dependencies. Three internal workspace packages were added (`@river/identity`, `@river/settings`, `@river/config`), and `sfw npm install` updated only the lockfile's workspace entries. `npm audit`: 0 vulnerabilities.

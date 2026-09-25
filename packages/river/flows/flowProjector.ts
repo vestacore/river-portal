@@ -25,13 +25,13 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
   switch (event.type) {
     case 'flow.Committed': flow.status = 'committed'; break;
     case 'consignment.Dispatched':
-      flow.carrier = { kind: p.carrierKind as CarrierKind, name: p.carrierName as string };
+      flow.carrier = { kind: p.carrierKind as CarrierKind, name: p.carrierName as string, personId: (p.carrierPersonId as string | null) ?? null };
       flow.fromLabel = p.fromLabel as string;
       flow.dispatchedAt = event.occurredAt;
       break;
     case 'costRecord.Submitted': {
       const c = p as CostSubmittedPayload;
-      flow.costs.push({ id: event.aggregate.id, kind: c.kind, amountMinor: c.amountMinor, currency: c.currency, fxRateToGbp: c.fxRateToGbp, gbpMinor: c.gbpMinor, note: c.note, status: 'submitted', at: event.occurredAt });
+      flow.costs.push({ id: event.aggregate.id, kind: c.kind, amountMinor: c.amountMinor, currency: c.currency, fxRate: c.fxRate, reportingCurrency: c.reportingCurrency, reportingMinor: c.reportingMinor, note: c.note, status: 'submitted', at: event.occurredAt });
       break;
     }
     case 'costRecord.Approved': {

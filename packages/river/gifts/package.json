@@ -13,6 +13,7 @@
     "@river/kernel": "0.0.0",
     "@river/log": "0.0.0",
     "@river/privacy": "0.0.0",
+    "@river/settings": "0.0.0",
     "@river/store": "0.0.0"
   }
 }

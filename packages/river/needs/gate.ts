@@ -26,3 +26,4 @@ export { needProjector } from './needProjector.ts';
 export { readNeedQueue } from './readNeedQueue.ts';
 export { readNeed } from './readNeed.ts';
 export { readRecipientView } from './readRecipientView.ts';
+export { readNeedsByPerson } from './readNeedsByPerson.ts';

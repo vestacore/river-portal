@@ -1,12 +1,15 @@
 ---
 type: adr
-status: accepted
+status: accepted (amended by ADR-0022)
 date: 2026-09-24
 tags: [adr, ui, content]
 spec: spec/04-form/Content Editor.md
 ---
 
 # ADR-0006 In-Place Editing with Tiptap
+
+> [!note] Amended 2026-09-25
+> Editing **on public pages** is superseded by [[ADR-0022 Editing in the Studio, Not on Public Pages]]: texts are now edited in the studio. Tiptap, the stored format (JSON plus server-rendered HTML) and `content.BlockEdited` remain as decided here.
 
 ## Context
 Administrators and editors must edit content **where it appears**: headings and texts on public pages, report bodies and feed snippets. The spec asks for a simple but high-quality editor with structured JSON blocks and live data blocks.

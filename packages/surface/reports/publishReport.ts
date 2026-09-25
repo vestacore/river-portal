@@ -14,7 +14,7 @@ export async function publishReport(env: CommandEnv, input: { reportId: string; 
   const now = env.ctx.at ? new Date(env.ctx.at) : new Date();
   const arrived = report.facts.arrivedAt ? new Date(report.facts.arrivedAt) : now;
   const daysSinceDelivery = Math.floor((now.getTime() - arrived.getTime()) / 86_400_000);
-  const insideDelay = daysSinceDelivery < safetyDelayDays();
+  const insideDelay = daysSinceDelivery < safetyDelayDays(env.settings);
   if (insideDelay && !input.acknowledgeSafetyDelay) return { ok: false, reason: 'safety_delay', daysSinceDelivery };
   const aggregate = { kind: 'publication', id: report.id };
   await commit(env, [

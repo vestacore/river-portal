@@ -9,8 +9,10 @@
     ".": "./gate.ts"
   },
   "dependencies": {
+    "@river/identity": "0.0.0",
     "@river/kernel": "0.0.0",
-    "@river/store": "0.0.0",
-    "@river/privacy": "0.0.0"
+    "@river/privacy": "0.0.0",
+    "@river/settings": "0.0.0",
+    "@river/store": "0.0.0"
   }
 }

@@ -1,18 +1,18 @@
 import type { BlockMap } from '@river/content';
 import type { Locale } from '@river/i18n';
 import type { Dictionary } from '@/lib/dictionary/types';
-import { Editable } from '../edit/Editable';
+import { SiteText } from './SiteText';
 import { Container } from '../ui/Container';
 
 /** The river in four steps: a straight process line with diamond nodes and oblique arrowheads. */
-export function HowItWorks({ locale, dict, blocks }: { locale: Locale; dict: Dictionary; blocks: BlockMap }) {
+export function HowItWorks({ locale, dict, blocks, index }: { locale: Locale; dict: Dictionary; blocks: BlockMap; index: string }) {
   return (
     <section className="py-24">
       <Container>
         <div className="mb-14 max-w-2xl">
-          <p className="annot mb-4 flex items-center gap-3 text-ink-500"><span className="text-sunrise-600">§ 01</span><span className="h-px w-12 bg-graphite/40" aria-hidden="true" /></p>
-          <Editable blocks={blocks} blockId="home.how.title" locale={locale} as="h2" className="text-3xl font-semibold sm:text-[2.6rem]" />
-          <Editable blocks={blocks} blockId="home.how.lead" locale={locale} className="mt-4 text-lg text-ink-500" />
+          <p className="annot mb-4 flex items-center gap-3 text-ink-500"><span className="text-sunrise-600">§ {index}</span><span className="h-px w-12 bg-graphite/40" aria-hidden="true" /></p>
+          <SiteText blocks={blocks} blockId="home.how.title" locale={locale} as="h2" className="text-3xl font-semibold sm:text-[2.6rem]" />
+          <SiteText blocks={blocks} blockId="home.how.lead" locale={locale} className="mt-4 text-lg text-ink-500" />
         </div>
         <ol className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {dict.home.how.map((step, i) => (

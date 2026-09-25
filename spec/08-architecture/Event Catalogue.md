@@ -353,5 +353,19 @@ AI events accompany, never replace, the human decision event (e.g. `flow.Committ
 | `publication.Drafted` (`publicationKind: feedItem`) | publication | `kind`, `text` (en-GB, uk), `reportId`, `source` (vertex / fallback / editor), `model` | team | feed (studio) |
 | `publication.Published` / `publication.Withdrawn` (`publicationKind: report` or `feedItem`) | publication | report: `safetyOverride`, `daysSinceDelivery`; feed item: final `text` | public | reports, feed, site document, campaign page |
 
+
+## Added in engineering iteration 04 (2026-09-25)
+
+| Event | Aggregate | Payload (summary) | Default visibility | Projections |
+|---|---|---|---|---|
+| `settings.ProfileApplied` | settings | `profileId`, `keepOverrides` | team | organisation settings |
+| `settings.ValuesChanged` | settings | `values`: setting key → validated value; a value equal to the one in force is not recorded | team | organisation settings (and every page, through tokens) |
+| `settings.ValueReset` | settings | `key` | team | organisation settings |
+| `costRecord.Submitted` / `costRecord.Approved` (extended) | costRecord | `amountMinor` and `currency` as paid, `fxRate` used, `reportingCurrency`, `reportingMinor`; on approval `approvedAs`: `lead` (within the limit) or `finance_steward` | team / public | flows, ledger, campaign page, site document |
+| `gift.Acknowledged` (payload fixed) | gift | `flowId`, `gratitudeNoteId`; emitted when the recipient shares thanks with the people who helped | team for now (participants when participant views exist) | gifts ("My river") |
+
+- The `settings.*` events implement `organisation.SettingsChanged`, with a dedicated aggregate so that each change is small and can be reset key by key.
+- The acting role recorded with every event is the **capacity** in which the person acted, for example `finance_steward` for an approval (engineering: `adr/records/ADR-0021 Identity Layer and Demo Personas.md`).
+
 Naming rules: [[Canonical Parameters]].
 

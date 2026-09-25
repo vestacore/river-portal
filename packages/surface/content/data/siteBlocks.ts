@@ -4,13 +4,13 @@ import type { BlockDefinition } from '../types/BlockDefinition.ts';
 export const siteBlocks: readonly BlockDefinition[] = [
   {
     id: 'home.hero.title', mode: 'inline', label: 'Home — headline',
-    defaults: { 'en-GB': 'Help flows to where it is needed', uk: 'Допомога тече туди, де вона потрібна' },
+    defaults: { 'en-GB': '{{org.tagline}}', uk: '{{org.tagline}}' },
   },
   {
     id: 'home.hero.lead', mode: 'rich', label: 'Home — introduction',
     defaults: {
-      'en-GB': 'We connect people who need help with people ready to share: in the form it is needed, carried by volunteers, and shown openly from the first request to the last thank-you.',
-      uk: "Ми поєднуємо тих, кому потрібна допомога, з тими, хто готовий нею поділитися: у тій формі, яка потрібна, з волонтерами, що її везуть, і відкрито — від першого запиту до останнього «дякую».",
+      'en-GB': '{{org.scope}}',
+      uk: '{{org.scope}}',
     },
   },
   {
@@ -39,8 +39,8 @@ export const siteBlocks: readonly BlockDefinition[] = [
   {
     id: 'ask.lead', mode: 'rich', label: 'Ask — reassurance',
     defaults: {
-      'en-GB': "Tell us what you need in your own words. You don't need to prove anything, and you don't need an account. We read every request, and a coordinator will reply within 2 days.",
-      uk: 'Розкажіть своїми словами, що вам потрібно. Нічого не треба доводити, і реєстрація не потрібна. Ми читаємо кожне звернення, а координатор відповість протягом 2 днів.',
+      'en-GB': "Tell us what you need in your own words. You don't need to prove anything, and you don't need an account. We read every request, and a coordinator will reply within {{help.replyWithinDays}} days. If we cannot help, we will tell you who can.",
+      uk: 'Розкажіть своїми словами, що вам потрібно. Нічого не треба доводити, і реєстрація не потрібна. Ми читаємо кожне звернення, а координатор відповість протягом {{help.replyWithinDays}} днів. Якщо ми не зможемо допомогти, підкажемо, хто зможе.',
     },
   },
   {
@@ -57,8 +57,8 @@ export const siteBlocks: readonly BlockDefinition[] = [
   {
     id: 'footer.note', mode: 'rich', label: 'Footer — organisation note',
     defaults: {
-      'en-GB': 'Open River Aid is a fictional charity used to demonstrate River Portal. Every figure on this site comes from our own records.',
-      uk: '«Відкрита ріка» — вигадана благодійна організація для демонстрації River Portal. Кожна цифра на сайті походить з наших власних записів.',
+      'en-GB': '{{org.scope}} Every figure on this site comes from our own records. This is a demonstration of River Portal; the organisation is fictional.',
+      uk: '{{org.scope}} Кожна цифра на сайті походить з наших власних записів. Це демонстрація River Portal; організація вигадана.',
     },
   },
 ];

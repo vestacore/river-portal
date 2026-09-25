@@ -38,7 +38,7 @@ export default async function ReportPage({ params }: Props) {
     { icon: 'globe', label: dict.report.region, value: oblastName(f.oblastId, locale) },
     { icon: 'check', label: dict.report.delivered, value: f.arrivedAt ? formatDate(f.arrivedAt, locale) : '—' },
     { icon: 'heart', label: dict.report.reached, value: pluralise(f.recipients.length, locale, dict.report.households) },
-    { icon: 'route', label: dict.report.costs, value: formatMoney(f.costsGbpMinor, 'GBP', locale) },
+    { icon: 'route', label: dict.report.costs, value: formatMoney(f.costsMinor, f.currency, locale) },
   ];
   return (
     <article>
@@ -70,7 +70,7 @@ export default async function ReportPage({ params }: Props) {
         ) : null}
         <section className="mt-10 sketch bg-paper p-7">
           <h2 className="mb-5 text-xl font-bold">{dict.report.breakdown}</h2>
-          <CostBreakdown breakdown={f.costBreakdown} locale={locale} dict={dict} />
+          <CostBreakdown breakdown={f.costBreakdown} currency={f.currency} locale={locale} dict={dict} />
         </section>
         <p className="mt-8 flex items-start gap-2 text-sm text-ink-500"><Icon name="shield" className="mt-0.5 size-4 shrink-0" />{dict.report.pseudonymised}</p>
       </Container>

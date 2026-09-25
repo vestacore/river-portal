@@ -15,7 +15,7 @@ async function create(): Promise<Runtime> {
       ? await createFirestoreStore({ ...(config.projectId ? { projectId: config.projectId } : {}), databaseId: config.firestoreDatabase })
       : createMemoryStore();
   const runtime: Runtime = { config, store, projectors: allProjectors(), assistant: createAssistant(config), demoTrackingLinks: {} };
-  if (config.seed === 'demo') await seedDemo(runtime);
+  if (config.seed === 'demo') await seedDemo(runtime, config.profile);
   return runtime;
 }
 

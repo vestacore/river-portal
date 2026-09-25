@@ -1,0 +1,12 @@
+{
+  "name": "@river/identity",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Roles, identities and signed demo sessions.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {}
+}

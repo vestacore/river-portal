@@ -7,6 +7,8 @@ export type GratitudeNote = {
   flowId: string;
   locale: Locale;
   text: string;
+  /** The thanks as givers and carriers see it: names and places removed when it was written. */
+  sharedText: string | null;
   shareWithParticipants: boolean;
   showOnWall: boolean;
   writtenAt: string;

@@ -1,4 +1,4 @@
-// @river/reports — reports generated from flows, edited in place, published after checks.
+// @river/reports — reports generated from flows, edited in the studio, published after checks.
 export type { ReportFacts } from './types/ReportFacts.ts';
 export { reportStatuses } from './types/ReportStatus.ts';
 export type { ReportStatus } from './types/ReportStatus.ts';

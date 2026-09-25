@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { verifySession } from '@river/identity';
+import { readConfig } from '@river/runtime';
 import { verifyIapJwt } from '@/lib/verifyIapJwt';
 
 const segments = ['en-gb', 'uk'];
@@ -11,31 +13,40 @@ function preferredSegment(request: NextRequest): string {
 }
 
 /**
- * Runs before every page (ADR-0010): strips spoofed identity headers, redirects `/` to a locale,
- * hides the studio on the public surface and verifies Identity-Aware Proxy on the studio surface.
+ * Runs before every page (ADR-0010, ADR-0021). Strips spoofed identity headers, then establishes who
+ * is acting: IAP on the studio service; a signed demo session locally or in a sandbox; nobody on the
+ * public service. Studio and "my river" pages need an identity: in demo mode the visitor is sent to
+ * the persona picker, otherwise they do not exist.
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const surface = process.env.RIVER_SURFACE ?? 'local';
+  const config = readConfig();
   const headers = new Headers(request.headers);
-  headers.delete('x-river-staff');
+  headers.delete('x-river-auth');
 
   if (pathname === '/') {
     const url = request.nextUrl.clone();
-    url.pathname = `/${preferredSegment(request)}${surface === 'studio' ? '/studio' : ''}`;
+    url.pathname = `/${preferredSegment(request)}${config.auth === 'iap' ? '/studio' : ''}`;
     return NextResponse.redirect(url);
   }
-  const studioPath = /^\/(en-gb|uk)\/studio(\/|$)/.test(pathname);
-  if (surface === 'public') {
-    if (studioPath) return new NextResponse('Not found', { status: 404 });
-    return NextResponse.next({ request: { headers } });
-  }
-  if (surface === 'studio') {
+  const segment = pathname.split('/')[1] ?? 'en-gb';
+  const protectedPath = /^\/(en-gb|uk)\/(studio|me)(\/|$)/.test(pathname);
+
+  if (config.auth === 'iap') {
     const email = await verifyIapJwt(request.headers.get('x-goog-iap-jwt-assertion'));
     if (!email) return new NextResponse('Forbidden', { status: 403 });
-    headers.set('x-river-staff', email);
-  } else {
-    headers.set('x-river-staff', process.env.RIVER_DEV_STAFF ?? 'dev@localhost');
+    headers.set('x-river-auth', JSON.stringify({ via: 'iap', email }));
+  } else if (config.auth === 'demo') {
+    const claims = verifySession(request.cookies.get('river-session')?.value, config.sessionSecret);
+    if (claims) headers.set('x-river-auth', JSON.stringify({ via: 'demo', personaId: claims.personaId }));
+    else if (protectedPath) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${segments.includes(segment) ? segment : 'en-gb'}/demo`;
+      url.search = `?next=${encodeURIComponent(pathname)}`;
+      return NextResponse.redirect(url);
+    }
+  } else if (protectedPath) {
+    return new NextResponse('Not found', { status: 404 });
   }
   return NextResponse.next({ request: { headers } });
 }

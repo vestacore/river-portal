@@ -55,7 +55,7 @@ All values are **per-organisation defaults**. An [[Administrator]] can make them
 
 The canonical list of events is in [[Event Catalogue]]. The rules:
 
-- `aggregate.PastTenseVerb`, with the aggregate name in camelCase: `need`, `offer`, `gift`, `flow`, `campaign`, `programme`, `consignment`, `item`, `leg`, `hub`, `costRecord`, `deliveryConfirmation`, `gratitudeNote`, `publication`, `article`, `report`, `mediaAsset`, `translation`, `person`, `organisation`, `role`, `consent`, `verification`, `visibility`, `reputation`, `intent`, `partner`, `location`, `category`, `content`, `safeguarding`, `dispute`, `whistleblow`, `ai`, `system`.
+- `aggregate.PastTenseVerb`, with the aggregate name in camelCase: `need`, `offer`, `gift`, `flow`, `campaign`, `programme`, `consignment`, `item`, `leg`, `hub`, `costRecord`, `deliveryConfirmation`, `gratitudeNote`, `publication`, `article`, `report`, `mediaAsset`, `translation`, `person`, `organisation`, `role`, `consent`, `verification`, `visibility`, `reputation`, `intent`, `partner`, `location`, `category`, `content`, `safeguarding`, `dispute`, `whistleblow`, `ai`, `system`, and `settings` (added 2026-09-25 for the settings registry).
 - These synonyms are fixed:
 
 | Use | Not |
@@ -72,4 +72,22 @@ The canonical list of events is in [[Event Catalogue]]. The rules:
 
 ## Publication kinds (added 2026-09-24, engineering iteration 01)
 Reports and feed items are **publications**. Their publishing events use the `publication` aggregate with `payload.publicationKind` set to `report` or `feedItem`: `publication.Drafted`, `publication.ConsentChecked`, `publication.Published`, `publication.Withdrawn`. AI help is logged as `ai.SuggestionMade`, `ai.SuggestionAccepted` and `ai.SuggestionRejected`. Editable site texts use the `content` aggregate: `content.BlockEdited`.
+
+## In the software: the settings registry (added 2026-09-25, engineering iteration 04)
+Every value an organisation may change is a typed setting in one registry, and the registry enforces the floors in this note. Changes are recorded as `settings.*` events. Three **profiles** preset the values for three kinds of organisation (see [[Scaling Tiers]]). Engineering decision: `adr/records/ADR-0020 Settings Registry and Organisation Profiles.md`.
+
+| Parameter in this note | Registry key | Registry default | State programme | City foundation | Small nationwide | Enforced |
+|---|---|---|---|---|---|---|
+| Delay before a public report or story after a delivery in a conflict zone | `publication.safetyDelayDays` | 14 days | 21 days | 14 days | 14 days | floor 14 |
+| Cost a Lead Coordinator can approve alone | `money.costApprovalLimit`, in the reporting currency | 250 | ₴50,000 | ₴10,000 | £250 | checked in the domain (DP-06) |
+| Currency of pledges, goals and public totals | `money.reportingCurrency` | GBP | UAH | UAH | GBP | — |
+| First human contact, as promised to people asking | `help.replyWithinDays` | 2 days | 3 days | 2 days | 2 days | 1–14 (see Open Questions) |
+
+- Values not yet in the registry are still fixed in code or not built:
+  - k-anonymity of 5;
+  - the 72-hour delay for public aggregates (engineering debt TD-08);
+  - the map delays;
+  - the two-approver threshold of GBP 1,000;
+  - the giver-anonymity threshold.
+- Conversion rates for costs in other currencies are settings too (`money.fxRates`). The rate used is recorded with each cost.
 

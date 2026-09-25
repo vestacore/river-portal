@@ -15,6 +15,7 @@
     "@river/store": "0.0.0",
     "@river/log": "0.0.0",
     "@river/needs": "0.0.0",
-    "@river/gifts": "0.0.0"
+    "@river/gifts": "0.0.0",
+    "@river/settings": "0.0.0"
   }
 }

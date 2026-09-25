@@ -12,6 +12,12 @@ test('redactPii removes phones, emails, streets and names', () => {
   assert.ok(!out.includes('Шевченка'));
 });
 
+test('name stems match inflected forms, not other words', () => {
+  assert.equal(redactPii('Дякуємо! Олена з Балаклії. Олені передали генератор.', ['Олена', 'Балаклія']), 'Дякуємо! […] з […]. […] передали генератор.');
+  assert.equal(redactPii('3 kW petrol generator, new, boxed', ['Peter Walsh']), '3 kW petrol generator, new, boxed');
+  assert.equal(redactPii('Peter and Peterborough', ['Peter']), '[…] and Peterborough');
+});
+
 test('public phrases are pseudonymised at oblast level', () => {
   assert.equal(describeRecipientPublicly('family', 'kharkiv', 'en-GB'), 'a family in Kharkiv oblast');
   assert.equal(describeRecipientPublicly('family', 'kharkiv', 'uk'), 'родина в Харківській області');

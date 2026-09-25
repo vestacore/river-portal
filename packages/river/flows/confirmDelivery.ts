@@ -1,5 +1,6 @@
 import { newId } from '@river/kernel';
 import { commit, type CommandEnv, type EventDraft } from '@river/log';
+import { giftEventDraft } from '@river/gifts';
 import { needEventDraft, readNeed } from '@river/needs';
 import { redactPii } from '@river/privacy';
 import { flowPaths } from './paths.ts';
@@ -34,6 +35,7 @@ export async function confirmDelivery(env: CommandEnv, input: ConfirmationInput)
     const names = need.details ? [need.details.name, need.details.settlement] : [];
     note = {
       id: newId('thanks', at), needId: input.needId, flowId: flow.id, locale: input.locale, text: input.thanks,
+      sharedText: input.shareWithParticipants ? redactPii(input.thanks, names) : null,
       shareWithParticipants: input.shareWithParticipants, showOnWall: input.showOnWall, writtenAt: at.toISOString(),
     };
     const payload: GratitudeWrittenPayload = {
@@ -46,6 +48,8 @@ export async function confirmDelivery(env: CommandEnv, input: ConfirmationInput)
     for (const [purpose, given] of [['gratitude.participants', input.shareWithParticipants], ['gratitude.wall', input.showOnWall]] as const) {
       if (given) drafts.push({ type: 'consent.Granted', aggregate: { kind: 'consent', id: `${note.id}-${purpose}` }, visibility: 'team', payload: { purpose, subject: { kind: 'gratitudeNote', id: note.id } } });
     }
+    // Thanks shared with the people who helped reaches each gift of the flow.
+    if (input.shareWithParticipants) for (const giftId of flow.giftIds) drafts.push(giftEventDraft(giftId, 'gift.Acknowledged', { flowId: flow.id, gratitudeNoteId: note.id }));
   }
 
   const othersConfirmed = await Promise.all(

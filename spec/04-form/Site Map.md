@@ -144,3 +144,34 @@ flowchart TD
 
 - An expired `token` route shows a friendly page: "This link has expired. We have sent a new one to the phone or email you gave us", with a button to resend. It never reveals whether a need exists.
 - `/ask` is never behind a maintenance wall. If `river-api` is down, submissions are queued via Pub/Sub, or the page falls back to SMS instructions. See [[Observability]].
+
+## Built so far (engineering iteration 04, 2026-09-25)
+One Next.js app serves both surfaces (engineering decision ADR-0010). Every route carries a locale prefix, including the studio: a deviation from this note, where the studio has none. The public surface answers **404** for `/me`, `/demo` and `/studio`.
+
+| Built route | Routes of this note it covers | Access now | Notes |
+|---|---|---|---|
+| `/{locale}` | `/{locale}` | open | Sections and their order come from settings |
+| `/ask` | `/ask`; `/ask/sent` becomes `/track/{token}?new=1` | open | Quick exit, emergency notice, other ways to ask, referrals, privacy link |
+| `/track/{token}` | `/track/{token}`, `/confirm`, `/thanks` (one page) | token | Quick exit |
+| `/give` (`?kind=`, `?campaign=`) | `/give/*` | open | Kinds and suggested amounts from settings; drop-off points |
+| `/campaigns/{slug}`, `/reports/{id}`, `/feed` | `/campaigns/{slug}`, `/reports/{slug}`, `/stories` (short form) | open | — |
+| `/transparency` | `/transparency` | open | Open ledger, costs by kind and by campaign, with caveats |
+| `/about`, `/contact`, `/faq` | `/about` | open | Texts edited in the studio |
+| `/policies/{privacy, safeguarding, complaints, accessibility}` | `/about/privacy`, `/about/ethics`, `/about/accessibility` | open | — |
+| `/me` | `/me`, `/me/requests`, `/me/giving`, the carrier's part of `/leg/{token}` | demo session now; Firebase later | One page, sections by role |
+| `/demo`, `/demo/walk` | — (not in this note) | demo mode only | Choose a persona and a profile; a guided walk of ten steps |
+
+The studio follows the river. Each stage states who may see it and who may act in it:
+
+| Stage | Route | Routes of this note | See | Act |
+|---|---|---|---|---|
+| Overview (the river) | `/studio` | — | every staff role | — |
+| Inflow | `/studio/inflow`, `/studio/needs/{id}` | `/queue`, `/triage`, `/needs/{id}`, `/offers/{id}` | coordinator, safeguarding lead, administrator, auditor | the same, without the auditor |
+| Channels | `/studio/channels` | `/flows`, `/routes` | coordinator, Finance Steward, administrator, auditor | coordinator, administrator |
+| Tolls | `/studio/tolls` | `/costs` | Finance Steward, coordinator, administrator, auditor | Finance Steward, administrator; coordinator within the limit |
+| Mouth | `/studio/mouth` | `/confirmations` | coordinator, safeguarding lead, administrator, auditor | the same, without the auditor |
+| Surface | `/studio/surface`, `/feed`, `/texts`, `/reports/{id}` | `/reports`, `/content` | editor, coordinator, administrator, auditor | editor, administrator; coordinators draft reports |
+| Settings (the bed) | `/studio/settings` | `/admin/org`, part of `/admin/features` | administrator, editor, auditor | administrator; editors for wording and the home page |
+
+Engineering decisions: `adr/records/ADR-0021 Identity Layer and Demo Personas.md` and `ADR-0022 Editing in the Studio, Not on Public Pages.md`.
+

@@ -19,6 +19,7 @@ export function createSurfaceService(
     RIVER_SURFACE: surface,
     RIVER_STORE: 'firestore',
     RIVER_ORG_ID: settings.orgId,
+    RIVER_PROFILE: settings.profile,
     RIVER_SEED: settings.seed,
     GOOGLE_CLOUD_PROJECT: settings.project,
     RIVER_AI: surface === 'studio' ? 'vertex' : 'fallback',

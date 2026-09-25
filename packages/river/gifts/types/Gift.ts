@@ -14,6 +14,7 @@ export type Gift = {
   flowId: string | null;
   giverDisplay: GiverDisplay;
   displayName: string | null;
+  giverId: string | null;
   pledgedAt: string;
   updatedAt: string;
 };

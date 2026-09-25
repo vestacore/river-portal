@@ -28,6 +28,7 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
       const need = await tx.get<NeedRecord>(needPaths.record(event.orgId, event.aggregate.id));
       c.needsConfirmed += 1;
       c.households += need?.householdSize ?? 1;
+      c.lastConfirmedAt = event.occurredAt;
       break;
     }
     case 'flow.Arrived': c.deliveries += 1; break;
@@ -40,16 +41,17 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
     }
     case 'gift.Received': {
       const gift = await tx.get<Gift>(giftPaths.gift(event.orgId, event.aggregate.id));
-      if (gift?.currency === 'GBP' && gift.amountMinor) c.moneyReceivedGbpMinor += gift.amountMinor;
+      if (gift?.currency && gift.amountMinor) c.moneyReceivedMinor += gift.amountMinor;
       const card = campaignCard(gift?.campaignId);
       if (card && gift?.currency === card.currency && gift.amountMinor) card.receivedMinor += gift.amountMinor;
       break;
     }
     case 'costRecord.Approved': {
       const cost = p as CostSubmittedPayload;
-      c.costsGbpMinor += cost.gbpMinor;
+      c.costsMinor += cost.reportingMinor;
+      c.costBreakdown = { ...c.costBreakdown, [cost.kind]: (c.costBreakdown?.[cost.kind] ?? 0) + cost.reportingMinor };
       const card = campaignCard(cost.campaignId);
-      if (card) card.spentGbpMinor += cost.gbpMinor;
+      if (card) card.spentMinor += cost.reportingMinor;
       break;
     }
     case 'gratitudeNote.Written': {
@@ -62,7 +64,7 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
     }
     case 'campaign.Launched': {
       const l = p as CampaignLaunchedPayload;
-      site.campaigns.unshift({ id: event.aggregate.id, slug: l.slug, title: l.title, summary: l.summary, goalMinor: l.goalMinor, currency: l.currency, pledgedMinor: 0, receivedMinor: 0, spentGbpMinor: 0, giftsCount: 0, status: 'active' });
+      site.campaigns.unshift({ id: event.aggregate.id, slug: l.slug, title: l.title, summary: l.summary, goalMinor: l.goalMinor, currency: l.currency, pledgedMinor: 0, receivedMinor: 0, spentMinor: 0, giftsCount: 0, status: 'active' });
       break;
     }
     case 'content.BlockEdited': {

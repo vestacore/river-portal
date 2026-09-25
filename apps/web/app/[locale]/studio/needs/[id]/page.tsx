@@ -1,17 +1,22 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { carrierKinds, costKinds, fxRatesToGbp, readFlow } from '@river/flows';
+import { approvalLimitMinor, carrierKinds, costKinds, readFlow } from '@river/flows';
 import { readCampaigns, readGifts } from '@river/gifts';
 import { formatDate, formatMoney, oblastName, pickText, segmentForLocale } from '@river/i18n';
 import { readEvents } from '@river/log';
 import { findCategory, readNeed } from '@river/needs';
 import { readReports } from '@river/reports';
-import { getRuntime } from '@river/runtime';
+import { hasRole } from '@river/identity';
+import { getRuntime, listPersonas, personaName } from '@river/runtime';
+import { settingText } from '@river/settings';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
+import { costCurrencies } from '@/lib/costCurrencies';
 import { getDictionary } from '@/lib/dictionary/getDictionary';
 import { href } from '@/lib/href';
+import { loadSettings } from '@/lib/loadSettings';
+import { requireStage } from '@/lib/requireStage';
 import { resolveLocale } from '@/lib/resolveLocale';
 import { approveCostAction, draftReportAction, matchAction, recordDeliveryAction, triageAction } from '../../actions';
 import { StatusBadge } from '../../StatusBadge';
@@ -23,9 +28,14 @@ const button = 'chamfer px-5 py-2.5 font-semibold text-paper [--cut:8px] [--fill
 export default async function NeedPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale: segment, id } = await params;
   const locale = resolveLocale(segment);
+  const { identity, canAct } = await requireStage('inflow', locale);
   const dict = getDictionary(locale);
   const t = dict.studio;
-  const runtime = await getRuntime();
+  const [runtime, settings] = await Promise.all([getRuntime(), loadSettings()]);
+  const coordinates = hasRole(identity, 'coordinator', 'administrator');
+  const currency = settingText(settings, 'money.reportingCurrency');
+  // Registered carriers: in the demo, the carrier personas; later, people with the carrier role.
+  const carriers = runtime.config.auth === 'demo' ? listPersonas().filter((p) => p.roles.includes('carrier')).map((p) => ({ personId: p.personId, name: personaName(p.id, settings.profileId, locale) })) : [];
   const orgId = runtime.config.orgId;
   const need = await readNeed(runtime.store, orgId, id);
   if (!need) notFound();
@@ -84,11 +94,11 @@ export default async function NeedPage({ params }: { params: Promise<{ locale: s
 
       <div className="space-y-6">
         <Card className="lg:sticky lg:top-24">
-          {n.status === 'acknowledged' || n.status === 'submitted' ? (
+          {canAct && (n.status === 'acknowledged' || n.status === 'submitted') ? (
             <form action={triageAction}><input type="hidden" name="needId" value={n.id} /><button type="submit" className={button}>{t.triage}</button></form>
           ) : null}
 
-          {n.status === 'open' || n.status === 'triaged' ? (
+          {coordinates && (n.status === 'open' || n.status === 'triaged') ? (
             <form action={matchAction} className="space-y-4">
               <h3 className="text-lg font-bold">{t.match}</h3>
               <p className="text-sm text-ink-500">{t.matchLead}</p>
@@ -119,24 +129,25 @@ export default async function NeedPage({ params }: { params: Promise<{ locale: s
                   {flow.costs.map((c) => (
                     <li key={c.id} className="flex items-center gap-2 px-3 py-2 text-sm">
                       <span className="font-medium">{dict.costKinds[c.kind]}</span>
-                      <span className="text-ink-500">{money(c.amountMinor, c.currency)}{c.currency !== 'GBP' ? ` ≈ ${money(c.gbpMinor, 'GBP')}` : ''}</span>
-                      {c.status === 'approved' ? <Badge tone="teal" className="ml-auto">✓</Badge> : (
+                      <span className="text-ink-500">{money(c.amountMinor, c.currency)}{c.currency !== c.reportingCurrency ? ` ≈ ${money(c.reportingMinor, c.reportingCurrency)}` : ''}</span>
+                      {c.status === 'approved' ? <Badge tone="teal" className="ml-auto">✓</Badge> : coordinates && c.reportingMinor <= approvalLimitMinor(settings) ? (
                         <form action={approveCostAction} className="ml-auto"><input type="hidden" name="flowId" value={flow.id} /><input type="hidden" name="costId" value={c.id} /><button className="chamfer px-3 py-1 text-xs font-bold [--cut:5px] [--fill:var(--color-sunrise-500)]">{t.approve}</button></form>
-                      )}
+                      ) : <Link className="annot ml-auto text-sunrise-600 underline underline-offset-4" href={href(locale, '/studio/tolls')}>{t.tolls.waiting}</Link>}
                     </li>
                   ))}
                 </ul>
               ) : null}
-              {flow.status === 'committed' ? (
-                <DispatchForm flowId={flow.id} t={t} carrierKinds={carrierKinds.map((k) => [k, dict.carrierKinds[k]])} costKinds={costKinds.map((k) => [k, dict.costKinds[k]])} currencies={Object.keys(fxRatesToGbp)} />
+              {coordinates && flow.status === 'committed' ? (
+                <DispatchForm flowId={flow.id} t={{ ...t, approvalNote: t.approvalNote.replace('{limit}', money(approvalLimitMinor(settings), currency)) }} carriers={carriers}
+                  carrierKinds={carrierKinds.map((k) => [k, dict.carrierKinds[k]])} costKinds={costKinds.map((k) => [k, dict.costKinds[k]])} currencies={costCurrencies(settings)} />
               ) : null}
-              {flow.status === 'in_motion' ? (
+              {coordinates && flow.status === 'in_motion' ? (
                 <form action={recordDeliveryAction}><input type="hidden" name="flowId" value={flow.id} /><button type="submit" className={button}>{t.recordDelivery}</button></form>
               ) : null}
-              {(flow.status === 'arrived' || flow.status === 'confirmed' || flow.status === 'reported') && !reportId ? (
+              {hasRole(identity, 'coordinator', 'editor', 'administrator') && (flow.status === 'arrived' || flow.status === 'confirmed' || flow.status === 'reported') && !reportId ? (
                 <form action={draftReportAction}><input type="hidden" name="flowId" value={flow.id} /><input type="hidden" name="localeSegment" value={segmentForLocale(locale)} /><button type="submit" className={button}>{t.generateReport}</button></form>
               ) : null}
-              {reportId ? <Link className="inline-block font-semibold text-river-700 underline" href={href(locale, `/studio/reports/${reportId}`)}>{t.openReport}</Link> : null}
+              {reportId ? <Link className="inline-block font-semibold text-river-700 underline" href={href(locale, `/studio/surface/reports/${reportId}`)}>{t.openReport}</Link> : null}
             </div>
           ) : null}
         </Card>

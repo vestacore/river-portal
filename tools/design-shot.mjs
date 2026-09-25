@@ -2,7 +2,9 @@
 // device emulation through the Chrome DevTools Protocol, plus horizontal-overflow diagnostics. No deps;
 // uses the locally installed Google Chrome in headless mode with a throwaway profile.
 // Usage: node tools/design-shot.mjs <url> <width> <out.png> [--mobile] [--reduce] [--height=900] [--scale=2]
-//        [--first-screen] [--eval=<js>]
+//        [--first-screen] [--eval=<js>] [--cookie=<name>=<value>]
+// --cookie sets a cookie for the page's origin before loading it, e.g. a demo session (river-session=…)
+// to capture the studio or "My river" as a persona (adr/records/ADR-0021).
 import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -52,6 +54,12 @@ await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width, height: viewportHeight, deviceScaleFactor: scale, mobile });
 if (mobile) await send('Emulation.setTouchEmulationEnabled', { enabled: true });
 if (reduce) await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+const cookieFlag = flags.find((f) => f.startsWith('--cookie='));
+if (cookieFlag) {
+  const [name, ...rest] = cookieFlag.slice('--cookie='.length).split('=');
+  await send('Network.enable');
+  await send('Network.setCookie', { name, value: rest.join('='), url: new URL(url).origin, httpOnly: true, sameSite: 'Lax' });
+}
 const loaded = once('Page.loadEventFired');
 await send('Page.navigate', { url });
 await loaded;

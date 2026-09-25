@@ -9,4 +9,6 @@ export type PledgeInput = {
   name: string;
   email: string;
   giverDisplay: GiverDisplay;
+  /** Set by the application from a signed-in giver's identity, never from the form. */
+  giverId?: string | null;
 };

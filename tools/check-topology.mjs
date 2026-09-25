@@ -6,7 +6,7 @@ import { builtinModules } from 'node:module';
 import { join, relative, dirname, resolve, sep } from 'node:path';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
-const layers = { foundation: 0, record: 1, river: 2, assist: 2, surface: 3, compose: 4, apps: 5, infra: 5 };
+const layers = { foundation: 0, record: 1, river: 2, steward: 2, assist: 2, surface: 3, compose: 4, apps: 5, infra: 5 };
 const errors = [];
 
 function walk(dir, out = []) {
@@ -98,7 +98,7 @@ function visit(name, trail) {
 for (const name of byName.keys()) visit(name, []);
 
 // Generated section of TOPOLOGY.md.
-const groups = ['foundation', 'record', 'river', 'assist', 'surface', 'compose', 'apps', 'infra'];
+const groups = ['foundation', 'record', 'river', 'steward', 'assist', 'surface', 'compose', 'apps', 'infra'];
 const id = (n) => n.replace('@river/', '').replace(/[^a-z0-9]/g, '_');
 let mermaid = 'flowchart BT\n';
 for (const group of groups) {

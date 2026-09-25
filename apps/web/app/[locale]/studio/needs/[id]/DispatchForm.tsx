@@ -1,24 +1,36 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { inputClass } from '@/components/ui/Field';
 import { dispatchAction } from '../../actions';
 
-type Labels = { dispatch: string; carrier: string; carrierName: string; fromLabel: string; costs: string; costNote: string; costAmount: string; currency: string; approvalNote: string };
+type Labels = { dispatch: string; carrier: string; registeredCarrier: string; carrierName: string; fromLabel: string; costs: string; costNote: string; costAmount: string; currency: string; approvalNote: string };
 
-/** Dispatch: carrier and up to three cost lines, each in its own currency. */
-export function DispatchForm({ flowId, t, carrierKinds, costKinds, currencies }: {
-  flowId: string; t: Labels; carrierKinds: Array<[string, string]>; costKinds: Array<[string, string]>; currencies: string[];
+/**
+ * Dispatch: the carrier (a registered carrier, who then sees the delivery in "My river", or just a
+ * name) and up to three cost lines, each in a currency with a rate in settings.
+ */
+export function DispatchForm({ flowId, t, carriers, carrierKinds, costKinds, currencies }: {
+  flowId: string; t: Labels; carriers: Array<{ personId: string; name: string }>; carrierKinds: Array<[string, string]>; costKinds: Array<[string, string]>; currencies: string[];
 }) {
   const [state, action, pending] = useActionState(dispatchAction, {});
+  const [name, setName] = useState('');
   const small = `${inputClass} py-2`;
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="flowId" value={flowId} />
       <div className="grid gap-3">
         <label className="text-sm font-semibold">{t.carrier}<select name="carrierKind" className={`${small} mt-1`}>{carrierKinds.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
-        <label className="text-sm font-semibold">{t.carrierName}<input name="carrierName" required className={`${small} mt-1`} /></label>
-        <label className="text-sm font-semibold">{t.fromLabel}<input name="fromLabel" required defaultValue="Lviv hub" className={`${small} mt-1`} /></label>
+        {carriers.length > 0 ? (
+          <label className="text-sm font-semibold">{t.registeredCarrier}
+            <select name="carrierPersonId" className={`${small} mt-1`} onChange={(e) => setName(carriers.find((c) => c.personId === e.target.value)?.name ?? name)}>
+              <option value="">—</option>
+              {carriers.map((c) => <option key={c.personId} value={c.personId}>{c.name}</option>)}
+            </select>
+          </label>
+        ) : null}
+        <label className="text-sm font-semibold">{t.carrierName}<input name="carrierName" required value={name} onChange={(e) => setName(e.target.value)} className={`${small} mt-1`} /></label>
+        <label className="text-sm font-semibold">{t.fromLabel}<input name="fromLabel" required className={`${small} mt-1`} /></label>
       </div>
       <fieldset className="space-y-2">
         <legend className="text-sm font-semibold">{t.costs}</legend>

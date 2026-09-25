@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { resolveSettings } from '@river/settings';
 import { createMemoryStore } from '@river/store';
 import { submitNeed } from './submitNeed.ts';
 import { triageNeed } from './triageNeed.ts';
@@ -18,7 +19,7 @@ test('a need is submitted, acknowledged, tracked by token and keeps PII out of t
   const input = validateNeedInput(raw);
   assert.ok(input.ok);
   const store = createMemoryStore();
-  const env = { store, projectors: [needProjector], ctx: { orgId: 'o', actor: { personId: null, role: 'anonymous' as const, via: 'web' as const } } };
+  const env = { store, projectors: [needProjector], settings: resolveSettings('small-nationwide'), ctx: { orgId: 'o', actor: { personId: null, role: 'anonymous' as const, via: 'web' as const } } };
   const { needId, trackingToken } = await submitNeed(env, input.value);
 
   const view = await readRecipientView(store, 'o', trackingToken);

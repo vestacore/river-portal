@@ -20,7 +20,7 @@ export async function suggestFeedItems(env: CommandEnv, input: { reportId: strin
       regionUkGenitive: oblastName(report.facts.oblastId, 'uk', 'gen'),
       households: report.facts.recipients.length,
       gifts: report.facts.giftsCount,
-      deliveryCosts: formatMoney(report.facts.costsGbpMinor, 'GBP', 'en-GB'),
+      deliveryCosts: formatMoney(report.facts.costsMinor, report.facts.currency, 'en-GB'),
       ...(report.facts.gratitude ? { consentedThanks: report.facts.gratitude.text } : {}),
     },
     maxItems: 4,

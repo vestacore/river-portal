@@ -11,6 +11,7 @@ export function readSettings(): Settings {
     region: gcp.get('region') ?? 'europe-west1',
     firestoreLocation: river.get('firestoreLocation') ?? 'eur3',
     orgId: river.get('orgId') ?? 'open-river-aid',
+    profile: (['state-programme', 'city-foundation'] as const).find((p) => p === river.get('profile')) ?? 'small-nationwide',
     seed: river.get('seed') === 'none' ? 'none' : 'demo',
     aiModel: river.get('aiModel') ?? 'gemini-2.5-flash',
     aiLocation: river.get('aiLocation') ?? 'europe-west4',

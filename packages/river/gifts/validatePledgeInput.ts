@@ -2,7 +2,7 @@ import type { FieldError, Result } from '@river/kernel';
 import { giftKinds, type GiftKind } from './types/GiftKind.ts';
 import type { PledgeInput } from './types/PledgeInput.ts';
 
-/** Validates the "give" form. Money is pledged in GBP in iteration 1; goods need a description. */
+/** Validates the "give" form. Money is pledged in the reporting currency (major units); goods need a description. */
 export function validatePledgeInput(raw: Record<string, string | undefined>): Result<PledgeInput> {
   const errors: FieldError[] = [];
   const kind = raw.kind as GiftKind;
@@ -10,7 +10,7 @@ export function validatePledgeInput(raw: Record<string, string | undefined>): Re
   let amountMinor: number | null = null;
   if (kind === 'money') {
     const pounds = Number.parseFloat((raw.amount ?? '').replace(',', '.'));
-    if (!Number.isFinite(pounds) || pounds < 1 || pounds > 100_000) errors.push({ field: 'amount', code: 'amount' });
+    if (!Number.isFinite(pounds) || pounds < 1 || pounds > 10_000_000) errors.push({ field: 'amount', code: 'amount' });
     else amountMinor = Math.round(pounds * 100);
   }
   const description = (raw.description ?? '').trim().slice(0, 1000);

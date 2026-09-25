@@ -23,4 +23,5 @@ export { giftEventDraft } from './giftEventDraft.ts';
 export { giftProjector } from './giftProjector.ts';
 export { campaignProjector } from './campaignProjector.ts';
 export { readGifts } from './readGifts.ts';
+export { readGiftsByGiver } from './readGiftsByGiver.ts';
 export { readCampaigns } from './readCampaigns.ts';

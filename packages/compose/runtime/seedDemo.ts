@@ -1,11 +1,16 @@
-import { suggestFeedItems, publishFeedItem, readFeedItem, draftFeedItem } from '@river/feed';
-import { confirmDelivery, dispatchFlow, matchNeed, recordDelivery, approveCost, readFlow } from '@river/flows';
+import { applyProfile } from '@river/config';
+import { draftFeedItem, publishFeedItem, readFeedItem, suggestFeedItems } from '@river/feed';
+import { approveCost, confirmDelivery, dispatchFlow, matchNeed, readFlow, recordDelivery } from '@river/flows';
 import { launchCampaign, markGiftReceived, pledgeGift } from '@river/gifts';
+import type { Actor } from '@river/log';
 import { submitNeed, triageNeed, validateNeedInput } from '@river/needs';
 import { draftReportFromFlow, publishReport } from '@river/reports';
+import { resolveSettings, settingNumber, type ProfileId } from '@river/settings';
 import { commandEnv } from './commandEnv.ts';
+import { demoVariants } from './data/demoVariants.ts';
+import { personas } from './data/personas.ts';
 import { publicActor } from './publicActor.ts';
-import { staffActor } from './staffActor.ts';
+import type { PersonaId } from './types/PersonaId.ts';
 import type { Runtime } from './types/Runtime.ts';
 
 const daysAgo = (days: number, hour = 10) => {
@@ -14,116 +19,120 @@ const daysAgo = (days: number, hour = 10) => {
   return d.toISOString();
 };
 
+// Money gifts in the base schedule (pounds; multiplied by the variant's factor): [days ago, amount, campaign].
+const schedule: Array<[number, number, 'fuel' | 'winter']> = [
+  [58, 500, 'fuel'], [57, 1000, 'fuel'], [55, 25, 'fuel'], [54, 40, 'fuel'], [52, 100, 'fuel'], [50, 30, 'fuel'],
+  [18, 200, 'winter'], [15, 75, 'winter'], [9, 450, 'winter'], [3, 50, 'winter'],
+];
+
+// The demo needs; a variant may move them (the city foundation serves one oblast).
+const needs = [
+  { days: 36, raw: { categoryId: 'energy', form: 'goods', description: 'Нам потрібен генератор: онук робить уроки при свічці, а холодильник з ліками вимикається. Нас троє.', oblastId: 'kharkiv', settlement: 'Балаклія', forWhom: 'family', householdSize: '3', urgency: 'this_week', name: 'Олена', locale: 'uk', consentToStory: 'on' } },
+  { days: 12, raw: { categoryId: 'food', form: 'goods', description: 'Six older neighbours on our street have not had a food delivery for a month. We can collect from the village shop.', oblastId: 'sumy', settlement: 'Krasnopillia', forWhom: 'neighbours', householdSize: '6', urgency: 'this_week', name: 'Vasyl', locale: 'en-GB' } },
+  { days: 8, raw: { categoryId: 'education', form: 'goods', description: 'Школа з укриттям: потрібні павербанки й настільні лампи, щоб діти могли вчитися під час відключень.', oblastId: 'dnipropetrovsk', settlement: 'Нікополь', forWhom: 'institution', householdSize: '120', urgency: 'this_month', name: 'Наталія Петрівна, директорка', locale: 'uk' } },
+  { days: 4, raw: { categoryId: 'hygiene', form: 'goods', description: 'Гігієнічні набори для родини з маленькою дитиною: підгузки (розмір 4), мило, серветки.', oblastId: 'kherson', settlement: 'Херсон', forWhom: 'family', householdSize: '4', urgency: 'this_week', name: 'Катерина', locale: 'uk' } },
+  { days: 1, raw: { categoryId: 'medicine', form: 'money', description: 'I am 78 and need help paying for my heart medication this month.', oblastId: 'zaporizhzhia', settlement: 'Zaporizhzhia', forWhom: 'self', householdSize: '1', urgency: 'today', name: 'Ivan', locale: 'en-GB' } },
+  // Olena's second request, so that the walk can follow a delivery from the carrier to her thanks.
+  { days: 9, raw: { categoryId: 'clothing', form: 'goods', description: 'Теплі ковдри для кімнати онука: взимку в будинку дуже холодно.', oblastId: 'kharkiv', settlement: 'Балаклія', forWhom: 'family', householdSize: '3', urgency: 'this_month', name: 'Олена', locale: 'uk' } },
+];
+
 /**
- * Seeds fictional, bilingual demo data (spec: 10-demo-content) through the same commands the UI
- * uses, so every page and projection is exercised. Runs once per store (guarded by a marker).
+ * Seeds fictional, bilingual demo data for a profile (spec: 10-demo-content) through the same
+ * commands the UI uses, each performed by the persona whose role it is. Runs once per store.
  */
-export async function seedDemo(runtime: Runtime): Promise<void> {
+export async function seedDemo(runtime: Runtime, profileId: ProfileId = runtime.config.profile): Promise<void> {
   const orgId = runtime.config.orgId;
   try {
-    await runtime.store.transact(async (tx) => tx.create(`orgs/${orgId}/meta/seed`, { at: new Date().toISOString(), kind: 'demo' }));
+    await runtime.store.transact(async (tx) => tx.create(`orgs/${orgId}/meta/seed`, { at: new Date().toISOString(), kind: 'demo', profileId }));
   } catch {
     return; // already seeded
   }
-  const andriy = staffActor('andriy@openriver.example', 'coordinator');
-  const helen = staffActor('helen@openriver.example', 'administrator');
-  const staff = (at: string, who = andriy) => commandEnv(runtime, who, at);
-  const web = (at: string, role: 'recipient' | 'giver' = 'giver') => commandEnv(runtime, publicActor(role), at);
+  const v = demoVariants[profileId];
+  const settings = resolveSettings(profileId, {});
+  const person = (id: PersonaId) => personas.find((p) => p.id === id) as (typeof personas)[number];
+  const as = (id: PersonaId): Actor => {
+    const p = person(id);
+    return { personId: p.personId, role: p.roles[0] ?? 'anonymous', via: p.roles.some((r) => ['coordinator', 'finance_steward', 'editor', 'administrator'].includes(r)) ? 'studio' : 'web', label: v.personaNames[id]['en-GB'] };
+  };
+  const env = (actor: Actor, at: string) => commandEnv(runtime, actor, settings, at);
+  const system: Actor = { personId: null, role: 'system', via: 'system' };
+  const money = (major: number) => Math.round(major * v.amountFactor) * 100;
 
-  const fuel = await launchCampaign(staff(daysAgo(60)), {
-    slug: 'fuel-for-the-kharkiv-run',
-    title: { 'en-GB': 'Fuel for the Kharkiv run', uk: 'Пальне для харківського рейсу' },
-    summary: {
-      'en-GB': 'One van, one driver, 2,300 km from Leeds to Kharkiv oblast. Your gift covers fuel, the ferry and road tolls — and you will see every receipt.',
-      uk: 'Один бус, один водій, 2 300 км від Лідса до Харківщини. Ваш дар покриває пальне, пором і платні дороги — і ви побачите кожен чек.',
-    },
-    goalMinor: 240_000, currency: 'GBP',
-  });
-  const winter = await launchCampaign(staff(daysAgo(20)), {
-    slug: 'warm-homes-this-winter',
-    title: { 'en-GB': 'Warm homes this winter', uk: 'Теплі домівки цієї зими' },
-    summary: {
-      'en-GB': 'Generators, power banks and heaters for families and schools near the front line, chosen by the people who will use them.',
-      uk: 'Генератори, павербанки й обігрівачі для родин і шкіл біля лінії фронту — саме те, що обрали люди, які ними користуватимуться.',
-    },
-    goalMinor: 600_000, currency: 'GBP',
-  });
+  await applyProfile(env(system, daysAgo(61)), { profileId, keepOverrides: false });
 
-  const money: Array<[number, string, string, number, string | null]> = [
-    [58, 'James Hart', 'james@example.org', 50_000, fuel], [57, 'Harbour Print Ltd', 'sarah@harbourprint.example', 100_000, fuel],
-    [55, 'Aisha Rahman', 'aisha@example.org', 2_500, fuel], [54, 'Tom Price', 'tom@example.org', 4_000, fuel],
-    [52, 'Ірина Коваль', 'iryna@example.org', 10_000, fuel], [50, 'Grace Lee', 'grace@example.org', 3_000, fuel],
-    [18, 'Oliver Byrne', 'oliver@example.org', 20_000, winter], [15, 'Марта Шевчук', 'marta@example.org', 7_500, winter],
-    [9, 'Leeds Community Choir', 'choir@example.org', 45_000, winter], [3, 'Daniel Owusu', 'daniel@example.org', 5_000, winter],
-  ];
+  const campaignIds = {
+    fuel: await launchCampaign(env(as('andriy'), daysAgo(60)), { slug: v.campaigns.fuel.slug, title: v.campaigns.fuel.title, summary: v.campaigns.fuel.summary, goalMinor: v.campaigns.fuel.goalMajor * 100, currency: v.currency }),
+    winter: await launchCampaign(env(as('andriy'), daysAgo(20)), { slug: v.campaigns.winter.slug, title: v.campaigns.winter.title, summary: v.campaigns.winter.summary, goalMinor: v.campaigns.winter.goalMajor * 100, currency: v.currency }),
+  };
+
   const moneyGifts: string[] = [];
-  for (const [days, name, email, amountMinor, campaignId] of money) {
-    const id = await pledgeGift(web(daysAgo(days)), { kind: 'money', amountMinor, description: '', campaignId, name, email, giverDisplay: days % 2 === 0 ? 'first_name' : 'anonymous' });
-    if (days > 4) await markGiftReceived(staff(daysAgo(days - 1)), { giftId: id });
+  for (const [i, [days, major, campaign]] of schedule.entries()) {
+    const giver = v.givers[i] ?? { name: `Giver ${i + 1}`, email: `giver${i + 1}@example.org` };
+    const giverId = i === 0 ? person('james').personId : i === 1 ? person('harbour').personId : null;
+    const id = await pledgeGift(env(i === 0 ? as('james') : i === 1 ? as('harbour') : publicActor('giver'), daysAgo(days)), {
+      kind: 'money', amountMinor: money(major), description: '', campaignId: campaignIds[campaign], name: giver.name, email: giver.email,
+      giverDisplay: days % 2 === 0 ? 'first_name' : 'anonymous', giverId,
+    });
+    if (days > 4) await markGiftReceived(env(as('andriy'), daysAgo(days - 1)), { giftId: id });
     moneyGifts.push(id);
   }
-  const generator = await pledgeGift(web(daysAgo(40)), { kind: 'goods', amountMinor: null, description: '3 kW petrol generator, new, boxed', campaignId: null, name: 'Peter Walsh', email: 'peter@example.org', giverDisplay: 'first_name' });
-  await markGiftReceived(staff(daysAgo(38)), { giftId: generator });
-  const food = await pledgeGift(web(daysAgo(6)), { kind: 'goods', amountMinor: null, description: '6 food parcels (tinned food, grains, tea)', campaignId: winter, name: 'St Mary Parish', email: 'parish@example.org', giverDisplay: 'first_name' });
-  await markGiftReceived(staff(daysAgo(5)), { giftId: food });
-  await pledgeGift(web(daysAgo(2)), { kind: 'transport', amountMinor: null, description: 'Van space Lviv → Dnipro, second week of the month', campaignId: null, name: 'Mykhailo', email: 'm@example.org', giverDisplay: 'anonymous' });
+  const generator = await pledgeGift(env(publicActor('giver'), daysAgo(40)), { kind: 'goods', amountMinor: null, description: v.goods.generator.description, campaignId: null, name: v.goods.generator.giver, email: v.goods.generator.email, giverDisplay: 'first_name' });
+  await markGiftReceived(env(as('andriy'), daysAgo(38)), { giftId: generator });
+  const food = await pledgeGift(env(publicActor('giver'), daysAgo(6)), { kind: 'goods', amountMinor: null, description: v.goods.food.description, campaignId: campaignIds.winter, name: v.goods.food.giver, email: v.goods.food.email, giverDisplay: 'first_name' });
+  await markGiftReceived(env(as('andriy'), daysAgo(5)), { giftId: food });
+  await pledgeGift(env(publicActor('giver'), daysAgo(2)), { kind: 'transport', amountMinor: null, description: v.goods.transport.description, campaignId: null, name: v.goods.transport.giver, email: v.goods.transport.email, giverDisplay: 'anonymous' });
 
-  const need = async (days: number, raw: Record<string, string>) => {
-    const input = validateNeedInput({ consentToContact: 'on', contactChannel: 'phone', contactValue: '+380 50 000 00 00', ...raw });
+  const submitted: Array<Awaited<ReturnType<typeof submitNeed>>> = [];
+  for (const [i, n] of needs.entries()) {
+    const own = i === 0 || i === 5; // Olena's requests; the second keeps the place of her first
+    const input = validateNeedInput({ consentToContact: 'on', contactChannel: 'phone', contactValue: '+380 50 000 00 00', ...n.raw, ...v.needOverrides[own ? 0 : i] });
     if (!input.ok) throw new Error(`Demo need invalid: ${JSON.stringify(input.errors)}`);
-    return submitNeed(web(daysAgo(days), 'recipient'), input.value);
-  };
-  const olena = await need(36, { categoryId: 'energy', form: 'goods', description: 'Нам потрібен генератор: онук робить уроки при свічці, а холодильник з ліками вимикається. Нас троє.', oblastId: 'kharkiv', settlement: 'Балаклія', forWhom: 'family', householdSize: '3', urgency: 'this_week', name: 'Олена', locale: 'uk', consentToStory: 'on' });
-  const sumy = await need(12, { categoryId: 'food', form: 'goods', description: 'Six older neighbours on our street have not had a food delivery for a month. We can collect from the village shop.', oblastId: 'sumy', settlement: 'Krasnopillia', forWhom: 'neighbours', householdSize: '6', urgency: 'this_week', name: 'Vasyl', locale: 'en-GB' });
-  const school = await need(8, { categoryId: 'education', form: 'goods', description: 'Школа з укриттям: потрібні павербанки й настільні лампи, щоб діти могли вчитися під час відключень.', oblastId: 'dnipropetrovsk', settlement: 'Нікополь', forWhom: 'institution', householdSize: '120', urgency: 'this_month', name: 'Наталія Петрівна, директорка', locale: 'uk' });
-  const kherson = await need(4, { categoryId: 'hygiene', form: 'goods', description: 'Гігієнічні набори для родини з маленькою дитиною: підгузки (розмір 4), мило, серветки.', oblastId: 'kherson', settlement: 'Херсон', forWhom: 'family', householdSize: '4', urgency: 'this_week', name: 'Катерина', locale: 'uk' });
-  await need(1, { categoryId: 'medicine', form: 'money', description: 'I am 78 and need help paying for my heart medication this month.', oblastId: 'zaporizhzhia', settlement: 'Zaporizhzhia', forWhom: 'self', householdSize: '1', urgency: 'today', name: 'Ivan', locale: 'en-GB' });
-
-  for (const [n, days] of [[olena, 35], [sumy, 11], [school, 7], [kherson, 3]] as const) await triageNeed(staff(daysAgo(days)), { needId: n.needId });
-
-  // Flow 1: delivered, confirmed with thanks, reported and shared on the feed.
-  const flow1 = await matchNeed(staff(daysAgo(33)), { needId: olena.needId, giftIds: [generator, moneyGifts[0] as string, moneyGifts[1] as string], campaignId: fuel });
-  await dispatchFlow(staff(daysAgo(30)), { flowId: flow1, carrierKind: 'volunteer', carrierName: 'Mykola', fromLabel: 'Leeds', costs: [
-    { kind: 'fuel', amountMinor: 1_260_000, currency: 'UAH', note: 'Diesel, Lviv → Kharkiv oblast and back' },
-    { kind: 'fuel', amountMinor: 18_640, currency: 'GBP', note: 'Diesel, Leeds → Dover and Calais → Lviv' },
-    { kind: 'ferry', amountMinor: 31_000, currency: 'GBP', note: 'Dover–Calais, van and driver, return' },
-    { kind: 'tolls', amountMinor: 8_950, currency: 'EUR', note: 'German and Polish road tolls' },
-  ] });
-  const flowDoc = await readFlow(runtime.store, orgId, flow1);
-  for (const cost of flowDoc?.costs.filter((c) => c.status === 'submitted') ?? []) {
-    await approveCost(staff(daysAgo(29), helen), { flowId: flow1, costId: cost.id });
+    const actor = own ? as('olena') : publicActor('recipient');
+    submitted.push(await submitNeed(env(actor, daysAgo(n.days)), input.value, own ? { personId: person('olena').personId } : undefined));
   }
-  await recordDelivery(staff(daysAgo(26, 15)), { flowId: flow1 });
-  await confirmDelivery(web(daysAgo(25, 18), 'recipient'), {
-    needId: olena.needId, by: 'recipient', note: '', locale: 'uk', shareWithParticipants: true, showOnWall: true,
-    thanks: 'Дякуємо всім, хто віз цей генератор через пів Європи. Тепер онук робить уроки при світлі, а ліки в холоді. Ви повернули нам спокій.',
+  type Submitted = Awaited<ReturnType<typeof submitNeed>>;
+  const [olena, sumy, school, kherson, , olenaWinter] = submitted as [Submitted, Submitted, Submitted, Submitted, Submitted, Submitted];
+  for (const [n, days] of [[olena, 35], [sumy, 11], [olenaWinter, 8], [school, 7], [kherson, 3]] as const) await triageNeed(env(as('andriy'), daysAgo(days)), { needId: n.needId });
+
+  // Flow 1: delivered by the carrier persona, confirmed with thanks, reported and shared on the feed.
+  const flow1 = await matchNeed(env(as('andriy'), daysAgo(33)), { needId: olena.needId, giftIds: [generator, moneyGifts[0] as string, moneyGifts[1] as string], campaignId: campaignIds.fuel });
+  await dispatchFlow(env(as('andriy'), daysAgo(30)), {
+    flowId: flow1, carrierKind: 'volunteer', carrierName: v.personaNames.mykola['en-GB'], carrierPersonId: person('mykola').personId, fromLabel: v.routes.flow1From,
+    costs: v.costs1.map((c) => ({ ...c })),
   });
-  const report = await draftReportFromFlow(staff(daysAgo(20)), { flowId: flow1 });
-  await publishReport(staff(daysAgo(11), helen), { reportId: report, acknowledgeSafetyDelay: false });
-  const suggested = await suggestFeedItems(staff(daysAgo(11, 11), helen), { reportId: report }, runtime.assistant);
+  const pending = (await readFlow(runtime.store, orgId, flow1))?.costs.filter((c) => c.status === 'submitted') ?? [];
+  for (const cost of pending) await approveCost(env(as('helen'), daysAgo(29)), { flowId: flow1, costId: cost.id });
+  await recordDelivery(env(as('mykola'), daysAgo(26, 15)), { flowId: flow1 });
+  await confirmDelivery(env(as('olena'), daysAgo(25, 18)), {
+    needId: olena.needId, by: 'recipient', note: '', locale: 'uk', shareWithParticipants: true, showOnWall: true,
+    thanks: v.recipientThanks,
+  });
+  // Publish only after the profile's safety delay (the delivery was 26 days ago).
+  const publishDay = Math.max(1, 26 - settingNumber(settings, 'publication.safetyDelayDays') - 1);
+  const report = await draftReportFromFlow(env(as('andriy'), daysAgo(publishDay + 1)), { flowId: flow1 });
+  await publishReport(env(as('sofia'), daysAgo(publishDay)), { reportId: report, acknowledgeSafetyDelay: false });
+  const suggested = await suggestFeedItems(env(as('sofia'), daysAgo(publishDay, 11)), { reportId: report }, runtime.assistant);
   for (const id of suggested.slice(0, 3)) {
     const item = await readFeedItem(runtime.store, orgId, id);
-    if (item) await publishFeedItem(staff(daysAgo(11, 12), helen), { itemId: id, text: item.text });
+    if (item) await publishFeedItem(env(as('sofia'), daysAgo(publishDay, 12)), { itemId: id, text: item.text });
   }
-  const milestone = await draftFeedItem(staff(daysAgo(2), helen), {
-    kind: 'milestone', campaignId: winter,
-    text: {
-      'en-GB': 'The Leeds Community Choir sang for an evening and gave £450 to Warm homes this winter. Thank you — the first heaters are on their way.',
-      uk: 'Громадський хор Лідса співав цілий вечір і передав £450 на «Теплі домівки цієї зими». Дякуємо — перші обігрівачі вже в дорозі.',
-    },
-  });
-  await publishFeedItem(staff(daysAgo(2, 11), helen), { itemId: milestone, text: {
-    'en-GB': 'The Leeds Community Choir sang for an evening and gave £450 to Warm homes this winter. Thank you — the first heaters are on their way.',
-    uk: 'Громадський хор Лідса співав цілий вечір і передав £450 на «Теплі домівки цієї зими». Дякуємо — перші обігрівачі вже в дорозі.',
-  } });
+  const milestone = await draftFeedItem(env(as('sofia'), daysAgo(2)), { kind: 'milestone', campaignId: campaignIds.winter, text: v.milestone });
+  await publishFeedItem(env(as('sofia'), daysAgo(2, 11)), { itemId: milestone, text: v.milestone });
 
-  // Flow 2: on its way.
-  const flow2 = await matchNeed(staff(daysAgo(4)), { needId: sumy.needId, giftIds: [food], campaignId: winter });
-  await dispatchFlow(staff(daysAgo(2)), { flowId: flow2, carrierKind: 'partner', carrierName: 'Sumy volunteer hub', fromLabel: 'Lviv hub', costs: [
-    { kind: 'fuel', amountMinor: 420_000, currency: 'UAH', note: 'Lviv → Sumy oblast' },
-  ] });
+  // Flow 2: on its way with a partner.
+  const flow2 = await matchNeed(env(as('andriy'), daysAgo(4)), { needId: sumy.needId, giftIds: [food], campaignId: campaignIds.winter });
+  await dispatchFlow(env(as('andriy'), daysAgo(2)), { flowId: flow2, carrierKind: 'partner', carrierName: v.routes.flow2Carrier, fromLabel: v.routes.flow2From, costs: v.costs2.map((c) => ({ ...c })) });
+
+  // Flow 3: on its way with the carrier persona, who hands it over and records costs in "My river";
+  // Olena then confirms it herself. Its cost is within every profile's limit, so it is approved.
+  const flow3 = await matchNeed(env(as('andriy'), daysAgo(5)), { needId: olenaWinter.needId, giftIds: [moneyGifts[7] as string], campaignId: campaignIds.winter });
+  await dispatchFlow(env(as('andriy'), daysAgo(3)), {
+    flowId: flow3, carrierKind: 'volunteer', carrierName: v.personaNames.mykola['en-GB'], carrierPersonId: person('mykola').personId, fromLabel: v.routes.flow2From,
+    costs: [{ kind: 'fuel', amountMinor: 150_000, currency: 'UAH', note: 'Diesel' }],
+  });
 
   runtime.demoTrackingLinks[olena.needId] = olena.trackingToken;
+  runtime.demoTrackingLinks[olenaWinter.needId] = olenaWinter.trackingToken;
   runtime.demoTrackingLinks[sumy.needId] = sumy.trackingToken;
   runtime.demoTrackingLinks[school.needId] = school.trackingToken;
   runtime.demoTrackingLinks[kherson.needId] = kherson.trackingToken;

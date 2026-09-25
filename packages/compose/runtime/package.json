@@ -9,18 +9,21 @@
     ".": "./gate.ts"
   },
   "dependencies": {
-    "@river/kernel": "0.0.0",
+    "@river/assist": "0.0.0",
+    "@river/config": "0.0.0",
+    "@river/content": "0.0.0",
+    "@river/feed": "0.0.0",
+    "@river/flows": "0.0.0",
+    "@river/gifts": "0.0.0",
     "@river/i18n": "0.0.0",
-    "@river/privacy": "0.0.0",
-    "@river/store": "0.0.0",
+    "@river/identity": "0.0.0",
+    "@river/kernel": "0.0.0",
     "@river/log": "0.0.0",
     "@river/needs": "0.0.0",
-    "@river/gifts": "0.0.0",
-    "@river/flows": "0.0.0",
-    "@river/assist": "0.0.0",
-    "@river/content": "0.0.0",
+    "@river/pages": "0.0.0",
+    "@river/privacy": "0.0.0",
     "@river/reports": "0.0.0",
-    "@river/feed": "0.0.0",
-    "@river/pages": "0.0.0"
+    "@river/settings": "0.0.0",
+    "@river/store": "0.0.0"
   }
 }

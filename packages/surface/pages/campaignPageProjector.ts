@@ -27,7 +27,7 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
     const l = p as CampaignLaunchedPayload;
     const page: CampaignPage = {
       id: campaignId, slug: l.slug, title: l.title, summary: l.summary, goalMinor: l.goalMinor, currency: l.currency,
-      pledgedMinor: 0, receivedMinor: 0, spentGbpMinor: 0, giftsCount: 0, status: 'active', costBreakdown: {}, deliveries: 0,
+      pledgedMinor: 0, receivedMinor: 0, spentMinor: 0, giftsCount: 0, status: 'active', costBreakdown: {}, deliveries: 0,
       reports: [], launchedAt: event.occurredAt, updatedAt: event.occurredAt,
     };
     tx.set(pagePaths.campaign(event.orgId, l.slug), page);
@@ -53,8 +53,8 @@ async function project(event: LogEvent, tx: Parameters<Projector['project']>[1])
     }
     case 'costRecord.Approved': {
       const cost = p as CostSubmittedPayload;
-      page.spentGbpMinor += cost.gbpMinor;
-      page.costBreakdown[cost.kind] = (page.costBreakdown[cost.kind] ?? 0) + cost.gbpMinor;
+      page.spentMinor += cost.reportingMinor;
+      page.costBreakdown[cost.kind] = (page.costBreakdown[cost.kind] ?? 0) + cost.reportingMinor;
       break;
     }
     case 'flow.Arrived': page.deliveries += 1; break;

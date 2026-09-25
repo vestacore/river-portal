@@ -1,12 +1,15 @@
 ---
 type: adr
-status: accepted
+status: accepted (amended)
 date: 2026-09-24
 tags: [adr, deployment]
 spec: spec/08-architecture/adr/ADR-003 IAP for Staff Sections.md
 ---
 
 # ADR-0010 One App, Two Surfaces
+
+> [!note] Amended 2026-09-25
+> Edit mode on public pages no longer exists: texts are edited in the studio ([[ADR-0022 Editing in the Studio, Not on Public Pages]]). The decision stands, because both surfaces still share every page component. Locally and in a sandbox, demo personas can sign in without IAP ([[ADR-0021 Identity Layer and Demo Personas]]); the public surface answers 404 for `/studio`, `/me` and `/demo`.
 
 ## Context
 The spec describes two Next.js apps, `web` (public) and `studio` (IAP). In-place editing ([[ADR-0006 In-Place Editing with Tiptap]]) means staff must see *the public pages themselves* in edit mode, and two apps would duplicate every page.

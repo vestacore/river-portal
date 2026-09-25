@@ -114,3 +114,20 @@ Each integration shows its status, last success and error rate, linking to [[Obs
 
 > [!question]
 > Should the Administrator role be able to see `sealed` data in an emergency ("break glass"), with a mandatory after-the-fact review by the Safeguarding Lead and trustees? The current default is no. See [[Safeguarding]].
+
+## Built so far (engineering iteration 04, 2026-09-25)
+- **Organisation settings** are the settings registry. It has about 35 typed settings in eight groups: organisation, contact, people asking for help, giving, money, publishing, home page and appearance. The form is generated from the registry. Each value shows whether it comes from the registry default, the profile or the organisation, and can be reset. Floors and the contrast of the accent colour are enforced. Every change is a `settings.*` event with the administrator as actor.
+- **Profiles**: an administrator can apply one of three profiles (state programme, city foundation, small nationwide), optionally keeping their own values. See [[Scaling Tiers]].
+- **Who may change what**: each setting names the roles that may change it. Wording and the home page are open to editors; money, contact and safety settings are for administrators; auditors see everything read-only.
+- **Site texts** are edited in the studio's *Surface* stage, never on public pages.
+- **Not built yet**:
+  - role grants with scope and dates (staff roles still come from a configured list);
+  - the feature switchboard;
+  - visibility policies;
+  - the consent registry;
+  - the audit log explorer;
+  - projection rebuild;
+  - integrations.
+
+The studio's stages are listed in [[Site Map]]. Engineering decision: `adr/records/ADR-0020 Settings Registry and Organisation Profiles.md`.
+

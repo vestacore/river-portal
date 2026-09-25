@@ -9,7 +9,10 @@ import { Icon } from '@/components/ui/Icon';
 import { Timeline } from '@/components/ui/Timeline';
 import { getDictionary } from '@/lib/dictionary/getDictionary';
 import { resolveLocale } from '@/lib/resolveLocale';
-import { ConfirmForm } from './ConfirmForm';
+import { ConfirmForm } from '@/components/site/ConfirmForm';
+import { QuickExitFor } from '@/components/site/QuickExitFor';
+import { loadSettings } from '@/lib/loadSettings';
+import { confirmAction } from './actions';
 import { CopyLink } from './CopyLink';
 
 export const dynamic = 'force-dynamic';
@@ -23,8 +26,9 @@ const journey: TimelineCode[] = ['submitted', 'acknowledged', 'triaged', 'matche
 export default async function TrackPage({ params, searchParams }: { params: Promise<{ locale: string; token: string }>; searchParams: Promise<{ new?: string }> }) {
   const { locale: segment, token } = await params;
   const locale = resolveLocale(segment);
-  const t = getDictionary(locale).track;
-  const runtime = await getRuntime();
+  const dict = getDictionary(locale);
+  const t = dict.track;
+  const [runtime, settings] = await Promise.all([getRuntime(), loadSettings()]);
   const view = await readRecipientView(runtime.store, runtime.config.orgId, token);
   if (!view) {
     return <Container narrow className="py-24"><h1 className="text-3xl font-extrabold">{t.title}</h1><p className="mt-4 text-lg text-ink-500">{t.notFound}</p></Container>;
@@ -34,6 +38,7 @@ export default async function TrackPage({ params, searchParams }: { params: Prom
   const steps = journey.map((code) => ({ label: t.timeline[code], when: done.has(code) ? formatDate(done.get(code) as string, locale, true) : undefined, done: done.has(code) }));
   return (
     <Container narrow className="py-14 sm:py-20">
+      <QuickExitFor settings={settings} dict={dict} />
       {isNew ? (
         <div className="chamfer mb-10 animate-rise p-7 [--cut:24px] [--fill:var(--color-teal-100)]">
           <Icon name="check" className="size-9 text-teal-600" />
@@ -49,7 +54,7 @@ export default async function TrackPage({ params, searchParams }: { params: Prom
           <Timeline steps={steps} />
         </div>
         <div className="sketch bg-paper p-7">
-          {view.canConfirm ? <ConfirmForm token={token} localeSegment={segmentForLocale(locale)} t={t} /> : (
+          {view.canConfirm ? <ConfirmForm action={confirmAction.bind(null, token)} localeSegment={segmentForLocale(locale)} t={t} /> : (
             <div className="grid h-full place-items-center text-center text-ink-500">
               <div><Icon name={view.status === 'confirmed' ? 'heart' : 'route'} className="mx-auto size-12 text-teal-500" /><p className="mt-3">{view.status === 'confirmed' ? t.confirmedText : t.timeline.acknowledged}</p></div>
             </div>

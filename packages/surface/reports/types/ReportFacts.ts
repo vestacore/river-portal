@@ -12,8 +12,10 @@ export type ReportFacts = {
   recipients: Array<{ kind: RecipientKind; householdSize: number | null }>;
   categoryIds: string[];
   giftsCount: number;
-  moneyGbpMinor: number;
-  costsGbpMinor: number;
+  /** Reporting currency at the time of the report; all money below is in its minor units. */
+  currency: string;
+  moneyMinor: number;
+  costsMinor: number;
   costBreakdown: Partial<Record<CostKind, number>>;
   carrierKind: string | null;
   fromLabel: string | null;
