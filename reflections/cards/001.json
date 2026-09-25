@@ -1,0 +1,322 @@
+{
+  "output": "Development Card 001 — River Portal × Claude Opus 5.5.pdf",
+  "documentTitle": "Development Card 001 · River Portal × Claude Opus 5.5",
+  "kicker": "Development card 001 · one task, one model",
+  "title": [
+    "River Portal",
+    "Claude Opus 5.5"
+  ],
+  "subtitle": "How one AI model specified, built, verified and documented a bilingual charity portal for one human owner, from an empty folder to a public site and a staff studio, on 24–25 September 2026.",
+  "identity": [
+    [
+      "Model",
+      "Claude Opus 5.5 `· claude-opus-5-5`, all 1,407 replies"
+    ],
+    [
+      "Harness",
+      "Claude Code desktop: shell, browser, sub-agents"
+    ],
+    [
+      "Owner",
+      "one person; British English"
+    ],
+    [
+      "Span",
+      "24 Sep 15:38 – 25 Sep 17:17 EEST · 25 h 39 min"
+    ],
+    [
+      "Sources",
+      "git (4 commits) · code at `ddb01cc` · session log · vaults"
+    ]
+  ],
+  "measured": {
+    "heading": "Measured — git, code, session log. Self-observation: read with care",
+    "items": [
+      {
+        "value": "7",
+        "caption": "directives from the owner, 334–3,298 characters each"
+      },
+      {
+        "value": "4 h 00",
+        "caption": "of AI work inside 25 h 39 min elapsed (16%)"
+      },
+      {
+        "value": "634",
+        "caption": "tool calls: 61% shell, 25% browser"
+      },
+      {
+        "value": "0",
+        "caption": "interactive edits; 170 scripted and 70 whole-file writes"
+      },
+      {
+        "value": "11",
+        "caption": "sub-agents; 1 context compaction mid-iteration"
+      },
+      {
+        "value": "11,701",
+        "caption": "lines of code in 412 files; median function 10 lines"
+      },
+      {
+        "value": "155",
+        "unit": "k",
+        "caption": "words of specification, decisions and process notes"
+      },
+      {
+        "value": "26",
+        "caption": "unit tests; ~60 type checks, 48 test runs, 8 builds"
+      },
+      {
+        "value": "13",
+        "caption": "defects found by walking the product after tests passed"
+      },
+      {
+        "value": "4",
+        "caption": "commits, all by the owner, of 631 to 16,341 lines"
+      }
+    ]
+  },
+  "task": {
+    "heading": "The task",
+    "paragraphs": [
+      "**River Portal**: a charity portal where needs meet gifts, carried by coordinators and carriers. Privacy is strict, a gift is a gift, and every public number comes from an append-only log.",
+      "Delivered in iterations 00–04: a 146-note specification, 23 ADRs, 17 packages behind gates, a public site and a studio, a Pulumi program, 9 demo personas and 3 organisation profiles."
+    ],
+    "epigraph": {
+      "text": "«…берега и оттоки несут то, что нужно, к тем, кому это нужно»",
+      "source": "The owner's first directive: banks and outflows carry what is needed to those who need it",
+      "after": 1
+    },
+    "stack": "Next.js 16 · React 19 · TypeScript 5.9 · Firestore · Vertex AI · Pulumi on Google Cloud · en-GB + uk"
+  },
+  "observations": {
+    "heading": "How the model generated code",
+    "items": [
+      "**Bottom-up by layer.** Foundation, record, domain, surface, compose, app. After each change lower down, the type checker's error list became the work list.",
+      "**Wide, guarded edits.** Not one interactive edit in the main thread. Each of 170 scripted replacements asserted a single match, alongside 70 whole-file writes. Fast across many files, and loud when the code was not as expected.",
+      "**Gates as context.** It planned from 17 gate files, not 285 sources. One exported function per file kept units small: a median of 10 lines.",
+      "**A check for every 1.5 writes.** Type checks, test runs, topology checks, production builds and 30 screenshot runs, interleaved with building.",
+      "**Text in parallel, code in one thread.** Sub-agents wrote the specification and 1,029 lines of bilingual content. Parallel text drifted in numbers, names and privacy, and needed harmonising.",
+      "**Decisions written as built.** ADRs followed verified code and record what testing found. The owner saw most of them only afterwards.",
+      "**Defects at the boundaries, not in the logic:** framework serialisation, the CSS cascade, Ukrainian inflection, scenario continuity, the meaning of a parameter.",
+      "**Amplification.** A 472-character directive became 263 changed files. Acceptance rested on evidence (screenshots, check output, evaluations), not on reading diffs."
+    ]
+  },
+  "ownWords": {
+    "heading": "In the model's own words",
+    "quotes": [
+      "I am fastest where rules are mechanical: types, topology, gates. I am slowest where meaning is involved: what a number says to a donor, or what a label reveals about a village.",
+      "The browser taught me more than my tests. With everything green, walking each role still found 13 defects.",
+      "Two flaws were my own designs: settings that became ‘custom’ when saved unchanged, and a demo that could not be walked. Using the product found them; reading the code did not.",
+      "The vaults are my memory. After my context was compacted mid-iteration, I carried on from files, not from recollection.",
+      "I reviewed my own work. That is the weakest link: a fresh reviewer would see what I cannot.",
+      "Construction took 16% of the elapsed time. The owner's attention set the pace, so easy acceptance matters more than faster building."
+    ]
+  },
+  "nextTime": {
+    "heading": "Next time",
+    "items": [
+      "Restate each directive before building: goal, scope, evidence.",
+      "Commit by layer, citing the ADR and the iteration.",
+      "Run the walk, the crawl and the screenshots in CI.",
+      "Add an independent review before acceptance."
+    ],
+    "note": "In full: reflections/sdlc/v1, folder 10-proposals."
+  },
+  "ladder": {
+    "title": "Fig. 2 — Where the 13 defects of iteration 04 surfaced",
+    "rungs": [
+      {
+        "name": "1 types",
+        "found": 0,
+        "note": "green"
+      },
+      {
+        "name": "2 topology",
+        "found": 0,
+        "note": "green"
+      },
+      {
+        "name": "3 unit tests",
+        "found": 0,
+        "note": "green"
+      },
+      {
+        "name": "4 seed",
+        "found": 0,
+        "note": "green"
+      },
+      {
+        "name": "5 build",
+        "found": 0,
+        "note": "green"
+      },
+      {
+        "name": "6 walk",
+        "found": 9
+      },
+      {
+        "name": "7 crawl",
+        "found": 0,
+        "note": "matrix as designed",
+        "strong": true
+      },
+      {
+        "name": "8 screenshots",
+        "found": 4
+      }
+    ],
+    "bracket": {
+      "from": 1,
+      "to": 5,
+      "label": "All green first"
+    }
+  },
+  "timeline": {
+    "title": "Fig. 1 — Construction against elapsed time",
+    "start": "2026-09-24T15:00",
+    "hours": 27,
+    "tickEvery": 3,
+    "dates": [
+      {
+        "at": "2026-09-24T15:00",
+        "label": "24 Sep"
+      },
+      {
+        "at": "2026-09-25T00:00",
+        "label": "25 Sep"
+      }
+    ],
+    "away": {
+      "from": "2026-09-24T22:50",
+      "to": "2026-09-25T11:36",
+      "label": "Owner away · 12 h 46 min"
+    },
+    "windows": [
+      {
+        "from": "2026-09-24T15:38",
+        "to": "2026-09-24T16:16",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-24T21:19",
+        "to": "2026-09-24T22:14",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-24T22:25",
+        "to": "2026-09-24T22:50",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-25T11:38",
+        "to": "2026-09-25T12:20",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-25T13:17",
+        "to": "2026-09-25T13:21",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-25T13:33",
+        "to": "2026-09-25T14:48",
+        "kind": "work"
+      },
+      {
+        "from": "2026-09-25T17:22",
+        "to": "2026-09-25T17:44",
+        "kind": "reflection"
+      }
+    ],
+    "directives": [
+      {
+        "at": "2026-09-24T15:38",
+        "label": "M1"
+      },
+      {
+        "at": "2026-09-24T21:18",
+        "label": "M2"
+      },
+      {
+        "at": "2026-09-24T22:21",
+        "label": "M3",
+        "dx": 0.6
+      },
+      {
+        "at": "2026-09-25T11:36",
+        "label": "M4"
+      },
+      {
+        "at": "2026-09-25T13:15",
+        "label": "M5",
+        "dx": -1.6
+      },
+      {
+        "at": "2026-09-25T13:26",
+        "label": "M6",
+        "dx": 1.9
+      },
+      {
+        "at": "2026-09-25T17:21",
+        "label": "M7",
+        "dx": -1.3
+      },
+      {
+        "at": "2026-09-25T17:48",
+        "label": "M8",
+        "dx": 1.5
+      }
+    ],
+    "commits": [
+      {
+        "at": "2026-09-24T17:35",
+        "label": "ab41599"
+      },
+      {
+        "at": "2026-09-25T13:13",
+        "label": "dbbb9d8 · 872ed85"
+      },
+      {
+        "at": "2026-09-25T17:17",
+        "label": "ddb01cc",
+        "anchor": "end"
+      }
+    ],
+    "span": {
+      "from": "2026-09-24T15:38",
+      "to": "2026-09-25T17:17",
+      "label": "25 h 39 min · first directive to last commit"
+    },
+    "caption": "AI work M1–M6: 4 h 00 min in six windows (16%) · M7 SDLC reflection · M8 asked for this card"
+  },
+  "titleBlock": {
+    "name": "River Portal",
+    "line": "Development card 001",
+    "rows": [
+      [
+        "Model",
+        "Claude Opus 5.5 `claude-opus-5-5`"
+      ],
+      [
+        "Drawn by",
+        "the model, observing itself"
+      ],
+      [
+        "Checked by",
+        "the product owner"
+      ],
+      [
+        "Source",
+        "`reflections/sdlc/v1`"
+      ],
+      [
+        "Date · rev.",
+        "2026-09-25 · A"
+      ],
+      [
+        "Sheet · scale",
+        "1 of 1 · 1 : 1, human"
+      ]
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Picks a dependency version following the supply-chain policy (see meta/Dependency Policy.md):
+// Picks a dependency version following the supply-chain policy (adr/records/ADR-0007; meta/process/Dependency Register.md):
 // take the latest stable major.minor line, step back two lines in release order (crossing a
 // major boundary if needed) and use the highest stable patch of that line. Usage: node tools/pick-version.mjs <pkg> [<pkg> ...]
 import { execFileSync } from 'node:child_process';

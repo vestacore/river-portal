@@ -22,7 +22,7 @@ packages/
     content  reports  feed  pages                         feed, page documents
   compose/          wiring for applications               (layer 4)
     runtime
-tools/              topology checker, version picker, design screenshots (design-shot.mjs)
+tools/              topology checker, version picker, design screenshots, development cards (tools/README.md)
 spec/ adr/ meta/    Obsidian vaults: product, decisions, process
 ```
 

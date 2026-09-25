@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><title>Paper texture</title></head>
+<body>
+<canvas id="paper" width="2339" height="1654"></canvas>
+<!-- Sandy tracing paper for the development cards, A4 landscape at 200 dpi: warm base, cloudy mottling,
+     fine grain, faint fibres and sand speckles, a soft vignette. Seeded, so a given seed gives the same
+     sheet. Run through tools/cards/build-card.mjs --paper; see tools/README.md. -->
+<script>
+function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+window.makePaper = ({ seed = 1925, base = [232, 217, 187] } = {}) => {
+  const canvas = document.getElementById('paper'), W = canvas.width, H = canvas.height, rnd = mulberry32(seed);
+  const gauss = () => { let u = 0, v = 0; while (!u) u = rnd(); while (!v) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const lum = new Float32Array(W * H);
+  // Cloudy mottling: coarse random grids, smoothly interpolated to full size, in three octaves.
+  const clouds = (cx, cy, amp) => {
+    const g = new Float32Array(cx * cy); let lo = Infinity, hi = -Infinity;
+    for (let i = 0; i < g.length; i++) { g[i] = gauss(); lo = Math.min(lo, g[i]); hi = Math.max(hi, g[i]); }
+    for (let i = 0; i < g.length; i++) g[i] = (g[i] - lo) / (hi - lo + 1e-6) - 0.5;
+    for (let y = 0; y < H; y++) {
+      const fy = (y / (H - 1)) * (cy - 1), y0 = Math.floor(fy), y1 = Math.min(cy - 1, y0 + 1), ty = fy - y0, sy = ty * ty * (3 - 2 * ty);
+      for (let x = 0; x < W; x++) {
+        const fx = (x / (W - 1)) * (cx - 1), x0 = Math.floor(fx), x1 = Math.min(cx - 1, x0 + 1), tx = fx - x0, sx = tx * tx * (3 - 2 * tx);
+        const top = g[y0 * cx + x0] * (1 - sx) + g[y0 * cx + x1] * sx, bottom = g[y1 * cx + x0] * (1 - sx) + g[y1 * cx + x1] * sx;
+        lum[y * W + x] += (top * (1 - sy) + bottom * sy) * amp;
+      }
+    }
+  };
+  clouds(9, 6, 18); clouds(40, 28, 8); clouds(160, 113, 4);
+  const ctx = canvas.getContext('2d'), img = ctx.createImageData(W, H), px = img.data;
+  for (let y = 0; y < H; y++) {
+    const vy = (y - H / 2) / (H / 2);
+    for (let x = 0; x < W; x++) {
+      const vx = (x - W / 2) / (W / 2), vignette = -Math.max(0, vx * vx * 0.55 + vy * vy * 0.75 - 0.35) * 14;
+      const i = y * W + x, l = lum[i] + gauss() * 2.2 + vignette;
+      px[i * 4] = base[0] + l; px[i * 4 + 1] = base[1] + l * 0.97; px[i * 4 + 2] = base[2] + l * 0.9; px[i * 4 + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  // Fibres and sand speckles on a separate layer, softened, then laid over the paper.
+  const layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+  const lc = layer.getContext('2d'); lc.lineWidth = 1;
+  for (let k = 0; k < 2600; k++) {
+    const x = rnd() * W, y = rnd() * H, ang = rnd() * Math.PI, length = 8 + rnd() * 38, bend = gauss() * 0.35, light = rnd() < 0.6;
+    lc.strokeStyle = light ? `rgba(250,243,226,${(30 + rnd() * 44) / 255})` : `rgba(160,136,96,${(24 + rnd() * 32) / 255})`;
+    lc.beginPath();
+    for (let s = 0; s <= 5; s++) { const t = s / 5, a = ang + bend * t, px2 = x + Math.cos(a) * length * t, py2 = y + Math.sin(a) * length * t; if (s === 0) lc.moveTo(px2, py2); else lc.lineTo(px2, py2); }
+    lc.stroke();
+  }
+  for (let k = 0; k < 5200; k++) {
+    const x = rnd() * W, y = rnd() * H, rr = 0.55 + rnd() * 0.95, dark = rnd() < 0.7;
+    lc.fillStyle = dark ? `rgba(120,98,64,${(20 + rnd() * 44) / 255})` : `rgba(255,250,238,${(34 + rnd() * 50) / 255})`;
+    lc.beginPath(); lc.ellipse(x, y, rr, rr, 0, 0, Math.PI * 2); lc.fill();
+  }
+  ctx.filter = 'blur(0.7px)'; ctx.drawImage(layer, 0, 0); ctx.filter = 'none';
+  return canvas.toDataURL('image/jpeg', 0.84);
+};
+</script>
+</body>
+</html>

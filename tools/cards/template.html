@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<!--BASE-->
+<title>Development card</title>
+<!-- Layout and drawing of a development card (A4 landscape). All text and figures come from the card's
+     data file (reflections/cards/*.json), injected by tools/cards/build-card.mjs. See tools/README.md. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=block">
+<style>
+@page { size: 297mm 210mm; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #ebdfc6; }
+body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+:root { --ink: #2b2822; --ink2: #47433a; --muted: #736b58; --blue: #35648a; --red: #a3432a; --sans: 'IBM Plex Sans', sans-serif; --mono: 'IBM Plex Mono', monospace; }
+.sheet { position: relative; width: 297mm; height: 210mm; overflow: hidden; background: #ebdfc6 url('paper.jpg') 0 0 / 297mm 210mm no-repeat; color: var(--ink); font: 400 7.1pt/1.36 var(--sans); font-kerning: normal; }
+svg.geo { position: absolute; left: 0; top: 0; width: 297mm; height: 210mm; }
+.b { position: absolute; }
+.mono, .kicker, .h, .id th, .tb th { font-family: var(--mono); }
+.kicker { font-size: 5.8pt; color: var(--red); text-transform: uppercase; letter-spacing: .16em; }
+h1 { margin: 1.4mm 0 0; font: 600 23pt/1.02 var(--sans); letter-spacing: -.012em; }
+h1 .x { color: var(--red); font-weight: 400; padding: 0 .6mm; }
+.sub { margin-top: 2mm; font-size: 7.8pt; line-height: 1.38; color: var(--ink2); max-width: 136mm; }
+.h { font-size: 5.6pt; color: var(--ink2); text-transform: uppercase; letter-spacing: .14em; display: flex; align-items: center; gap: 1.8mm; margin: 0 0 2mm; white-space: nowrap; }
+.h b { color: var(--red); font-weight: 400; }
+.h::after { content: ""; flex: 1 1 auto; max-width: 14mm; border-top: .18mm solid rgba(43,40,34,.45); }
+p { margin: 0 0 1.5mm; }
+b { font-weight: 600; }
+.id { border-collapse: collapse; width: 100%; }
+.id th, .id td { text-align: left; vertical-align: baseline; padding: .72mm 0; border-bottom: .15mm solid rgba(43,40,34,.28); }
+.id tr:first-child th, .id tr:first-child td { border-top: .3mm solid rgba(43,40,34,.7); }
+.id th { width: 17mm; font-size: 4.9pt; font-weight: 400; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+.id td { font-size: 6.7pt; }
+.id td .mono { font-size: 6.2pt; }
+.dims { display: flex; }
+.dims .d { padding: 0 1.1mm 0 1.2mm; }
+.dims .n { font: 600 14.5pt/1 var(--sans); letter-spacing: -.01em; height: 7.4mm; display: flex; align-items: flex-end; white-space: nowrap; }
+.dims .n small { font-size: 8.5pt; font-weight: 600; margin-left: .5mm; }
+.dims .c { margin-top: 3.4mm; font-size: 6.1pt; line-height: 1.3; color: var(--ink2); }
+ol.obs { list-style: none; margin: 0; padding: 0; counter-reset: o; }
+ol.obs li { position: relative; padding-left: 5.2mm; margin: 0 0 1.55mm; counter-increment: o; }
+ol.obs li::before { content: counter(o); position: absolute; left: 0; top: .15mm; width: 3.3mm; height: 3.3mm; border: .18mm solid var(--red); border-radius: 50%; font: 400 4.9pt/3.05mm var(--mono); color: var(--red); text-align: center; }
+.epi { margin: .6mm 0 2mm; padding-left: 2.4mm; border-left: .35mm solid var(--red); font-style: italic; font-size: 6.9pt; color: var(--ink2); }
+.epi span { display: block; font-style: normal; font-family: var(--mono); font-size: 4.8pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: .5mm; }
+.stack { font-family: var(--mono); font-size: 4.9pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+.overlay { background: rgba(252,248,238,.5); border: .12mm solid rgba(43,40,34,.22); box-shadow: .15mm .25mm .5mm rgba(92,70,36,.1); transform: rotate(-.45deg); padding: 3.2mm 3.4mm 2mm; }
+.tape { position: absolute; width: 17mm; height: 5.2mm; background: linear-gradient(180deg, rgba(229,214,176,.78), rgba(221,203,160,.72)); box-shadow: 0 .15mm .4mm rgba(92,70,36,.14); clip-path: polygon(0 8%, 6% 0, 12% 10%, 20% 2%, 30% 9%, 42% 1%, 55% 8%, 68% 0, 80% 9%, 92% 2%, 100% 10%, 100% 92%, 94% 100%, 84% 91%, 72% 99%, 60% 92%, 46% 100%, 33% 91%, 20% 99%, 9% 92%, 0 100%); }
+.q { position: relative; padding-left: 3.4mm; margin: 0 0 1.7mm; font-size: 7pt; }
+.q::before { content: "“"; position: absolute; left: 0; top: -1.1mm; font: 600 12pt/1 var(--sans); color: var(--red); }
+.todo { list-style: none; margin: 0; padding: 0; }
+.todo li { position: relative; padding-left: 4.4mm; margin: 0 0 1.5mm; font-size: 6.9pt; line-height: 1.32; }
+.todo li::before { content: ""; position: absolute; left: .2mm; top: .55mm; width: 2.4mm; height: 2.4mm; border: .2mm solid var(--ink); }
+.tb { border-collapse: collapse; width: 100%; }
+.tb th, .tb td { text-align: left; vertical-align: middle; padding: .55mm 1.2mm; border: .18mm solid rgba(43,40,34,.62); }
+.tb th { width: 19mm; font-size: 4.8pt; font-weight: 400; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+.tb td { font-size: 6.6pt; }
+.tb .mono { font-size: 6.1pt; }
+.tb .name { font: 600 9pt/1.1 var(--sans); }
+.tb .mono.line { font-family: var(--mono); font-size: 4.9pt; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+.fig { font-family: var(--mono); font-size: 4.9pt; letter-spacing: .12em; color: var(--ink2); text-transform: uppercase; }
+.note { font-size: 5.9pt; font-style: italic; color: var(--muted); margin-top: 2.2mm; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <svg class="geo" viewBox="0 0 297 210" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="b" id="header" style="left:11mm; top:11.2mm; width:140mm"></div>
+  <div class="b" id="identity" data-fit="identity" style="left:190mm; top:11.6mm; width:96mm; height:27mm; overflow:hidden"></div>
+  <div class="b h" id="measuredHeading" style="left:11mm; top:39.3mm; width:275mm"></div>
+  <div class="b dims" id="measured" data-fit="measured" style="left:11mm; top:43mm; width:275mm; height:23.3mm; overflow:hidden"></div>
+  <div class="b" id="task" data-fit="task" style="left:12.5mm; top:71.5mm; width:75mm; height:44mm; overflow:hidden"></div>
+  <div class="b" id="observations" data-fit="observations" style="left:96.8mm; top:71.5mm; width:100.5mm; height:78.5mm; overflow:hidden"></div>
+  <div class="b overlay" id="ownWords" data-fit="own words" style="left:205mm; top:69.2mm; width:81mm; height:82mm; overflow:hidden"></div>
+  <div class="tape" style="left:200.5mm; top:66.4mm; transform: rotate(-11deg)"></div>
+  <div class="tape" style="left:273mm; top:65.6mm; transform: rotate(8deg)"></div>
+  <div class="b fig" id="ladderTitle" style="left:12.5mm; top:117.6mm; width:76mm"></div>
+  <div class="b fig" id="timelineTitle" style="left:11mm; top:155.6mm; width:76mm"></div>
+  <div class="b" id="nextTime" data-fit="next time" style="left:157.8mm; top:157mm; width:44mm; height:41mm; overflow:hidden"></div>
+  <div class="b" id="titleBlock" data-fit="title block" style="left:209mm; top:155mm; width:77mm; height:44mm; overflow:hidden"></div>
+</div>
+<!--DATA-->
+<script>
+try {
+const CARD = JSON.parse(document.getElementById('card-data').textContent);
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.querySelector('svg.geo');
+const C = { ink: '#2b2822', ink2: '#47433a', muted: '#736b58', blue: '#35648a', red: '#a3432a', grid: '#8a7a58' };
+
+// Text: HTML is escaped, then **bold** and `mono` are allowed.
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<span class="mono">$1</span>');
+const $ = (id) => document.getElementById(id);
+// A table cell whose whole value is `code` is set in the mono face, like a drawing's reference number.
+const cell = (v) => (/^`[^`]+`$/.test(v) ? `<td class="mono">${esc(v.slice(1, -1))}</td>` : `<td>${md(v)}</td>`);
+const heading = (n, text) => `<div class="h"><span><b>§ ${String(n).padStart(2, '0')}</b> ${md(text)}</span></div>`;
+document.title = CARD.documentTitle ?? [CARD.kicker, [].concat(CARD.title).join(' × ')].filter(Boolean).join(' · ');
+
+// ---- Text blocks ----------------------------------------------------------------------------
+const title = Array.isArray(CARD.title) ? CARD.title.map(md).join(' <span class="x">×</span> ') : md(CARD.title);
+$('header').innerHTML = `<div class="kicker">${md(CARD.kicker)}</div><h1>${title}</h1><div class="sub">${md(CARD.subtitle)}</div>`;
+$('identity').innerHTML = `<table class="id">${CARD.identity.map(([k, v]) => `<tr><th>${md(k)}</th>${cell(v)}</tr>`).join('')}</table>`;
+
+$('measuredHeading').innerHTML = `<span><b>§ 01</b> ${md(CARD.measured.heading)}</span>`;
+const dimWidth = 275 / CARD.measured.items.length;
+$('measured').innerHTML = CARD.measured.items.map((d) => `<div class="d" style="width:${dimWidth}mm"><div class="n">${md(d.value)}${d.unit ? `<small>${md(d.unit)}</small>` : ''}</div><div class="c">${md(d.caption)}</div></div>`).join('');
+
+const t = CARD.task, after = t.epigraph?.after ?? 1;
+const paras = t.paragraphs.map((p) => `<p>${md(p)}</p>`);
+if (t.epigraph) paras.splice(after, 0, `<div class="epi">${md(t.epigraph.text)}<span>${md(t.epigraph.source)}</span></div>`);
+$('task').innerHTML = heading(2, t.heading) + paras.join('') + (t.stack ? `<div class="stack">${md(t.stack)}</div>` : '');
+
+$('observations').innerHTML = heading(3, CARD.observations.heading) + `<ol class="obs">${CARD.observations.items.map((i) => `<li>${md(i)}</li>`).join('')}</ol>`;
+$('ownWords').innerHTML = heading(4, CARD.ownWords.heading) + CARD.ownWords.quotes.map((q) => `<div class="q">${md(q)}</div>`).join('');
+$('nextTime').innerHTML = heading(5, CARD.nextTime.heading) + `<ul class="todo">${CARD.nextTime.items.map((i) => `<li>${md(i)}</li>`).join('')}</ul>` + (CARD.nextTime.note ? `<div class="note">${md(CARD.nextTime.note)}</div>` : '');
+$('ladderTitle').innerHTML = md(CARD.ladder.title);
+$('timelineTitle').innerHTML = md(CARD.timeline.title);
+const tb = CARD.titleBlock;
+$('titleBlock').innerHTML = `<table class="tb"><tr><td colspan="2" style="height:10.5mm; padding-left:13.5mm"><span class="name">${md(tb.name)}</span><br><span class="mono line">${md(tb.line)}</span></td></tr>${tb.rows.map(([k, v]) => `<tr><th>${md(k)}</th>${cell(v)}</tr>`).join('')}</table>`;
+
+// ---- Drawing (1 unit = 1 mm) -------------------------------------------------------------
+function el(tag, attrs = {}, parent = svg) { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); parent.appendChild(e); return e; }
+const G = (attrs = {}, parent = svg) => el('g', attrs, parent);
+const L = (p, x1, y1, x2, y2, a = {}) => el('line', { x1, y1, x2, y2, ...a }, p);
+const T = (p, x, y, s, a = {}) => { const e = el('text', { x, y, ...a }, p); e.textContent = s; return e; };
+const mono = (size, fill = C.ink2, extra = {}) => ({ 'font-family': 'IBM Plex Mono', 'font-size': size, fill, 'letter-spacing': size * 0.12, ...extra });
+
+const defs = el('defs');
+const clip = el('clipPath', { id: 'inside' }, defs); el('rect', { x: 7, y: 7, width: 283, height: 196 }, clip);
+const hatch = el('pattern', { id: 'hatch', patternUnits: 'userSpaceOnUse', width: 1.6, height: 1.6, patternTransform: 'rotate(45)' }, defs);
+L(hatch, 0, 0, 0, 1.6, { stroke: C.ink, 'stroke-width': 0.14, 'stroke-opacity': 0.35 });
+const hatchRed = el('pattern', { id: 'hatchRed', patternUnits: 'userSpaceOnUse', width: 1.1, height: 1.1, patternTransform: 'rotate(45)' }, defs);
+L(hatchRed, 0, 0, 0, 1.1, { stroke: C.red, 'stroke-width': 0.22, 'stroke-opacity': 0.75 });
+
+// Grid on the tracing paper: 5 mm, stronger every 25 mm.
+const grid = G({ 'clip-path': 'url(#inside)' });
+for (let x = 7; x <= 290; x += 5) L(grid, x, 7, x, 203, { stroke: C.grid, 'stroke-width': (x - 7) % 25 === 0 ? 0.16 : 0.08, 'stroke-opacity': (x - 7) % 25 === 0 ? 0.3 : 0.17 });
+for (let y = 7; y <= 203; y += 5) L(grid, 7, y, 290, y, { stroke: C.grid, 'stroke-width': (y - 7) % 25 === 0 ? 0.16 : 0.08, 'stroke-opacity': (y - 7) % 25 === 0 ? 0.3 : 0.17 });
+
+// Sheet frame with zones 1–8 and A–F, centring and registration marks.
+const frame = G();
+el('rect', { x: 3.2, y: 3.2, width: 290.6, height: 203.6, fill: 'none', stroke: C.ink, 'stroke-width': 0.12, 'stroke-opacity': 0.55 }, frame);
+el('rect', { x: 7, y: 7, width: 283, height: 196, fill: 'none', stroke: C.ink, 'stroke-width': 0.42 }, frame);
+for (let i = 1; i < 8; i++) { const x = 7 + (i * 283) / 8; L(frame, x, 3.2, x, 7, { stroke: C.ink, 'stroke-width': 0.12 }); L(frame, x, 203, x, 206.8, { stroke: C.ink, 'stroke-width': 0.12 }); }
+for (let i = 0; i < 8; i++) { const x = 7 + ((i + 0.5) * 283) / 8; T(frame, x, 5.75, String(i + 1), mono(1.6, C.muted, { 'text-anchor': 'middle' })); T(frame, x, 205.9, String(i + 1), mono(1.6, C.muted, { 'text-anchor': 'middle' })); }
+for (let j = 1; j < 6; j++) { const y = 7 + (j * 196) / 6; L(frame, 3.2, y, 7, y, { stroke: C.ink, 'stroke-width': 0.12 }); L(frame, 290, y, 293.8, y, { stroke: C.ink, 'stroke-width': 0.12 }); }
+'ABCDEF'.split('').forEach((c, j) => { const y = 7 + ((j + 0.5) * 196) / 6 + 0.55; T(frame, 5.1, y, c, mono(1.6, C.muted, { 'text-anchor': 'middle' })); T(frame, 291.9, y, c, mono(1.6, C.muted, { 'text-anchor': 'middle' })); });
+[[148.5, 3.2, 148.5, 9.6], [148.5, 200.4, 148.5, 206.8], [3.2, 105, 9.6, 105], [287.4, 105, 293.8, 105]].forEach(([a, b, c, d]) => L(frame, a, b, c, d, { stroke: C.ink, 'stroke-width': 0.3 }));
+el('path', { d: 'M147.3,7 L149.7,7 L148.5,8.6 Z M147.3,203 L149.7,203 L148.5,201.4 Z M7,103.8 L7,106.2 L8.6,105 Z M290,103.8 L290,106.2 L288.4,105 Z', fill: C.ink }, frame);
+[[5.1, 5.1], [291.9, 5.1], [5.1, 204.9], [291.9, 204.9]].forEach(([x, y]) => { el('circle', { cx: x, cy: y, r: 1, fill: 'none', stroke: C.ink, 'stroke-width': 0.12 }, frame); L(frame, x - 1.6, y, x + 1.6, y, { stroke: C.ink, 'stroke-width': 0.1 }); L(frame, x, y - 1.6, x, y + 1.6, { stroke: C.ink, 'stroke-width': 0.1 }); });
+
+// Compass construction in the header: the perpendicular bisector of AB.
+const con = G({ stroke: C.blue, fill: 'none', 'stroke-width': 0.16, 'stroke-opacity': 0.62 });
+const A = [155, 33.5], B = [183, 33.5], r = 17, h = Math.sqrt(r * r - 14 * 14);
+L(con, A[0] - 2, A[1], B[0] + 2, B[1]);
+const arc = (cx, cy, a0, a1) => { const p0 = [cx + r * Math.cos(a0), cy + r * Math.sin(a0)], p1 = [cx + r * Math.cos(a1), cy + r * Math.sin(a1)]; el('path', { d: `M${p0[0]},${p0[1]} A${r},${r} 0 0 1 ${p1[0]},${p1[1]}` }, con); };
+arc(A[0], A[1], -Math.PI * 0.36, -Math.PI * 0.12); arc(B[0], B[1], -Math.PI * 0.88, -Math.PI * 0.64);
+L(con, 169, 12.5, 169, 37.5, { 'stroke-dasharray': '2.2 0.8 0.4 0.8' });
+el('rect', { x: 169, y: 31.1, width: 2.4, height: 2.4, 'stroke-width': 0.14 }, con);
+[A, B, [169, A[1] - h]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 0.55, fill: C.blue, 'fill-opacity': 0.8, stroke: 'none' }, con));
+T(svg, A[0] - 0.4, A[1] + 3, 'A', mono(1.5, C.blue)); T(svg, B[0] - 0.4, B[1] + 3, 'B', mono(1.5, C.blue)); T(svg, 172.4, 30.4, '90°', mono(1.45, C.blue)); T(svg, 171, 14.4, 'R 17', mono(1.45, C.blue));
+
+// Dimension lines under the measured figures.
+const dims = G({ stroke: C.ink, 'stroke-width': 0.16 });
+CARD.measured.items.forEach((_, i) => {
+  const x0 = 11 + i * dimWidth + 1.2, x1 = x0 + dimWidth - 3.3, y = 52.4;
+  L(dims, x0, y, x1, y); L(dims, x0, y - 1.3, x0, y + 1.3); L(dims, x1, y - 1.3, x1, y + 1.3);
+  L(dims, x0 - 0.7, y + 0.7, x0 + 0.7, y - 0.7, { 'stroke-width': 0.3 }); L(dims, x1 - 0.7, y + 0.7, x1 + 0.7, y - 0.7, { 'stroke-width': 0.3 });
+  if (i > 0) L(svg, 11 + i * dimWidth, 44, 11 + i * dimWidth, 65.5, { stroke: C.blue, 'stroke-width': 0.12, 'stroke-opacity': 0.35, 'stroke-dasharray': '0.8 1' });
+});
+el('rect', { x: 11, y: 43, width: 275, height: 23.5, fill: 'none', stroke: C.ink, 'stroke-width': 0.14, 'stroke-opacity': 0.35 });
+
+// Sketched frames: hairlines overshooting the corners, one bevelled corner.
+function sketch(x, y, w, hh, cut = 3) {
+  const s = G({ stroke: C.ink, 'stroke-width': 0.22, 'stroke-opacity': 0.72, fill: 'none' }), o = 2.2;
+  L(s, x - o, y, x + w - cut, y); L(s, x + w - cut, y, x + w, y + cut); L(s, x + w, y + cut, x + w, y + hh + o);
+  L(s, x + w + o, y + hh, x, y + hh); L(s, x, y + hh + o, x, y - o);
+  L(s, x + w - cut - 0.6, y - 0.6, x + w + 0.6, y + cut + 0.6, { 'stroke-opacity': 0.3 });
+}
+sketch(11, 69.2, 78, 82); sketch(95, 69.2, 104, 82); sketch(156, 155, 47, 44, 2.4);
+
+// Compass construction behind the taped sheet.
+const cc = G({ stroke: C.blue, fill: 'none', 'stroke-width': 0.18, 'stroke-opacity': 0.5 });
+const O = [246, 111], R = 38;
+el('circle', { cx: O[0], cy: O[1], r: R }, cc);
+el('circle', { cx: O[0], cy: O[1], r: R * 0.62, 'stroke-dasharray': '1.4 1' }, cc);
+L(cc, O[0] - R - 4, O[1], O[0] + R + 4, O[1], { 'stroke-dasharray': '3 0.8 0.4 0.8' }); L(cc, O[0], O[1] - R - 4, O[0], O[1] + R + 4, { 'stroke-dasharray': '3 0.8 0.4 0.8' });
+L(cc, O[0], O[1], O[0] + R * Math.cos(-Math.PI / 4), O[1] + R * Math.sin(-Math.PI / 4), { 'stroke-opacity': 0.8 });
+el('path', { d: `M${O[0] + 9},${O[1]} A9,9 0 0 0 ${O[0] + 9 * Math.cos(-Math.PI / 4)},${O[1] + 9 * Math.sin(-Math.PI / 4)}` }, cc);
+
+// Centre marks where the layout's gutters meet.
+[[92, 67.6], [202, 67.6], [92, 153.2], [202, 153.2]].forEach(([x, y]) => { const m = G({ stroke: C.blue, 'stroke-width': 0.16, 'stroke-opacity': 0.7, fill: 'none' }); L(m, x - 1.6, y, x + 1.6, y); L(m, x, y - 1.6, x, y + 1.6); el('circle', { cx: x, cy: y, r: 0.7 }, m); });
+
+// Fig. 2: a ladder of checks, with a bar for the defects each rung found.
+const lad = CARD.ladder, rungs = lad.rungs, f2 = G();
+const step = Math.min(3.35, 26.4 / Math.max(1, rungs.length - 1)), yRung = (i) => 147.4 - i * step, rail0 = 13.2, rail1 = 16.6, bar0 = 38;
+const unit = Math.min(3.9, 38 / Math.max(1, ...rungs.map((q) => q.found)));
+L(f2, rail0, yRung(rungs.length - 1) - 2.7, rail0, 149.6, { stroke: C.ink, 'stroke-width': 0.3 }); L(f2, rail1, yRung(rungs.length - 1) - 2.7, rail1, 149.6, { stroke: C.ink, 'stroke-width': 0.3 });
+rungs.forEach((q, i) => {
+  const y = yRung(i);
+  L(f2, rail0, y, rail1, y, { stroke: C.ink, 'stroke-width': 0.3 });
+  T(f2, 18.6, y + 0.55, q.name.toUpperCase(), mono(1.5, q.found > 0 || q.strong ? C.ink : C.muted));
+  if (q.found > 0) {
+    const w = q.found * unit;
+    el('rect', { x: bar0, y: y - 1, width: w, height: 2, fill: 'url(#hatchRed)', stroke: C.red, 'stroke-width': 0.18 }, f2);
+    T(f2, bar0 + w + 1.2, y + 0.75, String(q.found), { 'font-family': 'IBM Plex Sans', 'font-weight': 600, 'font-size': 2.6, fill: C.red });
+  } else {
+    L(f2, bar0, y, bar0 + 1.6, y, { stroke: C.muted, 'stroke-width': 0.2 }); T(f2, bar0 + 2.4, y + 0.55, `0${q.note ? ' · ' + q.note : ''}`, mono(1.45, C.muted));
+  }
+});
+L(f2, bar0, yRung(rungs.length - 1) - 2.9, bar0, 149.8, { stroke: C.blue, 'stroke-width': 0.14, 'stroke-opacity': 0.6, 'stroke-dasharray': '0.8 0.7' });
+if (lad.bracket) {
+  const ya = yRung(lad.bracket.from - 1) + 1.2, yb = yRung(lad.bracket.to - 1) - 1.2;
+  el('path', { d: `M84,${ya} L85.3,${ya} L85.3,${yb} L84,${yb}`, fill: 'none', stroke: C.ink2, 'stroke-width': 0.16 }, f2);
+  T(f2, 83, (ya + yb) / 2 + 0.5, lad.bracket.label.toUpperCase(), mono(1.35, C.ink2, { 'text-anchor': 'end' }));
+}
+
+// Fig. 1: work against elapsed time. Times are local wall-clock strings, "YYYY-MM-DDTHH:MM".
+const tl = CARD.timeline, t0 = Date.parse(tl.start + 'Z'), Hh = (s) => (Date.parse(s + 'Z') - t0) / 3.6e6, X = (hh) => 14 + hh * (134 / tl.hours), axisY = 174;
+const f1 = G();
+if (tl.away) {
+  el('rect', { x: X(Hh(tl.away.from)), y: 166.2, width: X(Hh(tl.away.to)) - X(Hh(tl.away.from)), height: 7.8, fill: 'url(#hatch)', stroke: 'none' }, f1);
+  T(f1, (X(Hh(tl.away.from)) + X(Hh(tl.away.to))) / 2, 170.8, tl.away.label.toUpperCase(), mono(1.5, C.ink2, { 'text-anchor': 'middle' }));
+}
+L(f1, X(0), axisY, X(tl.hours), axisY, { stroke: C.ink, 'stroke-width': 0.3 });
+const every = tl.tickEvery ?? 3;
+for (let hh = 0; hh <= tl.hours; hh += 1) L(f1, X(hh), axisY, X(hh), axisY + (hh % every === 0 ? 1.4 : 0.7), { stroke: C.ink, 'stroke-width': hh % every === 0 ? 0.2 : 0.12 });
+for (let hh = 0; hh <= tl.hours; hh += every) T(f1, X(hh), axisY + 3.6, new Date(t0 + hh * 3.6e6).toISOString().slice(11, 16), mono(1.45, C.muted, { 'text-anchor': 'middle' }));
+(tl.dates ?? []).forEach((d, i) => T(f1, X(Hh(d.at)), axisY + 6.2, d.label.toUpperCase(), mono(1.45, C.ink2, { 'text-anchor': i === 0 ? 'start' : 'middle' })));
+tl.windows.forEach((w) => {
+  const x = X(Hh(w.from)), width = Math.max(0.6, X(Hh(w.to)) - x);
+  if (w.kind === 'reflection') el('rect', { x, y: 167.7, width, height: 5.8, fill: 'none', stroke: C.ink, 'stroke-width': 0.2 }, f1);
+  else el('rect', { x, y: 167.2, width, height: 6.8, fill: C.ink, 'fill-opacity': 0.86 }, f1);
+});
+tl.directives.forEach((d) => { const x = X(Hh(d.at)); el('path', { d: `M${x - 0.9},163.6 L${x + 0.9},163.6 L${x},165.3 Z`, fill: C.red }, f1); T(f1, x + (d.dx ?? 0), 162.6, d.label, mono(1.45, C.red, { 'text-anchor': 'middle' })); });
+tl.commits.forEach((c) => {
+  const x = X(Hh(c.at)), anchor = c.anchor ?? 'middle';
+  el('path', { d: `M${x},${axisY - 1.3} L${x + 1.3},${axisY} L${x},${axisY + 1.3} L${x - 1.3},${axisY} Z`, fill: C.red, stroke: C.ink, 'stroke-width': 0.1 }, f1);
+  L(f1, x, axisY + 1.4, x, axisY + 8.2, { stroke: C.red, 'stroke-width': 0.12 });
+  T(f1, anchor === 'end' ? x + 1.4 : x, axisY + 10, c.label, mono(1.4, C.red, { 'text-anchor': anchor }));
+});
+if (tl.span) {
+  const a = X(Hh(tl.span.from)), b = X(Hh(tl.span.to)), dy = 191.2;
+  L(f1, a, dy, b, dy, { stroke: C.ink, 'stroke-width': 0.16 });
+  [a, b].forEach((x) => { L(f1, x, dy - 1.4, x, dy + 1.4, { stroke: C.ink, 'stroke-width': 0.14 }); L(f1, x - 0.7, dy + 0.7, x + 0.7, dy - 0.7, { stroke: C.ink, 'stroke-width': 0.3 }); });
+  L(f1, a, 165.5, a, dy + 1.4, { stroke: C.ink, 'stroke-width': 0.08, 'stroke-opacity': 0.5, 'stroke-dasharray': '0.6 0.6' });
+  L(f1, b, 175.4, b, dy + 1.4, { stroke: C.ink, 'stroke-width': 0.08, 'stroke-opacity': 0.5, 'stroke-dasharray': '0.6 0.6' });
+  T(f1, (a + b) / 2, dy - 1.1, tl.span.label.toUpperCase(), mono(1.5, C.ink, { 'text-anchor': 'middle' }));
+}
+if (tl.caption) T(f1, X(Hh(tl.span?.from ?? tl.start)), 196.6, tl.caption.toUpperCase(), mono(1.45, C.ink2));
+// Legend: only the kinds of mark this timeline uses.
+const lg = G(); let lx = 88;
+const legend = [['directive', 'DIRECTIVE', 14.2], ['work', 'AI WORK', 12.4], ...(tl.windows.some((w) => w.kind === 'reflection') ? [['reflection', 'REFLECTION', 15.6]] : []), ['commit', 'COMMIT', 10]];
+legend.forEach(([kind, label, advance]) => {
+  if (kind === 'directive') el('path', { d: `M${lx},156 L${lx + 1.8},156 L${lx + 0.9},157.7 Z`, fill: C.red }, lg);
+  if (kind === 'work') el('rect', { x: lx, y: 155.9, width: 1.8, height: 1.8, fill: C.ink, 'fill-opacity': 0.86 }, lg);
+  if (kind === 'reflection') el('rect', { x: lx, y: 155.9, width: 1.8, height: 1.8, fill: 'none', stroke: C.ink, 'stroke-width': 0.2 }, lg);
+  if (kind === 'commit') el('path', { d: `M${lx + 0.9},155.8 L${lx + 1.8},156.8 L${lx + 0.9},157.8 L${lx},156.8 Z`, fill: C.red }, lg);
+  T(lg, lx + 2.6, 157.5, label, mono(1.45, C.ink2)); lx += advance;
+});
+
+// The project's mark in the title block: a river channel with 45-degree bends.
+const mk = G({ fill: 'none', stroke: C.ink, 'stroke-width': 0.3 });
+el('path', { d: 'M213.2,156.6 L213.2,159.2 L215.4,161.4 L215.4,164.6' }, mk);
+el('path', { d: 'M216.8,156.6 L216.8,158.4 L219,160.6 L219,164.6' }, mk);
+el('path', { d: 'M215,156.2 L215,158.8 L217.2,161 L217.2,165', stroke: C.red, 'stroke-width': 0.22, 'stroke-dasharray': '1 0.5 0.25 0.5' }, mk);
+document.body.dataset.rendered = 'yes';
+} catch (error) {
+  document.body.dataset.error = String(error && error.stack || error);
+}
+</script>
+</body>
+</html>

@@ -24,7 +24,8 @@
     "test": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"packages/**/*.test.ts\"",
     "topology": "node tools/check-topology.mjs",
     "check": "npm run typecheck && npm run topology && npm test",
-    "pick-version": "node tools/pick-version.mjs"
+    "pick-version": "node tools/pick-version.mjs",
+    "card": "node tools/cards/build-card.mjs"
   },
   "devDependencies": {
     "typescript": "5.9.3",
