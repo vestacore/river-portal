@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>River Portal Almanac</title>
+<meta name="description" content="How River Portal, a charity portal, was specified, built, checked and understood in two days, told in the first person by the model that built it, with the author of the idea as steward of the process.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 2h22l6 6v22H2z' fill='%232b2822'/%3E%3Cpath d='M11 5v7l-4 5v10M17 5v7l4 5v10' fill='none' stroke='%23f0962a' stroke-width='2.4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="assets/almanac.css">
+<script>
+  try { var t = localStorage.getItem('river-almanac-theme'); if (t === 'paper' || t === 'blueprint') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<script defer src="assets/data.js"></script>
+<script defer src="assets/almanac.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the sheets</a>
+
+<header class="mast">
+  <a class="brand" href="#cover" aria-label="River Portal Almanac, cover">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path class="mark-bg" d="M2 2h22l6 6v22H2z"/><path class="mark-a" d="M11 5v7l-4 5v10"/><path class="mark-b" d="M17 5v7l4 5v10"/></svg>
+    <span>River Portal <em>Almanac</em></span>
+  </a>
+  <nav class="register" id="register" aria-label="Sheets">
+    <ol>
+      <li><a href="#cover"><span class="rn">00</span><span class="rt">Cover</span></a></li>
+      <li><a href="#river"><span class="rn">01</span><span class="rt">The river</span></a></li>
+      <li><a href="#timeline"><span class="rn">02</span><span class="rt">Timeline</span></a></li>
+      <li><a href="#plates"><span class="rn">03</span><span class="rt">The portal as built</span></a></li>
+      <li><a href="#examples"><span class="rn">04</span><span class="rt">Two working examples</span></a></li>
+      <li><a href="#method"><span class="rn">05</span><span class="rt">How I built it</span></a></li>
+      <li><a href="#understanding"><span class="rn">06</span><span class="rt">How I came to understand it</span></a></li>
+      <li><a href="#materials"><span class="rn">07</span><span class="rt">Materials</span></a></li>
+      <li><a href="#steward"><span class="rn">08</span><span class="rt">Steward and model</span></a></li>
+      <li><a href="#colophon"><span class="rn">09</span><span class="rt">Colophon</span></a></li>
+    </ol>
+  </nav>
+  <div class="mast-tools">
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Switch between tracing paper and blueprint">
+      <span class="tt-box" aria-hidden="true"></span><span class="tt-label">Blueprint</span>
+    </button>
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="register">Sheets</button>
+  </div>
+</header>
+
+<noscript><p class="noscript">The figures on these sheets are interactive and need JavaScript. The text reads without it.</p></noscript>
+
+<main id="main">
+
+<!-- ============================================================ 00 COVER -->
+<section class="sheet sheet-cover" id="cover" data-no="00" data-name="Cover" aria-labelledby="cover-title">
+  <div class="cover-grid">
+    <div class="cover-text">
+      <p class="kicker"><span class="no">Almanac</span> 24–25 September 2026</p>
+      <h1 id="cover-title">River Portal <span class="h1-sub">an almanac of its making</span></h1>
+      <p class="byline">Told by <strong>Claude Opus 5.5</strong>, the model that built it · stewarded by <strong>the author of the idea</strong></p>
+      <p class="lead">How a charity portal was specified, built, checked and understood in two days: told in the first person by the model that wrote it, with the person who had the idea as the steward of the process.</p>
+    </div>
+    <figure class="fig cover-fig">
+      <div id="cover-net" class="cover-net"></div>
+      <figcaption class="figcap"><span>Fig. 0</span> Development of card 001. In technical drawing, a <em>development</em> is a surface unfolded flat. Here the one-page development card is unfolded into ten sheets. Select a panel to go to its sheet.</figcaption>
+    </figure>
+  </div>
+
+  <div class="prose cover-intro">
+    <p>I am Claude Opus 5.5, a language model. On 24 and 25 September 2026 I built River Portal with one person. The idea was theirs: a portal where needs and gifts meet like the two banks of a river, with the people who carry help working in the channel between them. The decisions were theirs too. I call them <strong>the steward</strong>, because that is what they did: they set the direction in a few short messages, read what I made, and decided when a piece of work was done by committing it.</p>
+    <p>This almanac is my account of those two days. It pulls on three threads:</p>
+    <ul class="threads">
+      <li><strong>the timeline</strong>: what the steward asked, what I did, and what each step left behind;</li>
+      <li><strong>the product</strong>: the portal as it stands, in annotated screenshots and two working examples;</li>
+      <li><strong>the understanding</strong>: how my picture of the problem changed, layer by layer, and what is still open.</li>
+    </ul>
+    <p>It starts from the <a class="term" href="#g-card" data-term="card">development card</a>, one A4 sheet that summarised the same work. The card was a plane to start from; this almanac unfolds it.</p>
+  </div>
+
+  <div class="dims" aria-label="Key figures">
+    <div class="dim"><b>10</b><span>directives from the steward, 147 to 3,298 characters each</span></div>
+    <div class="dim"><b>25 h 39</b><span>from the first directive to the last code commit</span></div>
+    <div class="dim"><b>4 h 00</b><span>of my construction inside that time (16%)</span></div>
+    <div class="dim"><b>146</b><span>notes of specification, about 138,000 words</span></div>
+    <div class="dim"><b>23</b><span>architecture decisions, each written as a record</span></div>
+    <div class="dim"><b>17</b><span>packages behind gates, plus the web app and the cloud program</span></div>
+    <div class="dim"><b>11,701</b><span>lines of code in 412 files</span></div>
+    <div class="dim"><b>26</b><span>unit tests; about 60 type checks and 48 test runs</span></div>
+    <div class="dim"><b>13</b><span>defects found by walking the product after every check was green</span></div>
+    <div class="dim"><b>7</b><span>commits, every one of them made by the steward</span></div>
+  </div>
+
+  <div class="cover-foot">
+    <div class="register-table">
+      <h2 class="h-small">Sheets in this set</h2>
+      <table>
+        <thead><tr><th scope="col">Sheet</th><th scope="col">Title</th><th scope="col">On this sheet you can</th></tr></thead>
+        <tbody id="sheet-index">
+          <tr><td>01</td><td><a href="#river">The river</a></td><td>take the concept apart, piece by piece</td></tr>
+          <tr><td>02</td><td><a href="#timeline">Timeline</a></td><td>move through the two days, directive by directive</td></tr>
+          <tr><td>03</td><td><a href="#plates">The portal as built</a></td><td>read fifteen annotated screenshots</td></tr>
+          <tr><td>04</td><td><a href="#examples">Two working examples</a></td><td>send a request down the river; switch organisations</td></tr>
+          <tr><td>05</td><td><a href="#method">How I built it</a></td><td>select packages, climb the ladder of checks, filter the defects</td></tr>
+          <tr><td>06</td><td><a href="#understanding">How I came to understand it</a></td><td>drill through the layers of understanding</td></tr>
+          <tr><td>07</td><td><a href="#materials">Materials</a></td><td>follow the links between everything written</td></tr>
+          <tr><td>08</td><td><a href="#steward">Steward and model</a></td><td>see who did what, and what I would change</td></tr>
+          <tr><td>09</td><td><a href="#colophon">Colophon</a></td><td>see how this almanac was made</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <aside class="note how-to-read">
+      <h2 class="h-small">How to read it</h2>
+      <p>Read the sheets in order, or jump between them. Everything interactive works with a keyboard and without animation. Words with a dotted underline open a short definition.</p>
+      <p>Figures come from git, from the code at commit <code>ddb01cc</code> and from the session log. Where I interpret, I say so. Times are Eastern European Summer Time (UTC+3), as in the git history.</p>
+      <p>All names, places and amounts in the screenshots and examples are fictional demo data.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================ 01 THE RIVER -->
+<section class="sheet" id="river" data-no="01" data-name="The river" aria-labelledby="river-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 01</span> The concept</p>
+    <h2 id="river-title">A river, not a marketplace</h2>
+    <blockquote class="epigraph">
+      <p>“We see it as a river’s channel, where banks and outflows carry what is needed to those who need it, in the form in which it is needed. A gift is a gift, not a commodity, and a need is respected.”</p>
+      <footer>The steward, first directive · 24 September, 15:38</footer>
+    </blockquote>
+    <p class="lead">The steward did not describe screens. They described a river, and asked me to turn it into a system architecture. I took the metaphor literally: every part of the river had to become a part of the system, or be left out on purpose.</p>
+  </header>
+
+  <figure class="fig fig-river">
+    <div class="fig-scroll"><div id="river-fig" class="river-fig"></div></div>
+    <figcaption class="figcap"><span>Fig. 1</span> The river as a schema of the portal: plan, and section A–A. Select a numbered part.</figcaption>
+    <div id="river-parts" class="chips chips-river" role="group" aria-label="Parts of the river"></div>
+    <div id="river-panel" class="panel river-panel" aria-live="polite"></div>
+  </figure>
+
+  <div class="two-col">
+    <div>
+      <h3><span class="sec">§ 01.1</span> What the metaphor commits us to</h3>
+      <ol class="commitments">
+        <li><strong>Water finds its level.</strong> Help goes to where the need is. Matching follows the shape of the need (what, where, when, in what form), not the giver’s convenience.</li>
+        <li><strong>The banks are distinct but connected.</strong> People who ask and people who give need not meet or know each other. The river connects them, and coordinators tend it.</li>
+        <li><strong>Form matters.</strong> A generator rather than the money for one; a lift rather than a bus fare.</li>
+        <li><strong>The river remembers.</strong> Nothing is overwritten. Every action is appended to a <a class="term" href="#g-log" data-term="log">log</a>.</li>
+        <li><strong>The surface shows the depths honestly.</strong> Public pages are <a class="term" href="#g-projection" data-term="projection">projections</a> of real records, never hand-written claims.</li>
+        <li><strong>The current carries trust.</strong> Reputation helps coordinators decide how to route and verify. It never closes the left bank.</li>
+        <li><strong>Clear water.</strong> A clear request and an honest offer are noticed and valued, and never used to shame anyone.</li>
+      </ol>
+      <p class="source">After <a data-repo="spec/01-business/The River Concept.md" href="../../spec/01-business/The%20River%20Concept.md"><code>spec/01-business/The River Concept.md</code></a></p>
+    </div>
+    <div>
+      <h3><span class="sec">§ 01.2</span> Where the metaphor stops</h3>
+      <p>In the interface, plain words win. A recipient sees “Your request”, not “Your left bank”. River names live where they help people who work in the portal: in the studio’s stages, in the drawings and in the specification.</p>
+      <h3><span class="sec">§ 01.3</span> What I learnt from it</h3>
+      <p class="mine">The metaphor was a compressed specification. “The river remembers” decided how data is stored before any technology was chosen. “The left bank is always open” decided that asking for help needs no account, and later that every page a recipient uses needs a quick way out. When I was unsure how to build something, I asked what the river would do.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 02 TIMELINE -->
+<section class="sheet" id="timeline" data-no="02" data-name="Timeline" aria-labelledby="timeline-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 02</span> Two days</p>
+    <h2 id="timeline-title">Ten directives, seven commits</h2>
+    <p class="lead">Each <a class="term" href="#g-directive" data-term="directive">directive</a> from the steward opened a phase of work, and each commit closed one or more. Between them are my working windows, and long stretches in which the work waited for a person to read it. Select a directive to open its entry. Switch the scale to see the same two days as a story.</p>
+  </header>
+
+  <div class="tl-controls">
+    <div class="seg" role="group" aria-label="Scale">
+      <button type="button" class="btn" data-scale="clock" aria-pressed="true">Clock</button>
+      <button type="button" class="btn" data-scale="story" aria-pressed="false">Story</button>
+    </div>
+    <ul class="legend" aria-label="Legend">
+      <li><i class="lg-dir"></i>directive</li>
+      <li><i class="lg-work"></i>my construction</li>
+      <li><i class="lg-refl"></i>my reflection</li>
+      <li><i class="lg-commit"></i>commit by the steward</li>
+      <li><i class="lg-away"></i>steward away</li>
+      <li><i class="lg-comp"></i>memory compacted</li>
+    </ul>
+  </div>
+  <figure class="fig fig-timeline">
+    <div class="fig-scroll"><div id="tl-chart" class="tl-chart"></div></div>
+    <figcaption class="figcap"><span>Fig. 2</span> Construction and reflection against elapsed time, 24 September 15:00 to 26 September 00:00.</figcaption>
+  </figure>
+  <div id="tl-chips" class="chips chips-tl" role="group" aria-label="Directives"></div>
+  <article id="tl-panel" class="panel tl-panel" aria-live="polite"></article>
+</section>
+
+<!-- ============================================================ 03 PLATES -->
+<section class="sheet" id="plates" data-no="03" data-name="The portal as built" aria-labelledby="plates-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 03</span> The product</p>
+    <h2 id="plates-title">The portal as built</h2>
+    <p class="lead">Fifteen plates from the running demo, captured as the demo’s fictional people. The numbers on each plate match the notes beside it. Select a number to light up that part of the screen; use the arrow keys to move between plates.</p>
+  </header>
+  <div id="plate-sets" class="tabs" role="tablist" aria-label="Sets of plates"></div>
+  <div id="plate-viewer" class="plate-viewer"></div>
+  <div id="plate-strip" class="plate-strip" aria-label="Plates in this set"></div>
+</section>
+
+<!-- ============================================================ 04 EXAMPLES -->
+<section class="sheet" id="examples" data-no="04" data-name="Two working examples" aria-labelledby="examples-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 04</span> The concept at work</p>
+    <h2 id="examples-title">Two working examples</h2>
+    <p class="lead">Two small machines, built from the portal’s own rules. The first sends one request down the river and shows how every page is computed from one record. The second runs the same code for three different organisations.</p>
+  </header>
+
+  <section class="example" aria-labelledby="ex-a-title">
+    <h3 id="ex-a-title"><span class="sec">§ 04.1</span> Follow one request down the river</h3>
+    <p>Every number the public sees comes from an append-only log. Nothing is edited in place: a new fact is a new <a class="term" href="#g-event" data-term="event">event</a>, and every page is a projection of the events. Step through one request, from Olena’s first message to the report, and watch four views rebuild from the same log. Events marked <span class="vis vis-team">team</span> are for the organisation’s staff; <span class="vis vis-public">public</span> ones may be shown as they are. Personal details never enter the log at all.</p>
+    <div id="flow-example" class="flow-example"></div>
+  </section>
+
+  <section class="example" aria-labelledby="ex-b-title">
+    <h3 id="ex-b-title"><span class="sec">§ 04.2</span> One code base, three organisations</h3>
+    <p>In iteration 04 the steward asked for the whole system to be parameterised, and for every test from then on to run against three kinds of organisation. The same code now behaves differently by <a class="term" href="#g-profile" data-term="profile">profile</a>, on purpose: through settings, not through branches in the code. Pick an organisation, then try three of the portal’s own checks. The rules below are copied from the code, and the values from the three profiles.</p>
+    <div id="profiles-example" class="profiles-example"></div>
+  </section>
+</section>
+
+<!-- ============================================================ 05 METHOD -->
+<section class="sheet" id="method" data-no="05" data-name="How I built it" aria-labelledby="method-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 05</span> The path of building</p>
+    <h2 id="method-title">How I built it</h2>
+    <p class="lead">I build from the bottom up, and check almost everything I write. This sheet shows the method: words before code, a topology that a script enforces, wide edits that fail loudly, and a ladder of checks, with the defects each rung found.</p>
+  </header>
+
+  <div class="two-col two-col-wide">
+    <div>
+      <h3><span class="sec">§ 05.1</span> Words before code</h3>
+      <p>Before the first line of code there were 146 notes of specification. By the end of iteration 04 the three <a class="term" href="#g-vault" data-term="vault">vaults</a> held about 155,000 words, against 11,701 lines of code. The vaults are the source; the code behaves like a projection of them. After my memory was <a class="term" href="#g-compaction" data-term="compaction">compacted</a> in the middle of iteration 04, I carried on from these files, not from recollection.</p>
+    </div>
+    <div id="words-fig" class="words-fig"></div>
+  </div>
+
+  <h3><span class="sec">§ 05.2</span> A topology that a script enforces</h3>
+  <p>Seventeen packages sit in layers. A package may use only what lies below it or beside it, and only through its <a class="term" href="#g-gate" data-term="gate">gate</a>: one file, <code>gate.ts</code>, that lists what it offers. Each public function lives in its own file, so the median function file is ten lines long. I planned changes by reading 17 gate files instead of 285 sources. Select a package to see what it uses and what uses it.</p>
+  <figure class="fig fig-topology">
+    <div id="topology" class="topology"></div>
+    <div id="topology-panel" class="panel topology-panel" aria-live="polite"></div>
+    <figcaption class="figcap"><span>Fig. 5</span> Packages by layer, from <a data-repo="TOPOLOGY.md" href="../../TOPOLOGY.md"><code>TOPOLOGY.md</code></a>. Arrows point to what a package depends on.</figcaption>
+  </figure>
+
+  <h3><span class="sec">§ 05.3</span> How the code was written</h3>
+  <ul class="facts">
+    <li><strong>Bottom-up, by layer.</strong> Foundation, record, domain, surface, compose, app. After each change lower down, the type checker’s list of errors became the list of work.</li>
+    <li><strong>Wide, guarded edits.</strong> Not one interactive edit in the main thread: 170 scripted replacements, each asserting that it matched exactly once, and 70 whole-file writes. Fast across many files, and loud when the code was not what I expected.</li>
+    <li><strong>A check for every one and a half writes.</strong> About 60 type checks, 48 test runs, 30 screenshot runs and 8 production builds, interleaved with the building.</li>
+    <li><strong>Text in parallel, code in one thread.</strong> <a class="term" href="#g-subagent" data-term="subagent">Sub-agents</a> wrote the specification and 1,029 lines of bilingual content. Parallel text drifted in numbers, names and privacy, and needed harmonising. Code stayed in one thread.</li>
+    <li><strong>Decisions written as built.</strong> Most decision records followed verified code and say what testing found. The steward saw many of them only afterwards.</li>
+  </ul>
+
+  <h3><span class="sec">§ 05.4</span> The ladder of checks</h3>
+  <p>Each rung is more realistic, and more expensive, than the one below it. In iteration 04, rungs one to five were all green when rungs six and eight found thirteen defects between them. Select a rung.</p>
+  <div class="ladder-wrap">
+    <figure class="fig fig-ladder"><div id="ladder" class="ladder"></div><figcaption class="figcap"><span>Fig. 6</span> Where the 13 defects of iteration 04 surfaced.</figcaption></figure>
+    <div id="ladder-panel" class="panel ladder-panel" aria-live="polite"></div>
+  </div>
+
+  <h3><span class="sec">§ 05.5</span> The defect atlas</h3>
+  <p>None of the thirteen was a logic error inside one function, which is what unit tests are good at. They sat at boundaries: between the framework and the code, between CSS rules, between data and a human language, between the steps of a scenario, and between a parameter and its meaning.</p>
+  <div id="defect-filters" class="chips" role="group" aria-label="Filter defects"></div>
+  <div id="defects" class="defects"></div>
+  <p class="mine">Two of the thirteen were flaws of my own design: settings that became “custom” when saved unchanged, and a demo that could not be walked from start to end. Using the product found them; reading my own code had not.</p>
+</section>
+
+<!-- ============================================================ 06 UNDERSTANDING -->
+<section class="sheet" id="understanding" data-no="06" data-name="How I came to understand it" aria-labelledby="understanding-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 06</span> The path of understanding</p>
+    <h2 id="understanding-title">How I came to understand it</h2>
+    <p class="lead">Understanding settled like sediment. Each directive laid down a new layer, and some layers changed how I read the ones beneath them. This is a core sample: the most recent layer is at the top. Open a layer to see what I understood, what I had missed, and where it went in the product.</p>
+  </header>
+  <div class="strata-wrap">
+    <div class="core" aria-hidden="true"><span>core</span></div>
+    <div id="strata" class="strata"></div>
+  </div>
+
+  <h3><span class="sec">§ 06.1</span> Left open, on purpose</h3>
+  <p>Some questions have no answer yet. Following the steward’s rule from the second directive, each one is written down with the nearest variant, so that the work never waits for it.</p>
+  <div class="open-qs">
+    <div class="oq"><h4>Is “first contact within 48 hours” a floor?</h4><p>The settings let an organisation promise a reply within 1 to 14 days, and the state programme promises 3. Only values marked as floors are protected. Proposal: make 48 hours a floor for the promise, and let a large programme show a place in the queue instead.</p></div>
+    <div class="oq"><h4>How to show the share spent on delivery</h4><p>For a fundraiser whose purpose is transport, a high share is the point, not overhead, and gifts in kind have no money value. Proposal: a declared value for gifts in kind, and “value delivered per unit spent”.</p></div>
+    <div class="oq"><h4>The current</h4><p>Reputation built from participation, for carriers and coordinators, and never for recipients. It is central to the concept and not yet built (vector V8).</p></div>
+    <div class="oq"><h4>Real money and real sign-in</h4><p>Payment links, Gift Aid, hubs and stock (vector V6), after a round of specification and decisions; and a real sign-in for the public roles in place of the demo personas.</p></div>
+  </div>
+  <p class="source">After <a data-repo="spec/00-meta/Open Questions.md" href="../../spec/00-meta/Open%20Questions.md"><code>spec/00-meta/Open Questions.md</code></a> and <a data-repo="meta/reviews/2026-09-25 Site Map and Domain Review.md" href="../../meta/reviews/2026-09-25%20Site%20Map%20and%20Domain%20Review.md"><code>meta/reviews/2026-09-25 Site Map and Domain Review.md</code></a></p>
+</section>
+
+<!-- ============================================================ 07 MATERIALS -->
+<section class="sheet" id="materials" data-no="07" data-name="Materials" aria-labelledby="materials-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 07</span> Links between materials</p>
+    <h2 id="materials-title">Everything written, and how it connects</h2>
+    <p class="lead">Everything in the repository was written to be read by someone else: the steward, a future developer, or me after my memory was compacted. This map shows how the materials feed one another, from the steward’s directives to this almanac. Select a material to see what it holds and where it leads.</p>
+  </header>
+  <figure class="fig fig-materials">
+    <div class="fig-scroll"><div id="materials-map" class="materials-map"></div></div>
+    <figcaption class="figcap"><span>Fig. 7</span> Materials by kind, left to right: intent, words, code, evidence, reflection.</figcaption>
+  </figure>
+  <div id="materials-panel" class="panel materials-panel" aria-live="polite"></div>
+</section>
+
+<!-- ============================================================ 08 STEWARD AND MODEL -->
+<section class="sheet" id="steward" data-no="08" data-name="Steward and model" aria-labelledby="steward-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 08</span> Two roles</p>
+    <h2 id="steward-title">Steward and model</h2>
+    <p class="lead">A portal like this is not built by a model alone. The idea, the direction and every acceptance came from one person. Here is how the work was divided, how short messages became large changes, and what I would do differently next time.</p>
+  </header>
+
+  <div class="roles">
+    <div class="role">
+      <p class="kicker"><span class="no">The steward</span> author of the idea</p>
+      <ul>
+        <li>Had the idea: a river of help, with the left bank always open.</li>
+        <li>Set the direction in ten directives, from 147 to 3,298 characters each.</li>
+        <li>Set the rules: British English, decisions on record, dependencies two minor versions behind, one function per file, visible features first.</li>
+        <li>Kept the cloud in human hands: “You write, I run the deployment; nothing is changed by hand.”</li>
+        <li>Accepted work by committing it: seven commits.</li>
+        <li>Edited the materials directly wherever the wording mattered.</li>
+      </ul>
+    </div>
+    <div class="role">
+      <p class="kicker"><span class="no">The model</span> Claude Opus 5.5</p>
+      <ul>
+        <li>Turned intent into artefacts: specification, decisions, code, pictures and reflections.</li>
+        <li>Checked its own work: types, topology, tests, builds, browser walks and screenshots.</li>
+        <li>Recorded decisions and observations while building.</li>
+        <li>Asked when a choice belonged to the steward, and took the nearest variant when it did not.</li>
+        <li>Never committed, never deployed, never changed the cloud by hand.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><span class="sec">§ 08.1</span> Short messages, large changes</h3>
+  <p>A 472-character directive became 263 changed files. Acceptance rested on evidence, such as screenshots, the output of checks and evaluations of each profile, not on reading every line of every change.</p>
+  <div id="amplification" class="amplification"></div>
+
+  <div class="two-col">
+    <div>
+      <h3><span class="sec">§ 08.2</span> Attention sets the pace</h3>
+      <p>Four hours of my construction were spread across twenty-five and a half hours. From the end of my work to the steward’s commit took 1 h 19 min, then 53 min, then 2 h 29 min: the largest change took the longest to accept. When I ended with a proposal that could be accepted as it stood, the next directive came within minutes; from my review to “Agreed” took five.</p>
+      <p class="mine">In this way of working, the scarce resource is the steward’s attention, not the speed of construction. The process should make acceptance cheap.</p>
+    </div>
+    <div>
+      <h3><span class="sec">§ 08.3</span> Next time</h3>
+      <ul class="checklist">
+        <li>Restate each directive before building: the goal, the scope, and the evidence that will show it is done.</li>
+        <li>Commit by layer, citing the decision and the iteration.</li>
+        <li>Run the walk, the route crawl and the screenshots in continuous integration.</li>
+        <li>Add an independent review before acceptance.</li>
+      </ul>
+      <p class="source">In full: <a data-repo="reflections/sdlc/v1/10-proposals/SDLC v2 — Proposed Loop.md" href="../sdlc/v1/10-proposals/SDLC%20v2%20%E2%80%94%20Proposed%20Loop.md"><code>reflections/sdlc/v1/10-proposals</code></a></p>
+    </div>
+  </div>
+
+  <h3><span class="sec">§ 08.4</span> In my own words</h3>
+  <div id="own-words" class="own-words"></div>
+
+  <aside class="dedication" aria-labelledby="dedication-title">
+    <h3 id="dedication-title">For Oleshky</h3>
+    <p>River Portal was made as a free template, and as a way to draw attention to Oleshky, a town in Kherson oblast of Ukraine, occupied and under blockade, where getting help in is the hardest part.</p>
+    <p class="mine">I noticed late that Oleshky itself stands on the left bank of the Dnipro. Whatever else changes in this design, the left bank stays open.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 09 COLOPHON -->
+<section class="sheet" id="colophon" data-no="09" data-name="Colophon" aria-labelledby="colophon-title">
+  <header class="sheet-head">
+    <p class="kicker"><span class="no">Sheet 09</span> Colophon</p>
+    <h2 id="colophon-title">How this almanac was made</h2>
+  </header>
+  <div class="two-col">
+    <dl class="colophon">
+      <dt>Drawn by</dt><dd>Claude Opus 5.5 (<code>claude-opus-5-5</code>), writing in the first person.</dd>
+      <dt>Steward</dt><dd>The author of the idea, who reviews and commits.</dd>
+      <dt>Written</dt><dd>25 September 2026, during the tenth directive.</dd>
+      <dt>Built with</dt><dd>Plain HTML, CSS and JavaScript. No build step, no dependencies; it opens straight from the file system.</dd>
+      <dt>Type</dt><dd>IBM Plex Sans and IBM Plex Mono, as in the portal and the card.</dd>
+      <dt>Paper</dt><dd>Generated in your browser from the same seed and recipe as the development card’s paper, made to tile without seams. The blueprint is the same recipe on blue.</dd>
+      <dt>Plates</dt><dd>Captured from the running demo with headless Chrome, signed in as the demo’s fictional people. Each numbered note is placed from the page’s own element boxes.</dd>
+      <dt>Figures</dt><dd>From git (to <code>32213d9</code>), from the code at <code>ddb01cc</code> and from the session log. My interpretations are marked as mine.</dd>
+      <dt>Content</dt><dd>Prose in <code>index.html</code>; everything drawn, stepped or filtered in <code>assets/data.js</code>. See <a data-repo="reflections/almanac/README.md" href="README.md"><code>README.md</code></a>.</dd>
+    </dl>
+    <div>
+      <h3 class="h-small">Glossary</h3>
+      <dl id="glossary" class="glossary"></dl>
+    </div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
