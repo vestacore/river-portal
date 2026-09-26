@@ -123,6 +123,10 @@ svg .focusable:focus-visible .focus-ring { stroke: var(--blue); stroke-width: 2;
 
 .skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 10px 14px; background: var(--ink); color: var(--paper); font: 500 13px/1 var(--mono); }
 .skip:focus { top: 12px; }
+.interim { padding: 10px clamp(12px, 3vw, 28px); border-bottom: 1px dashed var(--line-2); background: var(--panel); }
+.interim p { max-width: 1240px; margin: 0 auto; font: 400 13.5px/1.5 var(--sans); color: var(--ink-2); }
+.interim strong { font: 500 11px/1.5 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-right: 6px; }
+.interim a { white-space: nowrap; }
 .noscript { max-width: 1240px; margin: 20px auto 0; padding: 12px 16px; border: 1px solid var(--line-2); font: 13px/1.5 var(--mono); }
 
 .kicker { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 14px; font: 500 12px/1.5 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }

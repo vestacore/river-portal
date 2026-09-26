@@ -18,6 +18,7 @@ Language: British English.
 - [[Dependency Register]]: every direct dependency, its version, the rule it follows and why it exists
 - [[Technical Debt Register]]: shortcuts taken on purpose, with the trigger for repaying them
 - [[Nearest-Variant Assumptions]]: product questions answered provisionally so work can continue
+- [[Interim Showcase on Vercel]]: the technical interim site that shows how and what the model built; steps for the steward and their status
 
 ## Iterations
 - [[Iteration 00 — Specification Vault]]

@@ -31,7 +31,14 @@
 
   const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
-  const repo = (p) => '../../' + p.split('/').map((seg) => encodeURIComponent(seg)).join('/');
+  /* Repository files: relative paths in a checkout or on a local server; GitHub when served from the web (ADR-0024). */
+  const REPO_WEB = ((document.querySelector('meta[name="almanac:repository"]') || {}).content || A.meta.repository || '').replace(/\/$/, '');
+  const LOCAL = window.location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(window.location.hostname) || window.location.hostname.endsWith('.localhost');
+  const repo = (p) => {
+    const path = p.split('/').map((seg) => encodeURIComponent(seg)).join('/');
+    if (LOCAL || !REPO_WEB) return '../../' + path;
+    return `${REPO_WEB}/${p.endsWith('/') ? 'tree' : 'blob'}/main/${path.replace(/\/$/, '')}`;
+  };
   const repoLink = (label, path) => h('a', { href: repo(path), title: path, text: label });
   const pad2 = (n) => String(n).padStart(2, '0');
   const int = (n) => Math.round(n).toLocaleString('en-GB');
@@ -472,8 +479,9 @@
       const ax = X(minutes(T.away.from)), bx = X(minutes(T.away.to));
       svg.append(s('rect', { class: 'tl-away', x: ax, y: 44, width: Math.max(0, bx - ax), height: 104 }));
       if (bx - ax > 190) svg.append(s('text', { class: 'tx-m tx-mid', x: (ax + bx) / 2, y: 100, text: T.away.label.toUpperCase() }));
-      const midnight = X(minutes('2026-09-25T00:00'));
-      svg.append(s('path', { class: 'ln-faint', 'stroke-dasharray': '2 4', d: `M${midnight} 40 V170` }));
+      const midnights = [];
+      for (let m = Math.ceil(t0 / 1440) * 1440; m <= t1; m += 1440) if (m > t0) midnights.push(m);
+      for (const m of midnights) svg.append(s('path', { class: 'ln-faint', 'stroke-dasharray': '2 4', d: `M${X(m)} 40 V170` }));
       // phases
       T.phases.forEach((p, i) => {
         const a = X(minutes(D.find((d) => d.id === p.from).at)), nx = T.phases[i + 1];
@@ -489,8 +497,10 @@
         svg.append(s('line', { class: 'ln-thin', x1: x, y1: 165, x2: x, y2: 175 }));
         if (alpha < 0.5) svg.append(s('text', { class: 'tx-m tx-mid', x, y: 189, opacity: 1 - alpha * 2, text: pad2(hh) + ':00' }));
       }
-      [['2026-09-24T15:00', '24 SEP', 'start'], ['2026-09-25T00:00', '25 SEP', 'middle'], ['2026-09-26T00:00', '26 SEP', 'end']].forEach(([at, label, anchor]) =>
-        svg.append(s('text', { class: 'tx-b', x: X(minutes(at)), y: 206, 'text-anchor': anchor, text: label })));
+      [[t0, 'start'], ...midnights.map((m) => [m, 'middle'])].forEach(([m, anchor]) => {
+        const day = new Date(m * 60000);
+        svg.append(s('text', { class: 'tx-b', x: X(m), y: 206, 'text-anchor': anchor, text: `${day.getUTCDate()} ${MONTHS[day.getUTCMonth()].slice(0, 3).toUpperCase()}` }));
+      });
       // working windows and the compaction
       const cur = D[sel].id;
       T.windows.forEach((w) => {
@@ -1194,8 +1204,17 @@
     if (host) host.append(...A.ownWords.map((q) => h('blockquote', { text: q })));
   }
 
+  /* ============================================================ online: repository links and the interim banner */
+  function online() {
+    if (!LOCAL) for (const a of $$('a[data-repo]')) a.setAttribute('href', repo(a.dataset.repo));
+    const portal = A.meta.showcase && A.meta.showcase.portal;
+    const box = $('.interim-demo'), link = $('.interim-portal');
+    if (portal && box && link) { link.setAttribute('href', portal); box.hidden = false; }
+  }
+
   /* ============================================================ start */
   const run = (name, fn) => { try { fn(); } catch (e) { console.error(`Almanac: ${name} failed`, e); } };
+  run('online', online);
   run('themes', themes);
   run('sheets', sheets);
   run('register', register);

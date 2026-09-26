@@ -6,6 +6,8 @@
 <title>River Portal Almanac</title>
 <meta name="description" content="How River Portal, a charity portal, was specified, built, checked and understood in two days, told in the first person by the model that built it, with the author of the idea as steward of the process.">
 <meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<meta name="almanac:repository" content="https://github.com/vestacore/river-portal">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 2h22l6 6v22H2z' fill='%232b2822'/%3E%3Cpath d='M11 5v7l-4 5v10M17 5v7l4 5v10' fill='none' stroke='%23f0962a' stroke-width='2.4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,6 +49,10 @@
   </div>
 </header>
 
+<aside class="interim" aria-label="About this site">
+  <p><strong>An interim technical site.</strong> This almanac, and a demo copy of the portal, are published only to show how and what the model built. The portal itself is designed for Google Cloud; everything on these pages is fictional demo data. <a data-repo="adr/records/ADR-0024 Interim Showcase on Vercel.md" href="../../adr/records/ADR-0024%20Interim%20Showcase%20on%20Vercel.md">Why and how</a><span class="interim-demo" hidden> · <a class="interim-portal" href="#" rel="noopener">Open the demo portal ↗</a></span></p>
+</aside>
+
 <noscript><p class="noscript">The figures on these sheets are interactive and need JavaScript. The text reads without it.</p></noscript>
 
 <main id="main">
@@ -87,7 +93,7 @@
     <div class="dim"><b>11,701</b><span>lines of code in 412 files</span></div>
     <div class="dim"><b>26</b><span>unit tests; about 60 type checks and 48 test runs</span></div>
     <div class="dim"><b>13</b><span>defects found by walking the product after every check was green</span></div>
-    <div class="dim"><b>7</b><span>commits, every one of them made by the steward</span></div>
+    <div class="dim"><b>8</b><span>commits, every one of them made by the steward</span></div>
   </div>
 
   <div class="cover-foot">
@@ -163,7 +169,7 @@
 <section class="sheet" id="timeline" data-no="02" data-name="Timeline" aria-labelledby="timeline-title">
   <header class="sheet-head">
     <p class="kicker"><span class="no">Sheet 02</span> Two days</p>
-    <h2 id="timeline-title">Ten directives, seven commits</h2>
+    <h2 id="timeline-title">Ten directives, eight commits</h2>
     <p class="lead">Each <a class="term" href="#g-directive" data-term="directive">directive</a> from the steward opened a phase of work, and each commit closed one or more. Between them are my working windows, and long stretches in which the work waited for a person to read it. Select a directive to open its entry. Switch the scale to see the same two days as a story.</p>
   </header>
 
@@ -183,7 +189,7 @@
   </div>
   <figure class="fig fig-timeline">
     <div class="fig-scroll"><div id="tl-chart" class="tl-chart"></div></div>
-    <figcaption class="figcap"><span>Fig. 2</span> Construction and reflection against elapsed time, 24 September 15:00 to 26 September 00:00.</figcaption>
+    <figcaption class="figcap"><span>Fig. 2</span> Construction and reflection against elapsed time, 24 September 15:00 to 26 September 13:00.</figcaption>
   </figure>
   <div id="tl-chips" class="chips chips-tl" role="group" aria-label="Directives"></div>
   <article id="tl-panel" class="panel tl-panel" aria-live="polite"></article>
@@ -322,7 +328,7 @@
         <li>Set the direction in ten directives, from 147 to 3,298 characters each.</li>
         <li>Set the rules: British English, decisions on record, dependencies two minor versions behind, one function per file, visible features first.</li>
         <li>Kept the cloud in human hands: “You write, I run the deployment; nothing is changed by hand.”</li>
-        <li>Accepted work by committing it: seven commits.</li>
+        <li>Accepted work by committing it: eight commits.</li>
         <li>Edited the materials directly wherever the wording mattered.</li>
       </ul>
     </div>
@@ -381,6 +387,7 @@
       <dt>Drawn by</dt><dd>Claude Opus 5.5 (<code>claude-opus-5-5</code>), writing in the first person.</dd>
       <dt>Steward</dt><dd>The author of the idea, who reviews and commits.</dd>
       <dt>Written</dt><dd>25 September 2026, during the tenth directive.</dd>
+      <dt>Published</dt><dd>On Vercel, as an interim technical site beside a demo copy of the portal, to show how and what the model built (<a data-repo="adr/records/ADR-0024 Interim Showcase on Vercel.md" href="../../adr/records/ADR-0024%20Interim%20Showcase%20on%20Vercel.md">ADR-0024</a>). Online, links to the repository open on GitHub.</dd>
       <dt>Built with</dt><dd>Plain HTML, CSS and JavaScript. No build step, no dependencies; it opens straight from the file system.</dd>
       <dt>Type</dt><dd>IBM Plex Sans and IBM Plex Mono, as in the portal and the card.</dd>
       <dt>Paper</dt><dd>Generated in your browser from the same seed and recipe as the development card’s paper, made to tile without seams. The blueprint is the same recipe on blue.</dd>

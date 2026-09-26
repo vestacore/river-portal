@@ -29,6 +29,15 @@ Then open `http://127.0.0.1:3200/reflections/almanac/`.
 
 The switch at the top right changes between tracing paper and blueprint. Without a choice, the page follows the system's light or dark setting.
 
+## Online
+
+The almanac is published on Vercel as an **interim technical site**, next to a demo copy of the portal, only to show how and what the model built (`adr/records/ADR-0024 Interim Showcase on Vercel.md`; the steps are in `meta/process/Interim Showcase on Vercel.md`). The portal itself is designed for Google Cloud, and its code is not changed for Vercel.
+
+- The Vercel project serves this folder as it is: framework preset *Other*, no build.
+- Served from the web, links to repository files open on GitHub (`almanac:repository` in `index.html`). In a checkout or on a local server they stay relative.
+- A strip at the top of the page says what the site is. Once `meta.showcase.portal` in `assets/data.js` holds the demo portal's address, the strip links to it.
+- The page asks search engines not to index it (`<meta name="robots" content="noindex">`).
+
 ## Where things live
 
 | What | File |

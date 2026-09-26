@@ -44,3 +44,4 @@ The engineering log of **architecture decisions** taken while building the porta
 | [[ADR-0021 Identity Layer and Demo Personas]] | Roles and signed sessions; IAP for staff, demo personas locally; "My river"; the studio by river stages with see/act roles | accepted | identity / access |
 | [[ADR-0022 Editing in the Studio, Not on Public Pages]] | Site texts and page structure edited only in the studio; public pages carry no editing code | accepted | UI / content |
 | [[ADR-0023 Reporting Currency and Recorded Conversion Rates]] | A reporting currency in settings; each cost keeps its currency and the rate used | accepted | money |
+| [[ADR-0024 Interim Showcase on Vercel]] | A technical interim site on Vercel (Hobby) to show how and what the model built; public sandbox by environment variables, no code change; Google Cloud stays the target | accepted | deployment |

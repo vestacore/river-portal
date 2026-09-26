@@ -8,6 +8,10 @@ window.ALMANAC = {
     date: "25.09.2026",
     rev: "A",
     last: "09",
+    /* Online, repository paths open here (ADR-0024). */
+    repository: "https://github.com/vestacore/river-portal",
+    /* The interim sites on Vercel; filled in after the steward's first deployment. */
+    showcase: { portal: "", almanac: "" },
   },
 
   sheets: [
@@ -130,7 +134,7 @@ window.ALMANAC = {
   /* Sheet 02: the two days. */
   timeline: {
     start: "2026-09-24T15:00",
-    end: "2026-09-26T00:00",
+    end: "2026-09-26T13:00",
     away: { from: "2026-09-24T22:50", to: "2026-09-25T11:36", label: "Steward away · 12 h 46 min" },
     compaction: "2026-09-25T13:51",
     phases: [
@@ -157,6 +161,7 @@ window.ALMANAC = {
       { at: "2026-09-25T20:55", hash: "962560d", msg: "update: language selection options", files: 3, add: 1, del: 6 },
       { at: "2026-09-25T20:58", hash: "f357c60", msg: "add: reflections and card builder", files: 56, add: 2821, del: 3 },
       { at: "2026-09-25T20:59", hash: "32213d9", msg: "add: development card v 001", files: 1, add: 0, del: 0 },
+      { at: "2026-09-26T11:41", hash: "1faa0a9", msg: "add: reflections almanac", files: 38, add: 3085, del: 0 },
     ],
     directives: [
       { id: "M1", at: "2026-09-24T15:38", chars: 3298, title: "Turn a river into a specification",
@@ -228,7 +233,7 @@ window.ALMANAC = {
         learnt: "Writing for readers who were not there made me restate what I had taken for granted: why a gift is not a commodity, and why the left bank has no door to knock on. Capturing the plates as each person showed me the portal the way each of them meets it, one role at a time.",
         left: [["This almanac", "reflections/almanac/README.md"]],
         figures: [["21:09–22:10", "my working window"], ["10", "sheets"], ["15", "plates"], ["2", "working examples"]],
-        accepted: [], plates: ["home", "track", "giver", "carrier"] },
+        accepted: ["1faa0a9"], plates: ["home", "track", "giver", "carrier"] },
     ],
   },
 
@@ -549,6 +554,7 @@ window.ALMANAC = {
     { m: "M2–M4", chars: 3206, commits: "dbbb9d8 · 872ed85", files: 394, add: 16972, del: 1, out: "code, design and publication" },
     { m: "M5–M6", chars: 1153, commits: "ddb01cc", files: 263, add: 6193, del: 870, out: "review and iteration 04" },
     { m: "M7–M9", chars: 807, commits: "f357c60 · 32213d9", files: 57, add: 2821, del: 3, out: "reflections and the card" },
+    { m: "M10", chars: 1124, commits: "1faa0a9", files: 38, add: 3085, del: 0, out: "this almanac" },
   ],
 
   ownWords: [
