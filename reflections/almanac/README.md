@@ -31,7 +31,7 @@ The switch at the top right changes between tracing paper and blueprint. Without
 
 ## Online
 
-The almanac is published on Vercel as an **interim technical site**, next to a demo copy of the portal, only to show how and what the model built (`adr/records/ADR-0024 Interim Showcase on Vercel.md`; the steps are in `meta/process/Interim Showcase on Vercel.md`). The portal itself is designed for Google Cloud, and its code is not changed for Vercel.
+The almanac is published at <https://river-portal-almanac.vercel.app> as an **interim technical site**, next to a demo copy of the portal at <https://river-portal-web-mu.vercel.app>, only to show how and what the model built (`adr/records/ADR-0024 Interim Showcase on Vercel.md`; the steps are in `meta/process/Interim Showcase on Vercel.md`). The portal itself is designed for Google Cloud, and its code is not changed for Vercel.
 
 - The Vercel project serves this folder as it is: framework preset *Other*, no build.
 - Served from the web, links to repository files open on GitHub (`almanac:repository` in `index.html`). In a checkout or on a local server they stay relative.

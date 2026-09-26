@@ -34,8 +34,8 @@ spec: none
 
 | Project | Root Directory | Framework preset | Install | Build | Node.js |
 |---|---|---|---|---|---|
-| `river-portal-showcase` | `apps/web` | Next.js | `cd ../.. && npm ci --include=dev` | default (`npm run build` → `next build`) | 22.x |
-| `river-portal-almanac` | `reflections/almanac` | Other | none | none; the folder is served as it is | — |
+| `river-portal-web` | `apps/web` | Next.js | `cd ../.. && npm ci --include=dev` | default (`npm run build` → `next build`) | 22.x |
+| `river-portal-almanac` | `reflections/almanac` | Other | a no-op (`echo …`), because Vercel otherwise installs the whole workspace from the repository root | none; the folder is served as it is | — |
 
 3. **The portal is configured only through environment variables**, the same for every environment:
 
@@ -71,7 +71,7 @@ spec: none
   - **Hobby plan terms.** Personal, non-commercial use only, with limits on functions and bandwidth. An organisation that adopts the portal deploys it to its own Google Cloud project instead.
   - **Deployments follow `main`.** Every push to `main` redeploys both projects.
 - **Follow-ups**
-  - Record both URLs after the first deployment: in `meta/process/Interim Showcase on Vercel.md`, the README and the almanac.
+  - Record both URLs after the first deployment: in `meta/process/Interim Showcase on Vercel.md`, the README and the almanac. *Done on 2026-09-26: the portal demo at https://river-portal-web-mu.vercel.app, the almanac at https://river-portal-almanac.vercel.app.*
   - **Search indexing of the portal.** Vercel does not add `X-Robots-Tag: noindex` to production `.vercel.app` addresses. There are two ways to add it, and both wait for the steward's decision:
     - a Vercel configuration file (`vercel.json`) in `apps/web`;
     - a sandbox notice in the code.

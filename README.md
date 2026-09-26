@@ -27,6 +27,9 @@
 > 2. **A free, open-source template** (Apache 2.0) for charities and civil-society organisations that want to coordinate help openly. It is a **research preview**: it has not been independently audited, and it must not store real personal data until the documented hard gates are closed ([`SECURITY.md`](SECURITY.md)). The demo organisation *Open River Aid* and every person in the demo data are fictional.
 > 3. **A way to draw attention** to what is happening in **Oleshky**, a town in Ukraine's Kherson oblast under Russian occupation and blockade. [Read the fact sheet →](docs/oleshky-fact-sheet.md)
 
+> [!NOTE]
+> **Interim showcase.** A technical interim site shows how and what the model built: the [portal demo](https://river-portal-web-mu.vercel.app) — a public sandbox with fictional data, where every role can be tried from **Try as…** — and the [almanac of its making](https://river-portal-almanac.vercel.app). Both run on Vercel's free plan for this purpose only. The portal itself is built for Google Cloud, and its code is not changed for Vercel ([ADR-0024](adr/records/ADR-0024%20Interim%20Showcase%20on%20Vercel.md)). Demo data lives in memory and resets often.
+
 ## Oleshky: where the left bank is closed
 
 This portal is built on one rule: **the left bank is always open**. Anyone who needs help may ask for it, and help may reach them. In **Oleshky** (Олешки), a town on the Dnipro opposite Kherson that Russia has occupied since the first days of the full-scale invasion, that rule has been broken by force.

@@ -11,7 +11,7 @@ window.ALMANAC = {
     /* Online, repository paths open here (ADR-0024). */
     repository: "https://github.com/vestacore/river-portal",
     /* The interim sites on Vercel; filled in after the steward's first deployment. */
-    showcase: { portal: "", almanac: "" },
+    showcase: { portal: "https://river-portal-web-mu.vercel.app", almanac: "https://river-portal-almanac.vercel.app" },
   },
 
   sheets: [

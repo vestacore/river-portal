@@ -18,8 +18,8 @@ As with Pulumi, the model writes the steps and the steward carries them out, her
 ## Sites
 | Site | Vercel project | Root Directory | Address | Status |
 |---|---|---|---|---|
-| Portal demo, public sandbox | `river-portal-showcase` | `apps/web` | recorded after the first deployment | to deploy |
-| Almanac | `river-portal-almanac` | `reflections/almanac` | recorded after the first deployment | to deploy |
+| Portal demo, public sandbox | `river-portal-web` | `apps/web` | <https://river-portal-web-mu.vercel.app> | deployed 2026-09-26 |
+| Almanac | `river-portal-almanac` | `reflections/almanac` | <https://river-portal-almanac.vercel.app> | deployed 2026-09-26 |
 
 ## Steps
 
@@ -39,12 +39,13 @@ openssl rand -base64 48
 4. **Framework Preset:** Other.
 5. **Build and Output Settings:**
    - Build Command: turn **Override** on and leave the field empty. This skips the build.
-   - Output Directory and Install Command: leave as they are. The folder has no `package.json`, so there is nothing to install, and it is served as it is.
+   - Output Directory: leave as it is. The folder is served as it is.
+   - Install Command: turn **Override** on and enter a no-op, `echo "static site: nothing to install"`. Otherwise Vercel detects the workspace and runs `npm install --prefix=../..`: it installs the whole repository, and on the default Node.js 24 it stops on the engine check.
 6. **Deploy**, then open the address. The strip at the top of the page must say that this is an interim technical site.
 
 ### 2. The portal demo: Next.js
 1. **Import the same repository again** (**Add New… → Project**).
-2. **Project Name:** `river-portal-showcase`.
+2. **Project Name:** `river-portal-web` (the name used for the deployed project).
 3. **Root Directory:** `apps/web`. The Framework Preset switches to **Next.js** by itself.
 4. **Build and Output Settings:**
    - Install Command: **Override** on, value `cd ../.. && npm ci --include=dev`. This installs the whole workspace from the root lockfile, build tools included.
@@ -91,3 +92,4 @@ openssl rand -base64 48
 | Date | Entry |
 |---|---|
 | 2026-09-26 | Decision recorded (ADR-0024), steps written. Local check of the planned configuration: a production build with the same five variables, served by the standalone server. `/` redirects to `/en-gb`; the studio and "My river" redirect to the persona picker without a persona; the walk's "Act as Andriy" opens the studio; no console errors. |
+| 2026-09-26 | Deployed. The portal project, imported earlier with the defaults, had failed twice at `npm install` with `EBADENGINE` (Node.js 24.21 against `>=22.13 <23`), as expected. The install command (`cd ../.. && npm ci --include=dev`), Node.js 22.x and the four variables were set in the dashboard; the steward entered `RIVER_SESSION_SECRET` as a Secret. The redeployment of `d237218` built in 58 seconds, with `output: 'standalone'` causing no trouble. The almanac project was created with the Other preset, no build and a no-op install. Checks on the live sites: `/` redirects to `/en-gb`; the studio and "My river" redirect to the persona picker; "Act as Andriy" opens the studio; the CSP and HSTS headers are present; the almanac shows the banner, asks not to be indexed and links repository files to GitHub. |
