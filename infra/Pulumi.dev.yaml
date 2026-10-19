@@ -15,3 +15,29 @@ config:
   #   - group:coordinators@example.org
   # Optional role overrides for staff e-mails: "a@x:administrator,b@y:editor".
   # river-portal:staffRoles: ""
+
+  # The payment river (adr/records/ADR-0025). Nothing is created unless payEnabled is true.
+  # river-portal:payEnabled: true
+  # river-portal:payStripeMode: simulated        # off | simulated | connected
+  # river-portal:payPaypalMode: simulated        # off | simulated | connected
+  # river-portal:payAllowSimulated: true         # a stand-in settles orders nobody paid: sandboxes only
+  # river-portal:payFeeBps: 250                  # commission in basis points (250 = 2.5%)
+  # river-portal:payInvoiceTtlHours: 72
+  # river-portal:paySessionTtlMinutes: 180       # how long a provider's page stays open (30 to 1440)
+  # river-portal:payDatabase: river-pay          # the river's own Firestore database (4 to 63 characters)
+  # river-portal:payTickSchedule: "*/10 * * * *"
+  # river-portal:payMerchants:                   # at least one; each provider named must be mounted above
+  #   - id: m-bakery
+  #     name: Riverside Bakery
+  #     providers: [stripe, paypal]
+  #     # stripeAccount: acct_...                # a connected account: Stripe splits the payment itself
+  #     # paypalMerchantId: ...
+  # river-portal:payRouting:                     # optional; the default table is in packages/pay/flow/data/defaultRouting.ts
+  #   - { provider: stripe, currencies: [EUR, USD, GBP, UAH], maxMinor: null, why: Stripe carries every currency of the river }
+  # Secrets for connected providers are set by the owner, never written here in the clear:
+  #   pulumi config set --secret river-portal:payStripeSecretKey        (a test-mode key: sk_test_...)
+  #   pulumi config set --secret river-portal:payStripeWebhookSecret    (whsec_...)
+  #   pulumi config set --secret river-portal:payPaypalClientId
+  #   pulumi config set --secret river-portal:payPaypalSecret
+  #   pulumi config set --secret river-portal:payPaypalWebhookId
+  # Live credentials are refused by the functions unless payAllowLive is true.

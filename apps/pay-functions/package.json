@@ -1,0 +1,15 @@
+{
+  "name": "@river/pay-functions",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The functions of the payment river: one door or one bank per process, chosen by PAY_FUNCTION.",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types --no-warnings=ExperimentalWarning server.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@river/pay-runtime": "0.0.0"
+  }
+}

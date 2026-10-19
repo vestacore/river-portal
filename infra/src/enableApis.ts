@@ -7,7 +7,7 @@ const apis = [
   'iam.googleapis.com', 'logging.googleapis.com', 'secretmanager.googleapis.com', 'cloudresourcemanager.googleapis.com',
 ];
 
-/** Enables the Google Cloud APIs the portal needs. Never disabled on destroy. */
-export function enableApis(settings: Settings): gcp.projects.Service[] {
-  return apis.map((api) => new gcp.projects.Service(`api-${api.split('.')[0]}`, { project: settings.project, service: api, disableOnDestroy: false }));
+/** Enables the Google Cloud APIs the portal needs, and any `extra` ones a part of it asks for. Never disabled on destroy. */
+export function enableApis(settings: Settings, extra: readonly string[] = []): gcp.projects.Service[] {
+  return [...apis, ...extra].map((api) => new gcp.projects.Service(`api-${api.split('.')[0]}`, { project: settings.project, service: api, disableOnDestroy: false }));
 }

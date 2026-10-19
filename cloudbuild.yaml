@@ -1,8 +1,12 @@
-# Builds the web image; invoked by Pulumi (infra/src/buildImage.ts) with _IMAGE=<registry>/web:<content-hash>.
+# Builds one image; invoked by Pulumi with _IMAGE=<registry>/<name>:<content-hash>.
+# The web image uses the default Dockerfile (infra/src/buildImage.ts); the payment river's
+# functions use Dockerfile.pay (infra/src/buildPayImage.ts).
 steps:
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--pull', '-t', '${_IMAGE}', '-f', 'Dockerfile', '.']
+    args: ['build', '--pull', '-t', '${_IMAGE}', '-f', '${_DOCKERFILE}', '.']
 images: ['${_IMAGE}']
+substitutions:
+  _DOCKERFILE: Dockerfile
 options:
   logging: CLOUD_LOGGING_ONLY
   machineType: E2_HIGHCPU_8

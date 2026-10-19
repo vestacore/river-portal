@@ -1,3 +1,5 @@
+import { payEnGB } from './payEnGB.ts';
+
 /** British English UI strings. The shape of this object is the Dictionary type; `uk` must match it. */
 export const enGB = {
   meta: {
@@ -5,7 +7,7 @@ export const enGB = {
     description: 'Ask for help, share what you can, and see every gift arrive. A demonstration of River Portal.',
   },
   org: { name: 'Open River Aid', tagline: 'Help flows to where it is needed' },
-  nav: { ask: 'Ask for help', give: 'Give', campaigns: 'Campaigns', feed: 'Feed', studio: 'Studio', skip: 'Skip to content', language: 'Language', whereHelpWent: 'Where help went', transparency: 'Transparency', about: 'About', contact: 'Contact', faq: 'Questions', myRiver: 'My river', tryAs: 'Try as…', actingAs: 'Acting as', switch: 'Switch', signOut: 'Sign out', demo: 'Demo' },
+  nav: { ask: 'Ask for help', give: 'Give', campaigns: 'Campaigns', feed: 'Feed', studio: 'Studio', skip: 'Skip to content', language: 'Language', whereHelpWent: 'Where help went', transparency: 'Transparency', about: 'About', contact: 'Contact', faq: 'Questions', myRiver: 'My river', tryAs: 'Try as…', actingAs: 'Acting as', switch: 'Switch', signOut: 'Sign out', demo: 'Demo', pay: 'Payments' },
   edit: { save: 'Save', saving: 'Saving…', cancel: 'Cancel', saved: 'Saved', failed: 'Could not save. Please try again.', bold: 'Bold', italic: 'Italic', list: 'List', heading: 'Heading' },
   common: {
     sheet: 'Sheet', backHome: 'Back to home', seeAll: 'See all', readReport: 'Read the report', private: 'Private', public: 'Public', team: 'Team only',
@@ -205,6 +207,7 @@ export const enGB = {
     feedQueue: 'Feed', suggestions: 'Suggestions to review', published: 'Published', accept: 'Publish', reject: 'Reject', source: 'Source',
     newItem: 'Write a feed item',
   },
+  pay: payEnGB,
 } as const satisfies DictionaryShape;
 
 type DictionaryShape = { [key: string]: string | DictionaryShape | ReadonlyArray<string> | ReadonlyArray<{ title: string; text: string }> };

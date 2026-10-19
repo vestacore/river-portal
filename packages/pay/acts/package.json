@@ -1,0 +1,16 @@
+{
+  "name": "@river/pay-acts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The door of the payment river: a person's gesture, validated, becomes a fact — and nothing more.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/pay-facts": "0.0.0",
+    "@river/stream": "0.0.0"
+  }
+}

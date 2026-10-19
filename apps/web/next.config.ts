@@ -27,6 +27,7 @@ const config: NextConfig = {
   transpilePackages: [
     '@river/kernel', '@river/i18n', '@river/privacy', '@river/store', '@river/log', '@river/needs', '@river/gifts',
     '@river/flows', '@river/assist', '@river/content', '@river/reports', '@river/feed', '@river/pages', '@river/runtime',
+    '@river/stream', '@river/figure', '@river/pay-facts', '@river/pay-ledger', '@river/pay-flow', '@river/pay-acts', '@river/pay-providers', '@river/pay-views', '@river/pay-runtime',
   ],
   serverExternalPackages: ['firebase-admin', '@google/genai'],
   images: { unoptimized: true },

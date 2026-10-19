@@ -1,0 +1,14 @@
+{
+  "name": "@river/stream",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Append-only streams of facts with dense sequence numbers: one stream per key, one fragment per wave.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/store": "0.0.0"
+  }
+}

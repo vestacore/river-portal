@@ -15,9 +15,11 @@ export function SiteHeader({ locale, dict, identity, orgName, demo }: { locale: 
   const link = 'whitespace-nowrap px-2 py-2 text-[0.95rem] font-medium text-ink-700 transition-colors hover:text-ink-900 hover:underline hover:decoration-sunrise-500 hover:decoration-2 hover:underline-offset-[6px]';
   const staff = isStaff(identity);
   const home = identity ? (staff ? '/studio' : '/me') : null;
-  const nav = [
+  // The payment river (adr/records/ADR-0025) is an experiment beside the portal: its link shows only in demo runs.
+  const nav: ReadonlyArray<readonly [string, string]> = [
     ['/#campaigns', dict.nav.campaigns], ['/feed', dict.nav.whereHelpWent], ['/transparency', dict.nav.transparency], ['/about', dict.nav.about], ['/give', dict.nav.give],
-  ] as const;
+    ...(demo ? [['/pay', dict.nav.pay] as const] : []),
+  ];
   return (
     <header className="sticky top-0 z-40 border-b border-graphite/20 bg-paper">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:bg-paper focus:px-4 focus:py-2">{dict.nav.skip}</a>

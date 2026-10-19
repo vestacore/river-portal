@@ -13,11 +13,11 @@ function walk(dir: string, out: string[]): void {
   }
 }
 
-/** Content hash of everything that goes into the web image, so unchanged sources never rebuild. */
-export function sourceHash(repoRoot: string): string {
+/** Content hash of everything that goes into an image — the web image by default — so unchanged sources never rebuild. */
+export function sourceHash(repoRoot: string, app = 'apps/web', dockerfile = 'Dockerfile'): string {
   const files: string[] = [];
-  for (const entry of ['apps/web', 'packages']) walk(path.join(repoRoot, entry), files);
-  files.push(...['package.json', 'package-lock.json', '.npmrc', 'Dockerfile', 'cloudbuild.yaml'].map((f) => path.join(repoRoot, f)));
+  for (const entry of [app, 'packages']) walk(path.join(repoRoot, entry), files);
+  files.push(...['package.json', 'package-lock.json', '.npmrc', dockerfile, 'cloudbuild.yaml'].map((f) => path.join(repoRoot, f)));
   const hash = createHash('sha256');
   for (const file of files) hash.update(path.relative(repoRoot, file)).update('\0').update(readFileSync(file));
   return hash.digest('hex').slice(0, 16);

@@ -123,13 +123,25 @@ flowchart LR
 | Layer | Choice |
 |---|---|
 | UI | Next.js 16 (App Router, Server Components, Server Actions), React 19, Tailwind CSS 4, Tiptap 3 for editing in the studio, IBM Plex |
-| Domain | 17 TypeScript packages behind `gate.ts` entry points: `foundation` → `record` → `river` / `steward` / `assist` → `surface` → `compose` ([`TOPOLOGY.md`](TOPOLOGY.md)) |
+| Domain | 26 TypeScript packages behind `gate.ts` entry points: `foundation` → `record` → `river` / `steward` / `assist` / `pay` → `surface` → `compose` ([`TOPOLOGY.md`](TOPOLOGY.md)); nine of them are the payment river experiment |
 | Settings and identity | A typed settings registry with three organisation profiles; roles and signed sessions (IAP for staff, demo people locally) |
 | Data | Firestore: append-only log plus projections written in the same transaction; public pages read pre-shaped documents |
 | Edge and security | Global external Application Load Balancer, Cloud Armor Standard (OWASP CRS 3.3), Identity-Aware Proxy for the studio, Cloud Run reachable only through the balancer |
 | AI | Gemini on Vertex AI with PII redaction before prompts and an offline fallback; every suggestion is logged and reviewed by a person |
 | Infrastructure | Pulumi (TypeScript); images built by Cloud Build; no manual console changes |
 | Supply chain | Versions two minor lines behind latest, installs only through Socket Firewall (`sfw`), exact pins, no install scripts, audited ([ADR-0007](adr/records/ADR-0007%20Dependency%20Supply-Chain%20Policy.md)) |
+
+### An experiment beside the portal: the payment river
+
+The branch `new-approach` asks whether the same river can carry a **payment**, and whether code can be built as functions *around a log* rather than around aggregates ([ADR-0025](adr/records/ADR-0025%20Payment%20River%20%E2%80%94%20Functions%20Around%20an%20Append-Only%20Stream.md)).
+
+- **One order is one append-only stream**; each wave — a gesture or a provider's report, and everything settled because of it — is one fragment, written in one transaction.
+- **Five kinds of function**: *acts* at the door, *listeners* that need, *joiners* that bridge, *controllers* at the bank, *readings* on the surface. Only one function writes; only controllers reach the world.
+- **The flow**: order → invoice (the commission stated before anyone pays) → the payer's word at the gate → a provider chosen by a recorded rule → the provider's own page → the capture checked against the invoice → a balanced ledger entry → a receipt.
+- **Three cabinets** under `/pay`: a merchant's, a payer's (who needs no account — the pay link is the key), and an operator's, which shows every order's stream fact by fact and checks it by replay.
+- **In the cloud** it is cut into small functions — a door, a bank per provider, a webhook per provider, a clock — joined by a transactional outbox and Eventarc, each with its own identity and only its own secret.
+
+Locally the providers are **stand-ins** that say so on every page: no money moves. Stripe and PayPal adapters are written and tested against scripted responses; they have not yet been run against the providers' sandboxes, and nothing has been deployed.
 
 ## The AI development framework: `spec/`, `adr/`, `meta/`
 
@@ -173,6 +185,8 @@ The profiles are `state-programme`, `city-foundation` and `small-nationwide`.
 ```bash
 npm run check
 ```
+
+The payment river is at http://localhost:3000/en-gb/pay: act as a seller, a payer or a steward, or open an invoice by its link.
 
 `npm run check` runs the type check, the topology check and the unit tests, including the demo seed of every profile. For design reviews, `node tools/design-shot.mjs <url> <width> <out.png> [--mobile] [--reduce] [--cookie=river-session=…]` takes full-page screenshots with device emulation in your local Chrome, also as a demo person.
 
@@ -220,6 +234,22 @@ pulumi up
 - creates Firestore with rules that deny all client access.
 
 Without a configured domain, the URLs are `https://<ip>.sslip.io` and `https://studio.<ip>.sslip.io`.
+
+The payment river is created only when asked for. A sandbox with stand-in providers:
+
+```bash
+pulumi config set river-portal:payEnabled true
+```
+
+```bash
+pulumi config set river-portal:payStripeMode simulated
+```
+
+```bash
+pulumi config set river-portal:payAllowSimulated true
+```
+
+Merchants, the commission, the routing table and — for a connected provider — its test-mode secrets are set the same way; `infra/Pulumi.dev.yaml` lists every key, and ADR-0025 says what each function is given. This part of the program has been type-checked only: it has not been previewed or applied.
 
 ## Status
 

@@ -20,7 +20,7 @@
   "scripts": {
     "dev": "npm run dev --workspace @river/web",
     "build": "npm run build --workspace @river/web",
-    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspace @river/web",
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspace @river/web && npm run typecheck --workspace @river/pay-functions",
     "test": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"packages/**/*.test.ts\"",
     "topology": "node tools/check-topology.mjs",
     "check": "npm run typecheck && npm run topology && npm test",

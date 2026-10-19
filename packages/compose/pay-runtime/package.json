@@ -1,0 +1,23 @@
+{
+  "name": "@river/pay-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Wires the payment river for applications and functions: settings from the environment, the doors, the banks, the clock, and the handlers each function runs.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/figure": "0.0.0",
+    "@river/i18n": "0.0.0",
+    "@river/kernel": "0.0.0",
+    "@river/pay-acts": "0.0.0",
+    "@river/pay-facts": "0.0.0",
+    "@river/pay-flow": "0.0.0",
+    "@river/pay-providers": "0.0.0",
+    "@river/pay-views": "0.0.0",
+    "@river/store": "0.0.0",
+    "@river/stream": "0.0.0"
+  }
+}

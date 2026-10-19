@@ -1,0 +1,14 @@
+{
+  "name": "@river/pay-ledger",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The law of conservation for the payment river: commission, balanced double entries and account balances.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/pay-facts": "0.0.0"
+  }
+}

@@ -17,3 +17,12 @@ Creative Commons Attribution 4.0 International licence (CC BY 4.0).
 
 Typefaces: IBM Plex Sans and IBM Plex Mono, Copyright IBM Corp., licensed under
 the SIL Open Font License, Version 1.1; fetched from Google Fonts at build time.
+
+The payment river (packages/record/stream, packages/record/figure, packages/pay,
+packages/surface/pay-views, packages/compose/pay-runtime) adapts ideas from the
+Nest Runtime Specification Set (https://github.com/harmogics/nestvm), licensed
+under the Creative Commons Attribution 4.0 International licence (CC BY 4.0,
+https://creativecommons.org/licenses/by/4.0/). Changes: the ideas are
+re-expressed as plain TypeScript functions over a document store, for one
+domain; no text and no code of the specification set or of its reference
+implementation is reproduced. See adr/records/ADR-0025.

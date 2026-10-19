@@ -13,6 +13,7 @@ export function createSurfaceService(
   image: pulumi.Input<string>,
   account: gcp.serviceaccount.Account,
   projectNumber: pulumi.Input<string>,
+  extraEnv: Record<string, pulumi.Input<string>> = {},
 ): SurfaceService {
   const name = surface === 'public' ? 'river-web' : 'river-studio';
   const env: Record<string, pulumi.Input<string>> = {
@@ -27,6 +28,7 @@ export function createSurfaceService(
     RIVER_AI_LOCATION: settings.aiLocation,
     RIVER_IAP_AUDIENCE_PREFIX: pulumi.interpolate`/projects/${projectNumber}/global/backendServices/`,
     RIVER_STAFF_ROLES: settings.staffRoles,
+    ...extraEnv,
   };
   const service = new gcp.cloudrunv2.Service(name, {
     project: settings.project,

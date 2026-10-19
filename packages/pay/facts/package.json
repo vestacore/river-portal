@@ -1,0 +1,11 @@
+{
+  "name": "@river/pay-facts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The vocabulary of the payment river: fact types and their payloads, from the order to the mouth.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  }
+}

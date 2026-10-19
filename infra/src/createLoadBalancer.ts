@@ -5,12 +5,18 @@ import type { SurfaceService } from './types/SurfaceService';
 
 /**
  * Global external Application Load Balancer: <domain> → web, studio.<domain> → studio (IAP),
- * Google-managed certificate, HTTP → HTTPS redirect. Without a configured domain, the domain is
- * derived from the static IP via sslip.io (ADR-0016).
+ * Google-managed certificate, HTTP → HTTPS redirect. The address and the domain come from
+ * `createAddress`.
  */
-export function createLoadBalancer(settings: Settings, web: SurfaceService, studio: SurfaceService, webArmor: gcp.compute.SecurityPolicy, studioArmor: gcp.compute.SecurityPolicy) {
-  const address = new gcp.compute.GlobalAddress('lb-ip', { project: settings.project, name: 'river-lb-ip' });
-  const domain = settings.domain ? pulumi.output(settings.domain) : address.address.apply((ip) => `${ip.replace(/\./g, '-')}.sslip.io`);
+export function createLoadBalancer(
+  settings: Settings,
+  site: { address: gcp.compute.GlobalAddress; domain: pulumi.Output<string> },
+  web: SurfaceService,
+  studio: SurfaceService,
+  webArmor: gcp.compute.SecurityPolicy,
+  studioArmor: gcp.compute.SecurityPolicy,
+) {
+  const { address, domain } = site;
   const studioDomain = pulumi.interpolate`studio.${domain}`;
 
   const backend = (name: string, surface: SurfaceService, armor: gcp.compute.SecurityPolicy, iap: boolean) =>

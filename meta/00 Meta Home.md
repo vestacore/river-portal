@@ -26,11 +26,13 @@ Language: British English.
 - [[Iteration 02 — Drafting Table Design]]
 - [[Iteration 03 — Open Publication]]
 - [[Iteration 04 — Identity, Trust and Settings]]
+- [[Iteration 05 — Payment River]] (branch `new-approach`)
 
 ## Reviews
 - [[2026-09-25 Site Map and Domain Review]]
 
 ## Observations
+- [[2026-10-02 What Building the Payment River Found]]
 - [[2026-09-25 Walking Every Role Found What Tests Missed]]
 - [[2026-09-24 Parallel Authoring Needs a Harmonisation Pass]]
 - [[2026-09-24 Supply-Chain Rule Meets Real Version Lines]]

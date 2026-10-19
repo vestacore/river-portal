@@ -20,8 +20,21 @@
               "icon": "lucide-file",
               "title": "DP-10 Report Publication"
             }
+          },
+          {
+            "id": "0ab91b7958848f33",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.14.4"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.14.4"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -41,7 +54,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -183,7 +198,7 @@
       "bases:Create new base": false
     }
   },
-  "active": "c797b742b33fc0a7",
+  "active": "0ab91b7958848f33",
   "lastOpenFiles": [
     "07-decisions/DP-08 Delivery Confirmation Review.md",
     "07-decisions/DP-06 Cost Approval.md",

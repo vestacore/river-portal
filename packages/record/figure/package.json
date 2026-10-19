@@ -1,0 +1,16 @@
+{
+  "name": "@river/figure",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Functions around the log: listeners that need, joiners that bridge, controllers at the bank, and the wave that settles them.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/kernel": "0.0.0",
+    "@river/store": "0.0.0",
+    "@river/stream": "0.0.0"
+  }
+}

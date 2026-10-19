@@ -6,6 +6,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json .npmrc ./
 COPY packages ./packages
 COPY apps/web/package.json ./apps/web/package.json
+COPY apps/pay-functions/package.json ./apps/pay-functions/package.json
 COPY infra/package.json ./infra/package.json
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY apps/web ./apps/web

@@ -1,3 +1,4 @@
+import { payUk } from './payUk.ts';
 import type { Dictionary } from './types.ts';
 
 /** Українські рядки інтерфейсу. Форма об'єкта перевіряється типом Dictionary. */
@@ -7,7 +8,7 @@ export const uk: Dictionary = {
     description: 'Попросіть про допомогу, поділіться тим, що маєте, і побачте, як кожен дар доходить до людей. Демонстрація River Portal.',
   },
   org: { name: 'Відкрита ріка', tagline: 'Допомога тече туди, де вона потрібна' },
-  nav: { ask: 'Попросити допомоги', give: 'Допомогти', campaigns: 'Кампанії', feed: 'Стрічка', studio: 'Студія', skip: 'Перейти до змісту', language: 'Мова', whereHelpWent: 'Куди пішла допомога', transparency: 'Прозорість', about: 'Про нас', contact: 'Контакти', faq: 'Питання', myRiver: 'Моя ріка', tryAs: 'Спробувати як…', actingAs: 'Ви дієте як', switch: 'Змінити', signOut: 'Вийти', demo: 'Демо' },
+  nav: { ask: 'Попросити допомоги', give: 'Допомогти', campaigns: 'Кампанії', feed: 'Стрічка', studio: 'Студія', skip: 'Перейти до змісту', language: 'Мова', whereHelpWent: 'Куди пішла допомога', transparency: 'Прозорість', about: 'Про нас', contact: 'Контакти', faq: 'Питання', myRiver: 'Моя ріка', tryAs: 'Спробувати як…', actingAs: 'Ви дієте як', switch: 'Змінити', signOut: 'Вийти', demo: 'Демо', pay: 'Платежі' },
   edit: { save: 'Зберегти', saving: 'Зберігаємо…', cancel: 'Скасувати', saved: 'Збережено', failed: 'Не вдалося зберегти. Спробуйте ще раз.', bold: 'Жирний', italic: 'Курсив', list: 'Список', heading: 'Заголовок' },
   common: {
     sheet: 'Аркуш', backHome: 'На головну', seeAll: 'Дивитися все', readReport: 'Читати звіт', private: 'Приватно', public: 'Публічно', team: 'Лише для команди',
@@ -207,4 +208,5 @@ export const uk: Dictionary = {
     feedQueue: 'Стрічка', suggestions: 'Пропозиції на перегляд', published: 'Опубліковано', accept: 'Опублікувати', reject: 'Відхилити', source: 'Джерело',
     newItem: 'Написати допис',
   },
+  pay: payUk,
 };
