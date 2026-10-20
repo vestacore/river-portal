@@ -27,11 +27,13 @@ Language: British English.
 - [[Iteration 03 — Open Publication]]
 - [[Iteration 04 — Identity, Trust and Settings]]
 - [[Iteration 05 — Payment River]] (branch `new-approach`)
+- [[Iteration 06 — PSP Portal]] (branch `psp`)
 
 ## Reviews
 - [[2026-09-25 Site Map and Domain Review]]
 
 ## Observations
+- [[2026-10-19 What Walking the PSP Cabinets Found]]
 - [[2026-10-02 What Building the Payment River Found]]
 - [[2026-09-25 Walking Every Role Found What Tests Missed]]
 - [[2026-09-24 Parallel Authoring Needs a Harmonisation Pass]]

@@ -1,0 +1,14 @@
+{
+  "name": "@river/psp-ledger",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The ledger as a projection: balanced double entries formed from the split, refunds, lost disputes and payouts, and the balances of every account.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/psp-facts": "0.0.0"
+  }
+}

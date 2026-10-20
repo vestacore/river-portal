@@ -1,0 +1,19 @@
+{
+  "name": "@river/psp-views",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "What the PSP's cabinets show: the river of one session with what each bridge formed, figures and series for dashboards, funnels by stage, mixes, approvals and payout batches.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/psp-facts": "0.0.0",
+    "@river/psp-invoice": "0.0.0",
+    "@river/psp-order": "0.0.0",
+    "@river/psp-payment": "0.0.0",
+    "@river/psp-session": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}

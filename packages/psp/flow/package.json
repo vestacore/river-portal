@@ -1,0 +1,18 @@
+{
+  "name": "@river/psp-flow",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The figure of one attempt: the pure decisions that move a session along the river — screening, routing, the payer's consent, the course of its instrument, the split at capture.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/psp-facts": "0.0.0",
+    "@river/psp-instruments": "0.0.0",
+    "@river/psp-risk": "0.0.0",
+    "@river/psp-split": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}

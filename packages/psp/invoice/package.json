@@ -1,0 +1,15 @@
+{
+  "name": "@river/psp-invoice",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Boundary: the invoice — the payable claim: how much, by when, how much is still due; its attempts, reminders and receipts.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-facts": "0.0.0"
+  }
+}

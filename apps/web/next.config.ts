@@ -25,11 +25,11 @@ const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: [
-    '@river/kernel', '@river/i18n', '@river/privacy', '@river/store', '@river/log', '@river/needs', '@river/gifts',
-    '@river/flows', '@river/assist', '@river/content', '@river/reports', '@river/feed', '@river/pages', '@river/runtime',
-    '@river/stream', '@river/figure', '@river/pay-facts', '@river/pay-ledger', '@river/pay-flow', '@river/pay-acts', '@river/pay-providers', '@river/pay-views', '@river/pay-runtime',
+    '@river/i18n', '@river/identity', '@river/stream',
+    '@river/psp-facts', '@river/psp-order', '@river/psp-invoice', '@river/psp-payment', '@river/psp-session', '@river/psp-units', '@river/psp-instruments',
+    '@river/psp-split', '@river/psp-ledger', '@river/psp-access', '@river/psp-contracts', '@river/psp-risk', '@river/psp-agents', '@river/psp-checkout',
+    '@river/psp-integration', '@river/psp-flow', '@river/psp-views', '@river/psp-runtime',
   ],
-  serverExternalPackages: ['firebase-admin', '@google/genai'],
   images: { unoptimized: true },
   experimental: { serverActions: { bodySizeLimit: '256kb' } },
   async headers() {

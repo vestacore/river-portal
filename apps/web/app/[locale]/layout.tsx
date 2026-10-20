@@ -1,31 +1,21 @@
 import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { pickText } from '@river/i18n';
-import { getRuntime } from '@river/runtime';
-import { accentShades, settingLocalised, settingText } from '@river/settings';
-import { SiteFooter } from '@/components/site/SiteFooter';
-import { SiteHeader } from '@/components/site/SiteHeader';
-import { getDictionary } from '@/lib/dictionary/getDictionary';
-import { getIdentity } from '@/lib/getIdentity';
-import { loadSettings } from '@/lib/loadSettings';
-import { loadSite } from '@/lib/loadSite';
+import { lt } from '@/lib/lt';
 import { resolveLocale } from '@/lib/resolveLocale';
 import '../globals.css';
 
-// Lean font set for low bandwidth (V5): two weights, one italic, one mono; Latin and Cyrillic only.
+// Lean font set: two weights, one italic, one mono; Latin and Cyrillic only.
 const plexSans = IBM_Plex_Sans({ subsets: ['latin', 'cyrillic'], weight: ['400', '600'], style: ['normal', 'italic'], variable: '--font-plex-sans', display: 'swap' });
-const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'cyrillic'], weight: ['400'], variable: '--font-plex-mono', display: 'swap' });
+const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'cyrillic'], weight: ['400', '600'], variable: '--font-plex-mono', display: 'swap' });
 
 type Props = { children: ReactNode; params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Omit<Props, 'children'>): Promise<Metadata> {
-  const locale = resolveLocale((await params).locale);
-  const settings = await loadSettings();
-  const name = pickText(settingLocalised(settings, 'org.name'), locale);
+  const t = lt(resolveLocale((await params).locale));
   return {
-    title: { default: `${name} — ${pickText(settingLocalised(settings, 'org.tagline'), locale)}`, template: `%s · ${name}` },
-    description: pickText(settingLocalised(settings, 'org.scope'), locale),
+    title: { default: t('River Pay — every payment is a river', 'River Pay — кожен платіж є рікою'), template: '%s · River Pay' },
+    description: t('A payment platform where one attempt to pay is a river from unpaid to paid: split payments, a hierarchy of units, every instrument first-class, agents that propose and people who decide.', 'Платіжна платформа, де одна спроба оплати — це ріка від несплаченого до сплаченого: розщеплення платежів, ієрархія одиниць, усі інструменти рівноправні, агенти пропонують — люди вирішують.'),
     alternates: { languages: { 'en-GB': '/en-gb', uk: '/uk' } },
     icons: { icon: '/icon.svg' },
   };
@@ -33,19 +23,12 @@ export async function generateMetadata({ params }: Omit<Props, 'children'>): Pro
 
 export const viewport: Viewport = { themeColor: '#f7f5ef', width: 'device-width', initialScale: 1 };
 
+/** The root of every page: language, fonts and the paper. Each area draws its own frame. */
 export default async function LocaleLayout({ children, params }: Props) {
   const locale = resolveLocale((await params).locale);
-  const dict = getDictionary(locale);
-  const [site, settings, identity, runtime] = await Promise.all([loadSite(), loadSettings(), getIdentity(locale), getRuntime()]);
-  const accent = accentShades(settingText(settings, 'appearance.accent'));
   return (
     <html lang={locale} className={`${plexSans.variable} ${plexMono.variable}`} data-scroll-behavior="smooth">
-      <body className="min-h-dvh">
-        <style>{`:root{--color-sunrise-100:${accent[100]};--color-sunrise-300:${accent[300]};--color-sunrise-500:${accent[500]};--color-sunrise-600:${accent[600]}}`}</style>
-        <SiteHeader locale={locale} dict={dict} identity={identity} orgName={pickText(settingLocalised(settings, 'org.name'), locale)} demo={runtime.config.auth === 'demo'} />
-        <main id="main">{children}</main>
-        <SiteFooter locale={locale} dict={dict} blocks={site.blocks} settings={settings} />
-      </body>
+      <body className="min-h-dvh">{children}</body>
     </html>
   );
 }

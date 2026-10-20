@@ -1,0 +1,14 @@
+{
+  "name": "@river/psp-integration",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The integrator's side: API keys, webhook endpoints and deliveries — facts released as events — the retry schedule, endpoint health and the API log.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/psp-facts": "0.0.0"
+  }
+}

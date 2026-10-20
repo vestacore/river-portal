@@ -1,0 +1,17 @@
+{
+  "name": "@river/psp-checkout",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The pay page: its configuration resolved from a unit's policies, card checks that run in the payer's browser, the demo's test cards, and the payer's texts in both languages.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-facts": "0.0.0",
+    "@river/psp-instruments": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}

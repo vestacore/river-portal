@@ -12,7 +12,7 @@ Every **direct** dependency, the version chosen and why. Policy: ADR-0007 (two m
 |---|---|---|---|---|---|
 | next | **16.3.5** | 16.3.6 | **Exception (advisory)**: every 16.1 and 16.2 release is affected by critical RCE advisories fixed only in ≥ 16.3.3. We took the nearest safe patch at least 7 days old; 16.3.6 was 2 days old | UI framework | apps/web |
 | react, react-dom | 19.1.9 | 19.3.0 | Two lines back | UI runtime | apps/web |
-| @tiptap/react, starter-kit, pm, core | **3.30.6** | 3.31.3 | **Exception (advisory)**: 3.29 is affected by a ReDoS (fixed in ≥ 3.30.5). 3.30.6 is the latest patch of the next line and 24 days old. All `@tiptap/*` are pinned through `overrides` | In-place editor | apps/web |
+| @tiptap/react, starter-kit, pm, core | **3.30.6** | 3.31.3 | **Exception (advisory)**: 3.29 is affected by a ReDoS (fixed in ≥ 3.30.5). 3.30.6 is the latest patch of the next line and 24 days old. All `@tiptap/*` are pinned through `overrides` | In-place editor | apps/web on `main`; not used on the branch `psp` (ADR-0026), where its `overrides` stay until the branch is decided |
 | tailwindcss, @tailwindcss/postcss | 4.1.18 | 4.3.3 | Two lines back | Styling | apps/web (dev) |
 | @types/react, @types/react-dom | 19.1.17 / 19.1.11 | 19.3.0 | Two lines back | Types | apps/web (dev) |
 | typescript | 5.9.3 | 7.0.2 | Two lines back across majors (7.0 → 6.0 → 5.9) | Type checking | root (dev) |
@@ -35,6 +35,7 @@ Every **direct** dependency, the version chosen and why. Policy: ADR-0007 (two m
 - **zod**: validation functions per command.
 - **jose / google-auth-library** (direct): the IAP JWT is verified with Web Crypto (`apps/web/lib/verifyIapJwt.ts`).
 - **framer-motion**: CSS animations and View Transitions are enough for now.
+- **A chart library** (Recharts, ECharts, Chart.js): the PSP's charts are plain SVG in the drafting-table language (ADR-0026).
 - **postcss** (direct): Tailwind brings it; the rule would have picked a 2021 line.
 
 ## Supply-chain gaps (tracked)

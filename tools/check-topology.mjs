@@ -6,7 +6,7 @@ import { builtinModules } from 'node:module';
 import { join, relative, dirname, resolve, sep } from 'node:path';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
-const layers = { foundation: 0, record: 1, river: 2, steward: 2, assist: 2, pay: 2, surface: 3, compose: 4, apps: 5, infra: 5 };
+const layers = { foundation: 0, record: 1, river: 2, steward: 2, assist: 2, pay: 2, psp: 2, surface: 3, compose: 4, apps: 5, infra: 5 };
 const errors = [];
 
 function walk(dir, out = []) {
@@ -87,6 +87,17 @@ for (const pkg of packages) {
   }
 }
 
+// ADR-0026: the four boundaries of the PSP share a vocabulary and nothing else. Each may depend on
+// @river/psp-facts and on lower layers, never on another package of its own group.
+const pspBoundaries = ['@river/psp-order', '@river/psp-invoice', '@river/psp-session', '@river/psp-payment'];
+for (const name of pspBoundaries) {
+  const pkg = byName.get(name);
+  if (!pkg) continue;
+  for (const dep of pkg.internal) {
+    if (byName.get(dep)?.group === 'psp' && dep !== '@river/psp-facts') errors.push(`${name}: a boundary hears other boundaries only through @river/psp-facts, not through ${dep}`);
+  }
+}
+
 // Cycles in declared internal dependencies.
 const state = new Map();
 function visit(name, trail) {
@@ -99,7 +110,7 @@ function visit(name, trail) {
 for (const name of byName.keys()) visit(name, []);
 
 // Generated section of TOPOLOGY.md.
-const groups = ['foundation', 'record', 'river', 'steward', 'assist', 'pay', 'surface', 'compose', 'apps', 'infra'];
+const groups = ['foundation', 'record', 'river', 'steward', 'assist', 'pay', 'psp', 'surface', 'compose', 'apps', 'infra'];
 const id = (n) => n.replace('@river/', '').replace(/[^a-z0-9]/g, '_');
 let mermaid = 'flowchart BT\n';
 for (const group of groups) {

@@ -1,0 +1,15 @@
+{
+  "name": "@river/psp-access",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Who may do what, where: roles of the cabinets, grants scoped to a unit and inherited down its subtree, permissions, and separation of duties.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}

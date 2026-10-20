@@ -1,48 +1,39 @@
 import Link from 'next/link';
-import type { BlockMap } from '@river/content';
-import { pickText, type Locale } from '@river/i18n';
-import { settingLocalised, type SettingsSnapshot } from '@river/settings';
-import type { Dictionary } from '@/lib/dictionary/types';
+import type { Locale } from '@river/i18n';
 import { href } from '@/lib/href';
+import { lt } from '@/lib/lt';
+import { Container } from '../ui/Container';
 import { LogoMark } from './LogoMark';
-import { SiteText } from './SiteText';
 
-/** Footer as the title block of a drawing: organisation, links, policies, principles, legal line. */
-export function SiteFooter({ locale, dict, blocks, settings }: { locale: Locale; dict: Dictionary; blocks: BlockMap; settings: SettingsSnapshot }) {
-  const cell = 'border-graphite/25 p-6 sm:p-7';
-  const a = 'text-ink-700 hover:text-ink-900 hover:underline';
-  const legal = [pickText(settingLocalised(settings, 'org.legalName'), locale), pickText(settingLocalised(settings, 'org.registration'), locale)].filter(Boolean).join(' · ');
+/** The footer, drawn as the title block of a sheet: what this stand is, where everything is, and its honest limits. */
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const t = lt(locale);
+  const columns: Array<[string, Array<[string, string]>]> = [
+    [t('Platform', 'Платформа'), [['/platform/split', t('Split payments', 'Розщеплення платежів')], ['/platform/hierarchy', t('Hierarchy of units', 'Ієрархія одиниць')], ['/platform/instruments', t('Payment instruments', 'Платіжні інструменти')], ['/platform/lifecycle', t('Lifecycle and projections', 'Життєвий цикл і проєкції')], ['/platform/agents', t('Agent swarm', 'Рій агентів')], ['/platform/invoicing', t('Invoices and orders', 'Інвойси та замовлення')]]],
+    [t('For business', 'Для бізнесу'), [['/pricing', t('Pricing', 'Тарифи')], ['/shop', t('Pay a demo invoice', 'Сплатити демо-інвойс')], ['/demo', t('Six cabinets', 'Шість кабінетів')]]],
+    [t('Developers', 'Розробникам'), [['/developers', t('Four entities and their API', 'Чотири сутності та їх API')], ['/developers#events', t('Event catalogue', 'Каталог подій')], ['/cabinet/sandbox', t('Sandbox', 'Пісочниця')]]],
+  ];
   return (
-    <footer className="mt-8 border-t border-graphite/70 bg-paper">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="grid border-x border-graphite/25 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div className={`${cell} border-b md:border-b-0 md:border-r`}>
-            <div className="flex items-center gap-3"><LogoMark className="size-8" /><span className="font-display text-lg font-semibold text-ink-900">{pickText(settingLocalised(settings, 'org.name'), locale)}</span></div>
-            <SiteText blocks={blocks} blockId="footer.note" locale={locale} className="mt-4 max-w-md text-[0.95rem] text-ink-500" />
+    <footer className="mt-24 border-t-2 border-ink-900 bg-paper-deep">
+      <Container className="py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
+          <div>
+            <div className="flex items-center gap-3"><LogoMark /><span className="text-lg font-semibold text-ink-900">River Pay</span></div>
+            <p className="mt-4 max-w-sm text-[0.95rem] text-ink-700">{t('A payment platform drawn as a river: one attempt to pay is one river from unpaid to paid.', 'Платіжна платформа, накреслена як ріка: одна спроба оплати — одна ріка від несплаченого до сплаченого.')}</p>
+            <p className="annot mt-6 max-w-sm text-ink-500">{t('Demo stand · invented organisations and people · stand-in banks · no money moves', 'Демо-стенд · вигадані організації та люди · банки-імітатори · гроші не рухаються')}</p>
           </div>
-          <nav className={`${cell} border-b md:border-b-0 md:border-r`} aria-label="Footer">
-            <ul className="space-y-2.5 text-[0.95rem]">
-              <li><Link className={a} href={href(locale, '/ask')}>{dict.nav.ask}</Link></li>
-              <li><Link className={a} href={href(locale, '/give')}>{dict.nav.give}</Link></li>
-              <li><Link className={a} href={href(locale, '/about')}>{dict.nav.about}</Link></li>
-              <li><Link className={a} href={href(locale, '/transparency')}>{dict.nav.transparency}</Link></li>
-              <li><Link className={a} href={href(locale, '/contact')}>{dict.nav.contact}</Link></li>
-              <li><Link className={a} href={href(locale, '/faq')}>{dict.nav.faq}</Link></li>
-            </ul>
-          </nav>
-          <ul className={`${cell} space-y-2.5 border-b text-[0.95rem] md:border-b-0 md:border-r`}>
-            {(['privacy', 'safeguarding', 'complaints', 'accessibility'] as const).map((slug) => <li key={slug}><Link className={a} href={href(locale, `/policies/${slug}`)}>{dict.policies[slug]}</Link></li>)}
-          </ul>
-          <ul className={`${cell} annot space-y-3 text-ink-700`}>
-            {dict.footer.principles.map((p) => <li key={p} className="flex items-center gap-2"><span className="size-1.5 rotate-45 bg-sunrise-500" aria-hidden="true" />{p}</li>)}
-          </ul>
+          {columns.map(([title, links]) => (
+            <div key={title}>
+              <p className="annot mb-4 text-ink-500">{title}</p>
+              <ul className="space-y-2.5">{links.map(([path, label]) => <li key={path}><Link href={href(locale, path)} className="text-[0.95rem] text-ink-900 hover:underline hover:decoration-sunrise-500 hover:underline-offset-4">{label}</Link></li>)}</ul>
+            </div>
+          ))}
         </div>
-        <div className="annot grid border-x border-t border-graphite/25 text-ink-500 sm:grid-cols-[1fr_1fr_auto]">
-          <span className="border-b border-graphite/25 px-6 py-3 sm:border-b-0 sm:border-r">{legal || dict.footer.drawnBy}</span>
-          <span className="border-b border-graphite/25 px-6 py-3 sm:border-b-0 sm:border-r">{dict.footer.checkedBy}</span>
-          <span className="px-6 py-3">River Portal · {dict.footer.revision} 2026-09</span>
+        <div className="annot mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-graphite/30 pt-5 text-ink-500">
+          <span>{t('Sheet', 'Аркуш')} RP-00 · {t('Code Apache 2.0 · documents CC BY-NC 4.0', 'Код Apache 2.0 · документи CC BY-NC 4.0')}</span>
+          <span>{t('Built with an AI partner; people decide', 'Створено з ШІ-партнером; вирішують люди')}</span>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

@@ -1,0 +1,16 @@
+{
+  "name": "@river/psp-risk",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Risk and AML: the scoring of an attempt with its reasons, rules set on units and inherited down the hierarchy, monitoring alerts, merchant onboarding cases and name screening.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-facts": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@river/psp-payment",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Boundary: the payment — money secured by one attempt and its life after the mouth: capture, the delta of shares, refunds, disputes and payouts.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-facts": "0.0.0"
+  }
+}

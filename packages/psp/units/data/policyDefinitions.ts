@@ -1,0 +1,105 @@
+import { instrumentIds } from '@river/psp-facts';
+import type { PolicyDefinition } from '../types/Policy.ts';
+
+const t = (en: string, uk: string) => ({ 'en-GB': en, uk });
+
+/**
+ * Every policy a unit can set, once. A unit's effective policy is resolved from the root down
+ * (`resolvePolicy`): the declared default, then each unit's setting, met by the policy's `combine` rule.
+ */
+export const policyDefinitions: readonly PolicyDefinition[] = [
+  // limits
+  { key: 'limits.payment.max', group: 'limits', kind: 'money', combine: 'min', default: null,
+    label: t('Maximum for one payment', 'Максимум одного платежу'),
+    help: t('A lower unit may only lower it.', 'Нижча одиниця може лише зменшити.') },
+  { key: 'limits.daily.max', group: 'limits', kind: 'money', combine: 'min', default: null,
+    label: t('Daily turnover cap', 'Денний ліміт обороту'),
+    help: t('All successful payments of the unit and its subtree in one day.', 'Усі успішні платежі одиниці та її піддерева за добу.') },
+  // instruments
+  { key: 'instruments.allowed', group: 'instruments', kind: 'list', combine: 'subset', default: [...instrumentIds], options: instrumentIds,
+    label: t('Allowed instruments', 'Дозволені інструменти'),
+    help: t('A lower unit may only take instruments away, never add one its parent does not allow.', 'Нижча одиниця може лише прибрати інструмент, але не додати той, що заборонено вище.') },
+  // risk
+  { key: 'risk.review.score', group: 'risk', kind: 'number', combine: 'min', default: 75, measure: 'score',
+    label: t('Hold for review from score', 'Затримувати на перевірку від балу'),
+    help: t('Attempts scoring this or more wait for a compliance officer. Lower is stricter.', 'Спроби з таким чи вищим балом чекають офіцера. Менше — суворіше.') },
+  { key: 'risk.block.score', group: 'risk', kind: 'number', combine: 'min', default: 92, measure: 'score',
+    label: t('Block from score', 'Блокувати від балу'),
+    help: t('Attempts scoring this or more are refused at once.', 'Спроби з таким чи вищим балом відхиляються одразу.') },
+  { key: 'risk.countries.blocked', group: 'risk', kind: 'list', combine: 'union', default: [],
+    label: t('Blocked countries', 'Заблоковані країни'),
+    help: t('Payers and issuers from these countries are refused. A lower unit may only add countries.', 'Платники та емітенти з цих країн відхиляються. Нижча одиниця може лише додати країни.') },
+  { key: 'aml.threshold.report', group: 'risk', kind: 'money', combine: 'min', default: null,
+    label: t('Threshold for a mandatory report', 'Поріг обов’язкового звіту'),
+    help: t('Payments at or above it are reported to the financial intelligence unit.', 'Платежі від цієї суми звітуються до підрозділу фінансової розвідки.') },
+  { key: 'sca.mode', group: 'risk', kind: 'enum', combine: 'override', default: 'risk_based', options: ['always', 'risk_based'],
+    label: t('Strong customer authentication', 'Посилена автентифікація'),
+    help: t('Always challenge, or let low-risk and low-value attempts through without a challenge.', 'Завжди запитувати підтвердження або пропускати спроби з низьким ризиком і малою сумою.') },
+  { key: 'sca.exemption.max', group: 'risk', kind: 'money', combine: 'min', default: 3_000,
+    label: t('Low-value exemption up to', 'Виняток для малих сум до'),
+    help: t('Below this amount a low-risk attempt needs no challenge.', 'Нижче цієї суми спроба з низьким ризиком не потребує підтвердження.') },
+  // capture
+  { key: 'capture.mode', group: 'capture', kind: 'enum', combine: 'override', default: 'auto', options: ['auto', 'manual'],
+    label: t('Capture', 'Списання'),
+    help: t('Take the money at once, or hold it until an operator captures (at shipment).', 'Списувати одразу або тримати блокування до списання операціоністом (при відвантаженні).') },
+  { key: 'refunds.window.days', group: 'capture', kind: 'number', combine: 'min', default: 180, measure: 'days',
+    label: t('Refunds allowed for', 'Повернення дозволено протягом'),
+    help: t('Days after capture in which a payment may be refunded.', 'Днів після списання, протягом яких можна повернути платіж.') },
+  // settlement
+  { key: 'settlement.schedule', group: 'settlement', kind: 'enum', combine: 'override', default: 'T+1', options: ['T+0', 'T+1', 'T+2', 'weekly'],
+    label: t('Payout schedule', 'Графік виплат'),
+    help: t('When shares are paid out to recipients after capture.', 'Коли частки виплачуються одержувачам після списання.') },
+  { key: 'settlement.reserve.bps', group: 'settlement', kind: 'percent', combine: 'max', default: 0, measure: 'bps',
+    label: t('Rolling reserve', 'Ковзний резерв'),
+    help: t('Part of each share kept back as a reserve. A lower unit may only raise it.', 'Частина кожної частки, що утримується в резерві. Нижча одиниця може лише збільшити.') },
+  { key: 'settlement.hold.days', group: 'settlement', kind: 'number', combine: 'max', default: 0, measure: 'days',
+    label: t('Hold shares for', 'Утримувати частки'),
+    help: t('Days a share stays held before it may be paid out.', 'Днів, протягом яких частка утримується до виплати.') },
+  // split
+  { key: 'split.template', group: 'split', kind: 'enum', combine: 'override', default: 'direct', options: ['direct', 'marketplace', 'agency', 'franchise'],
+    label: t('Split template', 'Шаблон розщеплення'),
+    help: t('How an order’s money is distributed unless the order says otherwise.', 'Як розподіляються гроші замовлення, якщо воно не задає власних правил.') },
+  { key: 'split.commission.bps', group: 'split', kind: 'percent', combine: 'override', default: 0, measure: 'bps',
+    label: t('Marketplace commission', 'Комісія маркетплейсу'),
+    help: t('What a marketplace keeps from its sellers’ lines.', 'Що маркетплейс залишає собі з позицій продавців.') },
+  { key: 'split.charity.bps', group: 'split', kind: 'percent', combine: 'override', default: 0, measure: 'bps',
+    label: t('Share for a good cause', 'Частка на добру справу'),
+    help: t('A share of every payment that flows to a charity in the hierarchy.', 'Частка кожного платежу, що тече до благодійника в ієрархії.') },
+  { key: 'split.charity.recipient', group: 'split', kind: 'text', combine: 'override', default: 'ou-open-river',
+    label: t('Charity that receives it', 'Благодійник-одержувач'),
+    help: t('The unit the share for a good cause flows to.', 'Одиниця, до якої тече частка на добру справу.') },
+  // checkout
+  { key: 'checkout.accent', group: 'checkout', kind: 'colour', combine: 'override', default: '#0d378c',
+    label: t('Accent colour of the pay page', 'Акцентний колір сторінки оплати'),
+    help: t('The button and the active states of the payment page.', 'Кнопка та активні стани сторінки оплати.') },
+  { key: 'checkout.instrumentOrder', group: 'checkout', kind: 'list', combine: 'override', default: [...instrumentIds], options: instrumentIds,
+    label: t('Order of instruments', 'Порядок інструментів'),
+    help: t('The order in which the pay page offers the allowed instruments.', 'Порядок, у якому сторінка оплати пропонує дозволені інструменти.') },
+  { key: 'checkout.collect.email', group: 'checkout', kind: 'boolean', combine: 'override', default: true,
+    label: t('Ask for an e-mail for the receipt', 'Запитувати e-mail для квитанції'),
+    help: t('The address goes to the receipt only; it never enters the river.', 'Адреса потрібна лише для квитанції; у потік вона не потрапляє.') },
+  { key: 'checkout.session.minutes', group: 'checkout', kind: 'number', combine: 'min', default: 30, measure: 'minutes',
+    label: t('A session lives for', 'Сесія триває'),
+    help: t('Minutes before an untouched attempt is closed.', 'Хвилин до закриття покинутої спроби.') },
+  { key: 'checkout.showSplit', group: 'checkout', kind: 'boolean', combine: 'override', default: false,
+    label: t('Show the payer where the money goes', 'Показувати платнику, куди йдуть гроші'),
+    help: t('The pay page shows the delta: the shares of sellers, the marketplace, a good cause and the fee.', 'Сторінка оплати показує дельту: частки продавців, маркетплейсу, доброї справи та комісію.') },
+  { key: 'checkout.languages', group: 'checkout', kind: 'list', combine: 'subset', default: ['uk', 'en-GB'], options: ['uk', 'en-GB'],
+    label: t('Languages of the pay page', 'Мови сторінки оплати'),
+    help: t('The payer’s browser language is chosen among these.', 'Мова браузера платника обирається серед цих.') },
+  // invoices
+  { key: 'invoices.dueDays', group: 'invoices', kind: 'number', combine: 'override', default: 7, measure: 'days',
+    label: t('Invoices are due in', 'Строк оплати інвойсу'),
+    help: t('Days from issue to the due date.', 'Днів від виставлення до строку оплати.') },
+  { key: 'invoices.reminders', group: 'invoices', kind: 'list', combine: 'override', default: [-3, 0, 3, 7], measure: 'days',
+    label: t('Reminders, days from the due date', 'Нагадування, днів від строку'),
+    help: t('Negative is before the due date. The collector agent proposes; a person or the policy sends.', 'Від’ємні — до строку. Агент-збирач пропонує; надсилає людина або політика.') },
+  // agents
+  { key: 'agents.autonomy', group: 'agents', kind: 'enum', combine: 'override', default: 'propose', options: ['propose', 'act_low_risk'],
+    label: t('What agents may do alone', 'Що агенти можуть робити самі'),
+    help: t('Propose only, or also carry out low-risk proposals (reminders, webhook retries) without a person.', 'Лише пропонувати, або також виконувати низькоризикові пропозиції (нагадування, повтор вебхуків) без людини.') },
+  { key: 'agents.enabled', group: 'agents', kind: 'list', combine: 'subset', default: ['sentinel', 'router', 'reconciler', 'collector', 'analyst', 'clerk', 'copilot', 'treasurer'],
+    options: ['sentinel', 'router', 'reconciler', 'collector', 'analyst', 'clerk', 'copilot', 'treasurer'],
+    label: t('Agents at work', 'Агенти в роботі'),
+    help: t('Which agents of the swarm watch this unit’s flows.', 'Які агенти рою стежать за потоками одиниці.') },
+];

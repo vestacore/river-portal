@@ -1,0 +1,22 @@
+{
+  "name": "@river/psp-agents",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "The swarm of agents: who watches what, the insights and proposals they write in their own namespace, how they consult each other — and the rule that people decide.",
+  "type": "module",
+  "exports": {
+    ".": "./gate.ts"
+  },
+  "dependencies": {
+    "@river/i18n": "0.0.0",
+    "@river/psp-facts": "0.0.0",
+    "@river/psp-integration": "0.0.0",
+    "@river/psp-invoice": "0.0.0",
+    "@river/psp-order": "0.0.0",
+    "@river/psp-payment": "0.0.0",
+    "@river/psp-risk": "0.0.0",
+    "@river/psp-session": "0.0.0",
+    "@river/psp-units": "0.0.0"
+  }
+}
