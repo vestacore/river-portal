@@ -1,0 +1,14 @@
+{
+  "name": "@river/nestvm-lab",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "A payment attempt as a NestVM machine: programmes, the assembly's world, a door that routes facts to machines, and the planes they project. A laboratory beside the portal, not a workspace package.",
+  "type": "commonjs",
+  "scripts": {
+    "build": "../node_modules/.bin/tsc -p tsconfig.json",
+    "walk": "npm run build && node .dist/portal/nestvm/src/walk.js",
+    "serve": "npm run build && node .dist/portal/nestvm/src/serve.js",
+    "test": "npm run build && node --test .dist/portal/nestvm/src/walk.test.js"
+  }
+}

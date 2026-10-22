@@ -66,6 +66,16 @@ export type RouteChosen = {
   rail: Rail;
   acquirer: string;
   rule: string;
+  /** How the route was chosen: `approval_first`, `least_cost` or `on_us_first` (the unit's policy). */
+  strategy?: string;
+  /** The card's issuing bank, from the BIN, when known. */
+  issuer?: string | null;
+  /** The issuer is the acquirer: the bank pays no interchange to another bank. */
+  onUs?: boolean;
+  /** The acquirer's expected fee for this attempt under the merchant's acquiring terms. */
+  feeMinor?: number | null;
+  /** Every acquirer considered, with its expected fee and approval rate, and whether it qualified. */
+  alternatives?: Array<{ acquirer: string; feeMinor: number | null; approvalBps: number; onUs: boolean; eligible: boolean }>;
 };
 
 /** `authentication.Challenged` — the world (issuer's ACS, a bank): the payer must prove it is them. */
@@ -229,7 +239,7 @@ export type FundsReceived = {
   acquirer: string;
   amountMinor: number;
   currency: Currency;
-  via: 'statement' | 'rail' | 'chain' | 'kiosk' | 'lender';
+  via: 'statement' | 'rail' | 'chain' | 'kiosk' | 'lender' | 'loyalty';
   captureMode: 'auto' | 'manual';
 };
 
@@ -283,6 +293,8 @@ export type CaptureCompleted = {
   amountMinor: number;
   currency: Currency;
   feeMinor: number;
+  /** Held but not taken: a partial capture releases the rest of the authorisation (an order picked for less). */
+  releasedMinor?: number;
 };
 
 /** `split.Allocated` — the figure: the delta — who receives how much of the captured amount. Sums to the amount. */

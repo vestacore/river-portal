@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "Wires the PSP for the demo stand: the world in memory, the one writer of facts with its boundary check, the stand-in banks, the history it replays, the commands of every cabinet with their access checks, the swarm and the clock.",
+  "description": "Wires the platform's two demo assemblies — a retail group whose banks settle to it directly, and a PSP that holds its merchants' money: the worlds in memory, the one writer of facts with its boundary check, the stand-in providers, the history each replays, the commands of every cabinet with their access checks, the readings of routing, cost and reconciliation, the agents and the clock.",
   "type": "module",
   "exports": {
     ".": "./gate.ts"
@@ -25,6 +25,7 @@
     "@river/psp-payment": "0.0.0",
     "@river/psp-risk": "0.0.0",
     "@river/psp-session": "0.0.0",
+    "@river/psp-settlement": "0.0.0",
     "@river/psp-split": "0.0.0",
     "@river/psp-units": "0.0.0",
     "@river/psp-views": "0.0.0",

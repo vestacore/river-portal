@@ -4,6 +4,7 @@
 export { agentIds, proposalKinds } from './types/Agent.ts';
 export type { AgentId, ProposalKind, Audience, AgentDefinition, InsightSubject, Proposal, InsightDraft, Insight } from './types/Agent.ts';
 export type { SwarmInput } from './types/SwarmInput.ts';
+export type { RoutingOutlook, PosOutlook, ReconciledBatch } from './types/Outlook.ts';
 export { agentCatalogue } from './data/agentCatalogue.ts';
 export { runSwarm } from './runSwarm.ts';
 export { consultSwarm } from './consultSwarm.ts';

@@ -6,12 +6,13 @@ import type { Actor, CommandResult, World } from './types/World.ts';
 
 /**
  * Sets a policy on a unit (or clears it with `value: undefined`). The pay page's policies need the
- * designer's right, risk policies the compliance officer's, and the administrator may set any of them. A setting that would not take effect — a
+ * designer's right, risk policies the compliance officer's, routing policies the payments manager's, and
+ * the administrator may set any of them. A setting that would not take effect — a
  * unit above enforces it, or it is looser than what is allowed above — is refused with the reason.
  */
 export function setPolicy(world: World, actor: Actor, input: { unitId: string; key: string; value: PolicySetting['value'] | undefined; mode: PolicySetting['mode']; note?: string }, at: string): CommandResult<{ issues: string[] }> {
   const definition = findPolicyDefinition(input.key);
-  const rights: Permission[] = definition.group === 'checkout' ? ['checkout.write', 'policies.write'] : definition.group === 'risk' ? ['rules.write', 'policies.write'] : ['policies.write'];
+  const rights: Permission[] = definition.group === 'checkout' ? ['checkout.write', 'policies.write'] : definition.group === 'risk' ? ['rules.write', 'policies.write'] : definition.group === 'routing' ? ['routing.write', 'policies.write'] : ['policies.write'];
   const refusals = rights.map((right) => guard(world, actor, right, input.unitId, at));
   if (refusals.every((r) => r !== null)) return { ok: false, error: refusals[0]! };
   const personId = actor.kind === 'person' ? actor.personId : 'system';

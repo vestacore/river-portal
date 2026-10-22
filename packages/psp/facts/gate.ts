@@ -1,6 +1,7 @@
-// @river/psp-facts — the shared vocabulary of the PSP (adr/records/ADR-0026): the four boundaries (order,
-// invoice, session, payment), the stages of the river, and every fact type with its owner, its speaker
-// and the projections it forms. The four boundary packages depend on this gate and on nothing else.
+// @river/psp-facts — the shared vocabulary (adr/records/ADR-0026, ADR-0027): the boundaries (order,
+// invoice, session, payment, settlement), the stages of a payment session, and every fact type with its
+// owner, its speaker and the projections it forms. The boundary packages depend on this gate and on
+// nothing else.
 export { currencies } from './types/Currency.ts';
 export type { Currency } from './types/Currency.ts';
 export { boundaries, projections } from './types/Boundary.ts';
@@ -21,6 +22,7 @@ export type * from './types/OrderFacts.ts';
 export type * from './types/InvoiceFacts.ts';
 export type * from './types/SessionFacts.ts';
 export type * from './types/PaymentFacts.ts';
+export type * from './types/SettlementFacts.ts';
 export type { PayloadMap, FactType } from './types/PayloadMap.ts';
 export type { PspFact, PspDraft } from './types/PspFact.ts';
 export type { FactDefinition } from './types/FactDefinition.ts';

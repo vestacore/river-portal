@@ -34,7 +34,7 @@ export function orderColumns(ctx: Ctx): Column<OrderView>[] {
     { key: 'total', label: t('Total', 'Сума'), align: 'end', cell: (o) => ({ kind: 'money', minor: o.totalMinor, currency: o.currency }), sort: (o) => o.totalMinor },
     { key: 'status', label: t('Status', 'Статус'), cell: (o) => ({ kind: 'status', label: pickText(orderStatusLabels[o.status], ctx.locale), tone: orderTone[o.status] }), sort: (o) => o.status },
     { key: 'fulfilment', label: t('Goods', 'Товар'), cell: (o) => (o.fulfilment === 'none' ? { kind: 'empty' } : { kind: 'status', label: pickText(fulfilmentLabels[o.fulfilment], ctx.locale), tone: o.fulfilment === 'delivered' ? 'success' : 'info' }) },
-    { key: 'split', label: t('Streams', 'Протоки'), align: 'end', cell: (o) => ({ kind: 'count', n: o.allocations.length }) },
+    { key: 'split', label: t('Shares', 'Частки'), align: 'end', cell: (o) => ({ kind: 'count', n: o.allocations.length }) },
   ];
 }
 

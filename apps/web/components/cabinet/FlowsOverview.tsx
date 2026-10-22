@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { pickText, type Locale } from '@river/i18n';
+import { pickText, pluralise, type Locale } from '@river/i18n';
 import { agentCatalogue } from '@river/psp-agents';
 import { stageCatalogue, type Currency } from '@river/psp-facts';
 import { findInstrument } from '@river/psp-instruments';
@@ -18,16 +18,20 @@ import { DataTable } from '../panels/DataTable';
 import { Metric } from '../panels/Metric';
 import { Panel } from '../panels/Panel';
 import { InsightCard } from './InsightCard';
+import { providerName } from './connections/providerName';
 
 const day = 86_400_000;
 
 /**
  * The dashboard of a scope's flows: headline figures, the money by day, attempts by how they ended, the
  * funnel as a river, the mix of instruments, the acquirers' approvals, what waits for someone, the
- * newest attempts and the agents' proposals. Every figure is a fold of the boundaries' views.
+ * newest attempts and the agents' proposals. Every figure is a fold of the boundaries' views. On the retail
+ * stand the words follow its assembly: holds wait for picking, fees are the banks' acquiring fees, and
+ * providers are named.
  */
 export function FlowsOverview({ w, visible, locale, ctx, role, days, back, canDecide, personName }: { w: World; visible: ReadonlySet<string>; locale: Locale; ctx: Ctx; role: string; days: number; back: string; canDecide: boolean; personName: (id: string) => string }) {
   const t = lt(locale);
+  const retail = w.stand === 'retail';
   const now = ctx.now;
   const from = new Date(Date.parse(now) - days * day).toISOString();
   const { sessions, payments, invoices } = scoped(w, visible);
@@ -49,9 +53,11 @@ export function FlowsOverview({ w, visible, locale, ctx, role, days, back, canDe
   const audience = new Set(agentCatalogue.filter((a) => a.audience.includes(role as never)).map((a) => a.id));
   const insights = w.insights.filter((i) => i.status === 'open' && audience.has(i.agent) && visible.has(i.unitId)).slice(0, 4);
   const queue: Array<[string, number, string, string]> = [
-    [t('Holds to capture', 'Блокування до списання'), toCapture.length, ctx.link('/payments?status=authorised'), t('manual capture at shipment', 'ручне списання при відвантаженні')],
-    [t('Held for review', 'Затримано на перевірку'), held.length, ctx.link('/sessions?outcome=review'), t('compliance; money that did not match, an operator', 'комплаєнс; кошти, що не збіглися, — операціоніст')],
-    [t('Waiting for pushed money', 'Чекають надісланих коштів'), waitingFunds.length, ctx.link('/sessions?outcome=awaiting_funds'), t('transfers, cash codes, debits', 'перекази, коди готівки, списання')],
+    retail
+      ? [t('Holds awaiting picking', 'Блокування, що чекають на комплектацію'), toCapture.length, ctx.link('/payments?status=authorised'), t('captured after picking, less the bonus points', 'списання після комплектації, за вирахуванням бонусних балів')]
+      : [t('Holds to capture', 'Блокування до списання'), toCapture.length, ctx.link('/payments?status=authorised'), t('manual capture at shipment', 'ручне списання при відвантаженні')],
+    [t('Held for review', 'Затримано на перевірку'), held.length, ctx.link('/sessions?outcome=review'), retail ? t('risk and fraud; money that did not match, an operator', 'ризики й антифрод; кошти, що не збіглися, — оператор') : t('compliance; money that did not match, an operator', 'комплаєнс; кошти, що не збіглися, — операціоніст')],
+    [t('Waiting for pushed money', 'Чекають надісланих коштів'), waitingFunds.length, ctx.link('/sessions?outcome=awaiting_funds'), retail ? t('bank transfers and QR payments', 'банківські перекази й оплати за QR') : t('transfers, cash codes, debits', 'перекази, коди готівки, списання')],
     [t('Overdue invoices', 'Прострочені інвойси'), overdue.length, ctx.link('/invoices?status=overdue'), money(overdue.reduce((s, i) => s + invoiceDueMinor(i), 0), main, locale)],
     [t('Disputes to answer', 'Спори до відповіді'), disputes.length, ctx.link('/disputes'), t('evidence before the deadline', 'докази до строку')],
   ];
@@ -63,7 +69,7 @@ export function FlowsOverview({ w, visible, locale, ctx, role, days, back, canDe
         <Metric label={t('Approved', 'Схвалено')} value={percent(k.approvalBps, locale)} note={t('of attempts that reached an answer', 'спроб, що отримали відповідь')} tone={k.approvalBps > 9_000 ? 'success' : 'warning'} />
         <Metric label={t('Conversion', 'Конверсія')} value={percent(k.conversionBps, locale)} note={`${count(k.succeeded, locale)} / ${count(k.sessions, locale)} ${t('sessions', 'сесій')}`} />
         <Metric label={t('Refunded', 'Повернено')} value={money(k.refundedMinor, main, locale, true)} note={percent(k.refundBps, locale)} />
-        <Metric label={t('Fees earned', 'Комісій нараховано')} value={money(k.feeMinor, main, locale, true)} note={`${k.disputes} ${t('disputes', 'спорів')}`} />
+        <Metric label={retail ? t('Acquiring fees', 'Комісії еквайрингу') : t('Fees earned', 'Комісій нараховано')} value={money(k.feeMinor, main, locale, true)} note={`${retail ? `${t('paid to banks and providers', 'сплачено банкам і провайдерам')} · ` : ''}${pluralise(k.disputes, locale, locale === 'uk' ? { one: '{n} спір', few: '{n} спори', many: '{n} спорів', other: '{n} спору' } : { one: '{n} dispute', other: '{n} disputes' })}`} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
@@ -100,9 +106,9 @@ export function FlowsOverview({ w, visible, locale, ctx, role, days, back, canDe
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1.4fr]">
         <Panel title={t('Acquirers and banks', 'Еквайри та банки')} note={t('Approval of the attempts each carried.', 'Схвалення спроб, які кожен провів.')}>
-          <HBars rows={approvals.map((a) => ({ label: a.acquirer, value: a.approvalBps, display: percent(a.approvalBps, locale), note: `${a.approved + a.refused}`, tone: a.approvalBps < 9_000 ? 'attention' : 'teal' }))} />
+          <HBars rows={approvals.map((a) => ({ label: retail ? providerName(a.acquirer, locale, w.stand) : a.acquirer, value: a.approvalBps, display: percent(a.approvalBps, locale), note: `${a.approved + a.refused}`, tone: a.approvalBps < 9_000 ? 'attention' : 'teal' }))} />
         </Panel>
-        <Panel title={t('The swarm proposes', 'Рій пропонує')} actions={<Link href={ctx.link('/agents')} className="annot text-[0.6rem] text-river-700 hover:text-ink-900">{t('All proposals', 'Усі пропозиції')} →</Link>}>
+        <Panel title={t('The agents propose', 'Агенти пропонують')} actions={<Link href={ctx.link('/agents')} className="annot text-[0.6rem] text-river-700 hover:text-ink-900">{t('All proposals', 'Усі пропозиції')} →</Link>}>
           {insights.length === 0 ? <p className="text-ink-500">{t('Nothing waits for you.', 'Нічого не чекає на вас.')}</p> : (
             <div className="space-y-3">{insights.map((i) => <InsightCard key={i.id} insight={i} locale={locale} link={ctx.link} back={back} canDecide={canDecide} personName={personName} />)}</div>
           )}

@@ -117,7 +117,7 @@ export default async function WebhookPage({ params, searchParams }: { params: Pr
           ) : <p className="text-ink-500">{t('No event of the river was delivered here in the last two days.', 'За останні два дні сюди не доставлено жодної події ріки.')}</p>}
         </Panel>
         <Panel title={t('Checking the signature', 'Перевірка підпису')}
-          note={t('Every delivery is signed with the endpoint’s secret, so your server can tell it came from River Pay and was not changed on the way.', 'Кожну доставку підписано секретом кінцевої точки, тож ваш сервер може переконатися, що вона від River Pay і не змінена дорогою.')}>
+          note={t('Every delivery is signed with the endpoint’s secret, so your server can tell it came from the platform and was not changed on the way.', 'Кожну доставку підписано секретом кінцевої точки, тож ваш сервер може переконатися, що вона від платформи й не змінена дорогою.')}>
           <ol className="mb-4 list-decimal space-y-1.5 pl-5 text-[0.88rem] text-ink-700">
             <li>{t('Read the header', 'Прочитайте заголовок')} <code className="font-mono text-[0.8rem] text-ink-900">River-Signature: t=&lt;unix&gt;,v1=&lt;hex&gt;</code>.</li>
             <li>{t('Compute HMAC-SHA256 with the endpoint’s secret over the timestamp, a full stop and the raw body — the bytes as received, not JSON parsed and written again.', 'Обчисліть HMAC-SHA256 із секретом кінцевої точки від мітки часу, крапки й сирого тіла — байтів, як їх отримано, а не JSON, розібраного й записаного наново.')}</li>

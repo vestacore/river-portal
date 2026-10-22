@@ -16,7 +16,8 @@ export function releaseWebhooks(world: World, fact: PspFact): void {
   if (!unitId) return;
   for (const endpoint of world.endpoints) {
     if (!subscribes(endpoint, fact.type) || !isWithin(world.units, unitId, endpoint.unitId)) continue;
-    const failing = endpoint.id === 'wh-kvg-orders' && Date.parse(fact.at) > Date.parse(world.startedAt) - 5 * 3_600_000 && !world.counters.fixedKvgEndpoint;
+    const story = world.failing.find((f) => f.endpointId === endpoint.id);
+    const failing = story !== undefined && Date.parse(fact.at) > Date.parse(world.startedAt) - story.hours * 3_600_000 && !world.counters[`fixed:${endpoint.id}`];
     const seq = (world.counters.delivery ?? 0) + 1;
     world.counters.delivery = seq;
     const ms = 80 + ((seq * 37) % 340);

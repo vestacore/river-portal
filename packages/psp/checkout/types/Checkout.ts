@@ -16,6 +16,8 @@ export type CheckoutConfig = {
   collectEmail: boolean;
   sessionMinutes: number;
   showSplit: boolean;
+  /** Bonus points may pay part of the order: the merchant's bonus system is connected and the policy offers it. */
+  loyalty: boolean;
   languages: Locale[];
   returnUrl: string;
 };

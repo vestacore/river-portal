@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Архітектурно-комерційний бриф: Оркестратор платежів</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-sand: #F5F2EB;
+            --bg-panel: #ECE7DC;
+            --bg-highlight: #E3DCCB;
+            --ink-primary: #1C2024;
+            --ink-secondary: #4A5056;
+            --line-heavy: #1C2024;
+            --line-light: #B8B0A0;
+            --accent-blueprint: #1E4D6B;
+            --accent-alert: #8C3B2B;
+            --accent-ok: #2B5B3F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
+        body {
+            background-color: var(--bg-sand);
+            color: var(--ink-primary);
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.42;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* ISO Drawing Frame */
+        .iso-sheet {
+            width: 100%;
+            min-height: 277mm;
+            border: 2px solid var(--line-heavy);
+            padding: 5mm;
+            position: relative;
+            background-image: 
+                linear-gradient(to right, rgba(184, 176, 160, 0.22) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(184, 176, 160, 0.22) 1px, transparent 1px);
+            background-size: 5mm 5mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Top Coordinate Markers */
+        .frame-coords {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 7pt;
+            color: var(--ink-secondary);
+            border-bottom: 1px solid var(--line-heavy);
+            padding-bottom: 1.5mm;
+            margin-bottom: 4mm;
+            letter-spacing: 0.08em;
+        }
+
+        /* Typography & Structure */
+        h1 {
+            font-size: 15pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--ink-primary);
+            margin-bottom: 1.5mm;
+        }
+
+        .subtitle {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8.5pt;
+            color: var(--accent-blueprint);
+            margin-bottom: 4mm;
+            font-weight: 600;
+        }
+
+        .section-box {
+            border: 1px solid var(--line-heavy);
+            background-color: rgba(245, 242, 235, 0.92);
+            margin-bottom: 4mm;
+        }
+
+        .section-header {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--line-heavy);
+            padding: 1.8mm 3mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8.5pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-ref {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 7.5pt;
+            color: var(--ink-secondary);
+        }
+
+        .section-body {
+            padding: 3mm;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3.5mm;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 3mm;
+        }
+
+        /* Technical Callout Cards */
+        .tech-card {
+            border: 1px solid var(--line-light);
+            background-color: var(--bg-sand);
+            padding: 2.5mm;
+        }
+
+        .tech-card.highlight {
+            border: 1px solid var(--accent-blueprint);
+            background-color: var(--bg-panel);
+        }
+
+        .card-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 7pt;
+            text-transform: uppercase;
+            display: inline-block;
+            padding: 0.5mm 1.5mm;
+            margin-bottom: 1.5mm;
+            border: 1px solid currentColor;
+            font-weight: 600;
+        }
+
+        .tag-blocker { color: var(--accent-alert); background-color: rgba(140, 59, 43, 0.07); }
+        .tag-enabler { color: var(--accent-ok); background-color: rgba(43, 91, 63, 0.08); }
+        .tag-spec { color: var(--accent-blueprint); background-color: rgba(30, 77, 107, 0.07); }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 9pt;
+            margin-bottom: 1mm;
+        }
+
+        p {
+            margin-bottom: 2mm;
+            text-align: justify;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 3.5mm;
+            margin-bottom: 1.5mm;
+        }
+
+        ul li::before {
+            content: "▪";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-blueprint);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Comparison Table */
+        table.iso-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+        }
+
+        table.iso-table th, table.iso-table td {
+            border: 1px solid var(--line-heavy);
+            padding: 2mm 2.5mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        table.iso-table th {
+            background-color: var(--bg-panel);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        table.iso-table td.col-param {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            width: 22%;
+            background-color: rgba(236, 231, 220, 0.5);
+        }
+
+        table.iso-table td.col-old {
+            width: 36%;
+            color: var(--ink-secondary);
+        }
+
+        table.iso-table td.col-new {
+            width: 42%;
+            background-color: rgba(227, 220, 203, 0.45);
+        }
+
+        /* Architectural Diagram */
+        .arch-diagram {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 2mm;
+            margin-top: 1mm;
+        }
+
+        .arch-node {
+            flex: 1;
+            border: 1px dashed var(--line-heavy);
+            padding: 2.5mm;
+            background: var(--bg-sand);
+            position: relative;
+        }
+
+        .arch-node.solid {
+            border: 1.5px solid var(--accent-blueprint);
+            background: var(--bg-panel);
+        }
+
+        .arch-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: bold;
+            font-size: 11pt;
+            color: var(--accent-blueprint);
+            padding: 0 1mm;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8pt;
+        }
+
+        /* ISO 7200 Title Block (Stamp) */
+        .iso-title-block {
+            border: 1.5px solid var(--line-heavy);
+            background-color: var(--bg-panel);
+            display: grid;
+            grid-template-columns: 2.2fr 1.2fr 1.2fr 0.9fr;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 7pt;
+            margin-top: auto;
+        }
+
+        .stamp-cell {
+            border-right: 1px solid var(--line-heavy);
+            border-bottom: 1px solid var(--line-heavy);
+            padding: 1.2mm 2mm;
+        }
+
+        .stamp-cell:last-child {
+            border-right: none;
+        }
+
+        .stamp-row-bottom .stamp-cell {
+            border-bottom: none;
+        }
+
+        .stamp-label {
+            font-size: 5.5pt;
+            color: var(--ink-secondary);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.5mm;
+        }
+
+        .stamp-value {
+            font-weight: 600;
+            color: var(--ink-primary);
+            font-size: 7.5pt;
+        }
+    </style>
+</head>
+<body>
+
+<div class="iso-sheet">
+    <div>
+        <!-- Top Technical Coordinates -->
+        <div class="frame-coords">
+            <span>SYS-CLASS: IN-HOUSE PSP ORCHESTRATION</span>
+            <span>GRID: ISO-A4 // SCALE: N/A // REV: 1.0</span>
+            <span>DOC-ID: BRIEF-APACHE2-OPEX</span>
+        </div>
+
+        <!-- Document Header -->
+        <h1>Внутрішній бриф: Модель комерціалізації платіжного оркестратора</h1>
+        <div class="subtitle">СТРАТЕГІЯ «OPEN-CORE (APACHE 2.0) + ІНЖИНІРИНГ КОНФІГУРАЦІЙ (YAML)» ДЛЯ ТІР-1 РИТЕЙЛ-ХОЛДИНГІВ</div>
+
+        <!-- Section 1: Strategic Context & Deal Enabler -->
+        <div class="section-box">
+            <div class="section-header">
+                <span class="section-title">01. Бар'єр входу та логіка інтер.налізації PSP (Deal Enabler)</span>
+                <span class="section-ref">[REF: RISK-BARRIER-01]</span>
+            </div>
+            <div class="section-body">
+                <p>
+                    <strong>Контекст клієнта (Холдинги рівня Fozzy Group / АТБ):</strong> Інтерналізація зовнішнього PSP (переведення фінансових потоків, маршрутизації транзакцій та токенізації всередину власного периметра) є задачею найвищого рівня критичності. Служба інформаційної безпеки (InfoSec), комплаєнс та аудит холдингу <strong>ніколи не допустять пропрієтарний «чорний ящик» від невідомого вендора</strong> в контур руху грошей.
+                </p>
+                <div class="grid-2" style="margin-top: 2.5mm;">
+                    <div class="tech-card">
+                        <span class="card-tag tag-blocker">Сценарій А: Продаж ліцензії (Блокер угоди)</span>
+                        <div class="card-title">Тупик «Невідомого вендора»</div>
+                        <p>Спроба продати ліцензію на закритий або кастомно ліцензований код запускає захисні протоколи корпорації: 6–9 місяців аудиту прав ІВ, вимоги ескроу вихідного коду, страх зупинки бізнесу (Vendor Lock-in) у піковий сезон. Бюджет ліцензії для стартапу ріжеться закупівлею до мінімуму або угода блокується СБ.</p>
+                    </div>
+                    <div class="tech-card highlight">
+                        <span class="card-tag tag-enabler">Сценарій Б: Apache 2.0 + Впровадження (Каталізатор)</span>
+                        <div class="card-title">Повна прозорість та продаж інженерної експертизи</div>
+                        <p>Передача ядра під стандартною ліцензією <strong>Apache 2.0</strong> миттєво знімає вето ІБ. Холдинг отримує чистий, відкритий для SAST/DAST-аудиту код у власний репозиторій. Предметом угоди стає <strong>архітектурний консалтинг, схеми розгортання, кастомні YAML-правила процесингу та супровід</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Architecture Split (Code vs YAML) -->
+        <div class="section-box">
+            <div class="section-header">
+                <span class="section-title">02. Архітектурне розділення активу: Механізм vs Бізнес-логіка</span>
+                <span class="section-ref">[REF: ARCH-SPLIT-02]</span>
+            </div>
+            <div class="section-body">
+                <p>Цінність платіжного оркестратора полягає не в базовому коді маршрутизатора, а в декларативних правилах роботи з українськими банками-еквайрами (ПриватБанк, Моно, Райффайзен, ПУМБ). Система фізично і юридично розділяється на три контури:</p>
+                <div class="arch-diagram">
+                    <div class="arch-node">
+                        <span class="card-tag tag-spec">КОНТУР 1: APACHE 2.0 (AS-IS)</span>
+                        <div class="card-title">Ядро виконання (Runtime Engine)</div>
+                        <p class="mono" style="margin-top:1mm;">• Рушій оркестрації та абстракції API<br>• Усереднені синтетичні конфіги (demo.yaml)<br>• Відсутність ліцензійних роялті<br>• Чистота прав для форку та розвитку силами ІТ клієнта</p>
+                    </div>
+                    <div class="arch-arrow">➔</div>
+                    <div class="arch-node solid">
+                        <span class="card-tag tag-enabler">КОНТУР 2: РЕЗУЛЬТАТ РОБІТ (OPEX)</span>
+                        <div class="card-title">Бойові специфікації (YAML) та Схеми</div>
+                        <p class="mono" style="margin-top:1mm;">• Каскади маршрутизації та фолбеки банків<br>• Мапінг кодів помилок, тайм-аути, ліміти<br>• Топологія розгортання під PCI DSS<br>• Передається за Актом впровадження</p>
+                    </div>
+                    <div class="arch-arrow">➔</div>
+                    <div class="arch-node">
+                        <span class="card-tag tag-spec">КОНТУР 3: SLA / RETAINER</span>
+                        <div class="card-title">Зовнішній аудит та Супровід</div>
+                        <p class="mono" style="margin-top:1mm;">• Навантажувальне та SecOps тестування<br>• Оновлення YAML-правил при зміні API банків<br>• Розбір складних інцидентів (split/refunds)<br>• Регулярний сервісний контракт</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Matrix of Risk & Economics -->
+        <div class="section-box">
+            <div class="section-header">
+                <span class="section-title">03. Порівняльна матриця: Зняття ризиків та економіка угоди</span>
+                <span class="section-ref">[REF: ECON-MATRIX-03]</span>
+            </div>
+            <div class="section-body" style="padding: 0;">
+                <table class="iso-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр оцінки</th>
+                            <th>Класичний продаж ліцензії (CAPEX / IP)</th>
+                            <th>Модель Apache 2.0 + Впровадження та YAML (OPEX)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-param">Бюджетування та Закупівлі</td>
+                            <td class="col-old">Складний CAPEX-комітет. Тривала оцінка нематеріального активу, жорсткий пресинг за ціною для невеликого вендора.</td>
+                            <td class="col-new"><strong>Швидкий OPEX (ІТ-послуги / Консалтинг).</strong> Проходить через стандартні бюджети на розбудову інфраструктури та зовнішню експертизу.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-param">Юридичні ризики наших зобов'язань</td>
+                            <td class="col-old">Вимоги гарантій чистоти патентів, фінансова відповідальність вендора за збої в коді на мільйонних оборотах ритейлу.</td>
+                            <td class="col-new"><strong>Зняття ризиків з нас:</strong> Ядро надається за Apache 2.0 (відмова від гарантій на код). Ми відповідаємо виключно за <strong>узгоджений обсяг робіт з налаштування</strong> та тести на фіксованому коміті.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-param">Ризики для Холдингу (Клієнта)</td>
+                            <td class="col-old">Ризик залежності від одного постачальника, закритий код у фінансовому ядрі, неможливість самостійної модифікації.</td>
+                            <td class="col-new"><strong>Повна автономність:</strong> Міжнародна ліцензія Apache 2.0 гарантує право безперешкодно розвивати систему власним R&D-департаментом (напр., TemaBit).</td>
+                        </tr>
+                        <tr>
+                            <td class="col-param">Фінансовий потенціал чека</td>
+                            <td class="col-old">Низький стартовий поріг: корпорація не заплатить значну суму за «коробку» компанії без гучного імені.</td>
+                            <td class="col-new"><strong>Вищий сукупний чек (LTV):</strong> Вартість проєктування архітектури, бойових YAML-профілів, SecOps-тестування та SLA перевищує потенційну ціну «голої» ліцензії.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 4: Summary Executive Takeaway -->
+        <div class="section-box" style="margin-bottom: 2mm;">
+            <div class="section-header">
+                <span class="section-title">04. Резюме для прийняття рішення</span>
+                <span class="section-ref">[REF: EXEC-SUMMARY-04]</span>
+            </div>
+            <div class="section-body">
+                <div class="grid-3">
+                    <div>
+                        <strong class="mono" style="color: var(--accent-blueprint);">01 // ВХІД У ПЕРИМЕТР</strong>
+                        <p style="font-size: 8.5pt; margin-top: 1mm;">Ми не намагаємося продати холдингу «кота в мішку» для управління його грошима. Ми даємо прозорий інженерний фундамент і продаємо інтеграцію та знання предметної області.</p>
+                    </div>
+                    <div>
+                        <strong class="mono" style="color: var(--accent-blueprint);">02 // ЮРИДИЧНИЙ ЩИТ</strong>
+                        <p style="font-size: 8.5pt; margin-top: 1mm;">Відсутність договору про передачу виключних прав ІВ економить місяці погоджень. Ми не несемо токсичної відповідальності за код ядра, здаючи конкретні етапи робіт (UAT).</p>
+                    </div>
+                    <div>
+                        <strong class="mono" style="color: var(--accent-blueprint);">03 // МОНЕТИЗАЦІЯ ЗНАНЬ</strong>
+                        <p style="font-size: 8.5pt; margin-top: 1mm;">Усереднений YAML у коді робить систему безпечною для відкриття, але без нашого впровадження, схем розгортання та тонкого налаштування процесингу вона не дає бізнес-ефекту.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ISO 7200 Standard Title Block (Footer Stamp) -->
+    <div class="iso-title-block">
+        <div class="stamp-cell">
+            <span class="stamp-label">Назва документа / Проєкт</span>
+            <span class="stamp-value">АРХІТЕКТУРНИЙ ТА КОМЕРЦІЙНИЙ БРИФ: IN-HOUSE PSP ORCHESTRATOR</span>
+        </div>
+        <div class="stamp-cell">
+            <span class="stamp-label">Модель ліцензування</span>
+            <span class="stamp-value">CORE: APACHE 2.0 / SPEC: PROPRIETARY YAML</span>
+        </div>
+        <div class="stamp-cell">
+            <span class="stamp-label">Тип контракту</span>
+            <span class="stamp-value">OPEX / IMPLEMENTATION & SLA</span>
+        </div>
+        <div class="stamp-cell">
+            <span class="stamp-label">Статус / Аркуш</span>
+            <span class="stamp-value">INTERNAL BRIEF [1/1]</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

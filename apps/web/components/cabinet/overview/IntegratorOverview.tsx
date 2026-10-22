@@ -9,14 +9,17 @@ import { DataTable } from '../../panels/DataTable';
 import { Metric } from '../../panels/Metric';
 import { Panel } from '../../panels/Panel';
 import { InsightCard } from '../InsightCard';
+import { SystemsStrip } from '../connections/SystemsStrip';
+import { systemsOf } from '../connections/systemsOf';
 import { apiLogColumns, deliveredTone, endpointColumns, endpointRows } from '../integration/columns';
 
 const hour = 3_600_000;
 
 /**
- * The overview of the Integrator cabinet: how the calls to the API and the deliveries of webhooks went in
- * the last day, the deliveries hour by hour, the endpoints' health, the latest refused calls — and what the
- * Integration copilot proposes. Everything within the profile's reach; the world keeps two days of both.
+ * The overview of the Integrator cabinet: on the retail stand first the group's connected systems at a
+ * glance; then how the calls to the API and the deliveries of webhooks went in the last day, the
+ * deliveries hour by hour, the endpoints' health, the latest refused calls — and what the Integration
+ * copilot proposes. Everything within the profile's reach; the world keeps two days of both.
  */
 export function IntegratorOverview({ c, locale, query }: { c: Awaited<ReturnType<typeof cabinet>>; locale: Locale; query: Query }) {
   const { t } = c;
@@ -46,8 +49,10 @@ export function IntegratorOverview({ c, locale, query }: { c: Awaited<ReturnType
   const insights = c.w.insights.filter((i) => i.agent === 'copilot' && c.visible.has(i.unitId))
     .sort((a, b) => Number(a.status !== 'open') - Number(b.status !== 'open') || b.at.localeCompare(a.at)).slice(0, 3);
   const more = (path: string, label: string) => <Link href={c.link(path)} className="annot text-[0.6rem] text-river-700 hover:text-ink-900">{label} →</Link>;
+  const systems = c.stand === 'retail' ? systemsOf(c.w, c.visible, c.now) : [];
   return (
     <div className="space-y-6">
+      {systems.length > 0 ? <SystemsStrip systems={systems} locale={locale} now={c.now} link={c.link} unitName={c.unitName} /> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Metric label={t('API calls, 24 h', 'Виклики API, 24 год')} value={count(dayCalls.length, locale)} note={t(`${count(calls.length, locale)} in two days`, `${count(calls.length, locale)} за два дні`)} href={c.link('/logs')} />
         <Metric label={t('Error rate, 24 h', 'Частка помилок, 24 год')} value={percent(errorBps, locale)} tone={errorBps > 500 ? 'danger' : errorBps > 0 ? 'warning' : 'success'} note={t(`${errors} refused or failed`, `відхилено чи збій: ${errors}`)} href={c.link('/logs')} />

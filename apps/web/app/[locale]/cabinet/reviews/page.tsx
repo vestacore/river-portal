@@ -56,12 +56,12 @@ export default async function Reviews({ params, searchParams }: { params: Promis
   return (
     <>
       <CabinetHead kicker={t('Financial monitoring', 'Фінмоніторинг')} title={t('Held attempts', 'Затримані спроби')}
-        lead={t('Attempts the screening stopped for a person. Clear one and it is routed and goes on down the river; reject it and it ends here, with your reason on record.', 'Спроби, які скринінг зупинив для людини. Дозвольте — і спробу буде маршрутизовано далі за течією; відхиліть — і вона завершиться тут, а ваша причина залишиться в записі.')}
+        lead={t('Attempts the screening stopped for a person. Clear one and it is routed and goes on; reject it and it ends here, with your reason on record.', 'Спроби, які скринінг зупинив для людини. Дозвольте — і спробу буде маршрутизовано далі; відхиліть — і вона завершиться тут, а ваша причина залишиться в записі.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <Flash query={query} locale={locale} />
       <Panel title={`${t('Waiting for a decision', 'Чекають на рішення')} · ${held.length}`} tone={held.length > 0 ? 'attention' : 'plain'} flush
         note={held.length > 0 ? t('Longest waiting first. The alert behind each hold is closed with your decision.', 'Спершу ті, що чекають найдовше. Сповіщення, через яке спробу затримано, закривається разом із вашим рішенням.') : undefined}>
-        {held.length === 0 ? <p className="p-4 text-ink-500">{t('Nothing is held. The river runs.', 'Нічого не затримано. Ріка тече.')}</p> : (
+        {held.length === 0 ? <p className="p-4 text-ink-500">{t('Nothing is held.', 'Нічого не затримано.')}</p> : (
           <ul className="divide-y divide-graphite/20">
             {held.map(({ s, at, mismatch }) => (
               <li key={s.sessionId} className="grid gap-x-8 gap-y-4 px-4 py-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]">

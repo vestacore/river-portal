@@ -1,8 +1,8 @@
 import type { LocalisedText } from '@river/i18n';
 import type { Channel, Currency } from '@river/psp-facts';
 
-/** Kinds of unit, from the PSP itself down to a shop, a terminal or a marketplace's seller. */
-export const unitKinds = ['platform', 'entity', 'partner', 'holding', 'merchant', 'store', 'seller'] as const;
+/** Kinds of unit, from the platform or a group of companies down to a region, a store, a channel or a marketplace's seller. */
+export const unitKinds = ['platform', 'entity', 'partner', 'holding', 'merchant', 'region', 'store', 'seller'] as const;
 export type UnitKind = (typeof unitKinds)[number];
 
 /**

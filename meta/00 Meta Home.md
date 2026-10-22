@@ -28,11 +28,15 @@ Language: British English.
 - [[Iteration 04 — Identity, Trust and Settings]]
 - [[Iteration 05 — Payment River]] (branch `new-approach`)
 - [[Iteration 06 — PSP Portal]] (branch `psp`)
+- [[Iteration 07 — Payment Flow Orchestration]] (branch `psp`)
+- [[Iteration 08 — NestVM at the Centre]] (branch `psp`)
 
 ## Reviews
 - [[2026-09-25 Site Map and Domain Review]]
 
 ## Observations
+- [[2026-10-21 What Running a Payment Attempt on NestVM Found]]
+- [[2026-10-20 What Reframing the PSP as Orchestration Found]]
 - [[2026-10-19 What Walking the PSP Cabinets Found]]
 - [[2026-10-02 What Building the Payment River Found]]
 - [[2026-09-25 Walking Every Role Found What Tests Missed]]

@@ -1,0 +1,47 @@
+# Controller configuration record — the acquirer's stand-in (Vol. 07 §5;
+# Vol. 08 §5: "tests substitute deterministic controller doubles").
+#
+# Declared-record disambiguation (coagnes/CLAUDE.md §2):
+# 1. Element: the discharge station `controller.acquirer.stand-in` — the
+#    bank played by the machine under the acquirer's own name: it answers
+#    an authorisation (`authorise@1`) and a capture (`capture@1`) as a
+#    deterministic function of the request's scope, so that routing, the
+#    binds and the log are exactly as they would be with the real acquirer.
+#    Every answer names itself as a stand-in (`by.controller`); it never
+#    stands for a bank. The decision is read off the card's last four
+#    digits, so that a story can be told in the data and nowhere else:
+#    0051 → declined 51 (insufficient funds); 0005 → declined 05 (do not
+#    honour); 0091 → the capture fails 91 (issuer inoperative); anything
+#    else is approved and captured in full.
+# 2. Server: this file, portal/nestvm/controllers/ — human-owned truth;
+#    src/world/acquirerStandIn.ts enacts it.
+# 3. Consumer: the composition root (src/compose.ts) installs it in the
+#    world IN PLACE of a real acquirer's adapter — never beside one (Vol. 07
+#    §3.3: two claimants of one request would publish twice). The wave log
+#    is NOT a consumer of this record — it consumes the station's answers.
+# 4. Successful inclusion: src/walk.test.ts — an approved authorisation is
+#    captured and settled; a declined one ends the attempt and leaves the
+#    invoice open; a failed capture ends the attempt with the authorisation
+#    to be released.
+controller: acquirer.stand-in
+version: 1
+station: discharge
+deterministic: true
+installed: "in place of a real acquirer's adapter; a real adapter is the same station reaching the bank's sandbox, whose answers re-enter as the same facts — and whose discharge must be deferred beyond the request (see the ADR's follow-ups)"
+claims:
+  - kind: domain.fact
+    factType: service.request
+    when: "the request's instruction is authorise@1 or capture@1"
+correlation:
+  field: uid
+  echoed_on: [the answer, service.failed]
+  also: bindId
+answers:
+  - "authorisation.Answered {bindId, uid, result: {outcome, acquirer, reference, authCode?, code?, reason?}, by, outcome} — the top-level `outcome` is what the declared `where` rules read"
+  - "capture.Answered {bindId, uid, result: {outcome, capturedMinor, reference, code?, reason?}, by, outcome}"
+reads:
+  - "the request's bound scope only: the chosen route, the invoice, the instrument; no log, no projection, no environment, no clock"
+refuses:
+  - "to judge or to integrate (Vol. 07 §2.3): it answers as a bank answers, under the form the bind declared"
+budgets:
+  answers_per_request: 1

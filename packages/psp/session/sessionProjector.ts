@@ -20,7 +20,7 @@ function step(view: SessionView, fact: PspFact): SessionView {
       v.outcome = 'open';
       break;
     case 'review.Rejected': v.review = v.review ? { ...v.review, status: 'rejected', by: fact.payload.by } : null; break;
-    case 'route.Chosen': v.route = { rail: fact.payload.rail, acquirer: fact.payload.acquirer, rule: fact.payload.rule }; break;
+    case 'route.Chosen': { const p = fact.payload; v.route = { rail: p.rail, acquirer: p.acquirer, rule: p.rule, strategy: p.strategy ?? null, issuer: p.issuer ?? null, onUs: p.onUs ?? false, feeMinor: p.feeMinor ?? null }; break; }
     case 'authentication.Challenged': v.consent = fact.type; v.outcome = 'awaiting_consent'; break;
     case 'authentication.Passed':
     case 'token.Verified':

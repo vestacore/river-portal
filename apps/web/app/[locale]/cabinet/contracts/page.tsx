@@ -28,7 +28,7 @@ export default async function Contracts({ params, searchParams }: { params: Prom
   return (
     <>
       <CabinetHead kicker={t('Contracts', 'Договори')} title={t('Contracts', 'Договори')}
-        lead={t('What each unit has signed with River Pay, and the tariff it pays by: the fee of every payment comes from its merchant’s active contract.', 'Що кожна одиниця підписала з River Pay і за яким тарифом платить: комісія кожного платежу береться з чинного договору мерчанта.')}
+        lead={c.stand === 'retail' ? t('The group’s agreements: acquiring agreements with each bank, whose terms price every payment and are checked against every settlement, and the agreement for the platform itself.', 'Договори групи: договори еквайрингу з кожним банком, умови яких визначають вартість кожного платежу й перевіряються в кожному розрахунку, і договір на саму платформу.') : t('What each unit has signed with River Pay, and the tariff it pays by: the fee of every payment comes from its merchant’s active contract.', 'Що кожна одиниця підписала з River Pay і за яким тарифом платить: комісія кожного платежу береться з чинного договору мерчанта.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <Flash query={query} locale={locale} />
       <FilterBar locale={locale} query={query} groups={[

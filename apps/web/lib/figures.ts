@@ -28,7 +28,7 @@ export function stageCounts(world: World, from: string, scope?: ReadonlySet<stri
 
 /** The money that flowed to each role of the delta since a moment, in one currency. */
 export function roleShares(world: World, from: string, currency: Currency, scope?: ReadonlySet<string>): Record<AllocationRole, number> {
-  const out: Record<AllocationRole, number> = { merchant: 0, seller: 0, platform: 0, psp_fee: 0, charity: 0, partner: 0, reserve: 0 };
+  const out: Record<AllocationRole, number> = { merchant: 0, seller: 0, platform: 0, psp_fee: 0, acquirer_fee: 0, charity: 0, partner: 0, reserve: 0 };
   for (const p of world.views.payments.values()) {
     if (!p.capturedAt || p.capturedAt < from || p.currency !== currency || (scope && !scope.has(p.unitId))) continue;
     for (const a of p.allocations) out[a.role] += a.amountMinor;

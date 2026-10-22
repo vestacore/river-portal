@@ -5,12 +5,12 @@ import { testCardOf } from '@river/psp-checkout';
 import type { InstrumentDetail, InstrumentId, OrderLine } from '@river/psp-facts';
 import { invoiceDueMinor } from '@river/psp-invoice';
 import { isSessionClosed } from '@river/psp-session';
-import { invoiceByPayKey, payerGesture, regionOf, shopOrder, startSession, submitInstrument, type PayerGesture } from '@river/psp-runtime';
+import { bonusBalanceOf, invoiceByPayKey, payerGesture, regionOf, shopOrder, startSession, submitInstrument, type PayerGesture } from '@river/psp-runtime';
 import type { PayState } from '../payState';
-import { world } from '../world';
+import { world, worldOfPayKey } from '../world';
 
 function stateOf(payKey: string): PayState {
-  const w = world();
+  const w = worldOfPayKey(payKey);
   const invoice = invoiceByPayKey(w, payKey);
   const none: PayState = { state: 'choose', sessionId: null, instrument: null, failure: null, paymentId: null, receiptId: null, bridges: 0, waitingFor: null, instructions: {} };
   if (!invoice) return { ...none, state: 'failed', failure: 'not_found' };
@@ -50,7 +50,7 @@ export async function payStatus(payKey: string): Promise<PayState> {
  * this server — the number itself never leaves the payer's browser — and only demo test cards are known.
  */
 export async function payStart(payKey: string, instrument: InstrumentId, detail: { brand?: string; last4?: string; bin?: string; parts?: number; bank?: string; iban?: string; testNumber?: string }, locale: string): Promise<PayState> {
-  const w = world();
+  const w = worldOfPayKey(payKey);
   const invoice = invoiceByPayKey(w, payKey);
   if (!invoice) return { ...stateOf(payKey), state: 'failed', failure: 'not_found' };
   const now = new Date().toISOString();
@@ -73,7 +73,7 @@ export async function payStart(payKey: string, instrument: InstrumentId, detail:
 
 /** A gesture of the payer in the middle of an attempt — the challenge, the device, the bank's consent, the money sent. */
 export async function payGesture(payKey: string, sessionId: string, gesture: PayerGesture): Promise<PayState> {
-  const w = world();
+  const w = worldOfPayKey(payKey);
   const invoice = invoiceByPayKey(w, payKey);
   if (!invoice || !invoice.sessionIds.includes(sessionId)) return { ...stateOf(payKey), state: 'failed', failure: 'not_found' };
   payerGesture(w, sessionId, gesture, new Date().toISOString());
@@ -95,7 +95,28 @@ export async function shopCheckout(form: FormData): Promise<void> {
   const donation = Math.round(Number(String(form.get('donation') ?? '').replace(',', '.')) * 100);
   if (donation > 0) lines.push({ sku: 'GIFT-ANY', title: { 'en-GB': 'Where it is needed most', uk: 'Туди, де найпотрібніше' }, quantity: 1, unitMinor: donation, totalMinor: donation, sellerUnitId: null });
   if (lines.length === 0) redirect(`/${segment}/shop?empty=1#${unitId}`);
-  const placed = shopOrder(world(), { unitId, lines, payerRef: `py_guest_${Date.now().toString(36)}` }, new Date().toISOString());
+  const placed = shopOrder(world(unitId.startsWith('rt-') ? 'retail' : 'psp'), { unitId, lines, payerRef: `py_guest_${Date.now().toString(36)}` }, new Date().toISOString());
   if ('error' in placed) redirect(`/${segment}/shop?error=${encodeURIComponent(placed.error)}`);
   redirect(`/${segment}/pay/${placed.payKey}`);
+}
+
+/**
+ * The payer pays part of the order with bonus points: the merchant's bonus system holds the balance and
+ * confirms the redemption; an attempt for that amount is opened and settled at once, and the rest of the
+ * invoice stays to be paid with another instrument.
+ */
+export async function payBonus(payKey: string, amountMinor: number, locale: string): Promise<PayState> {
+  const w = worldOfPayKey(payKey);
+  const invoice = invoiceByPayKey(w, payKey);
+  if (!invoice) return { ...stateOf(payKey), state: 'failed', failure: 'not_found' };
+  const order = w.views.orders.get(invoice.orderId);
+  const due = invoice.amountMinor - invoice.paidMinor;
+  const amount = Math.min(Math.floor(amountMinor), due - 100, bonusBalanceOf(w, order?.payerRef ?? ''));
+  if (!Number.isInteger(amount) || amount < 100) return { ...stateOf(payKey), state: 'failed', failure: 'bonus_amount' };
+  const now = new Date().toISOString();
+  const opened = startSession(w, invoice.invoiceId, { channel: order?.channel ?? 'web', locale, country: 'UA', payerHandle: order?.payerRef ?? 'payer', amountMinor: amount }, now);
+  if ('error' in opened) return { ...stateOf(payKey), state: 'failed', failure: opened.error };
+  const result = submitInstrument(w, opened.sessionId, 'bonus_points', { wallet: 'bonus' }, { issuer: 'approve', consent: true, issuerWantsChallenge: false }, now);
+  if (typeof result !== 'string') return { ...stateOf(payKey), state: 'failed', failure: result.error };
+  return stateOf(payKey);
 }

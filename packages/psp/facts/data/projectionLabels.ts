@@ -7,5 +7,6 @@ export const projectionLabels: Record<Projection, LocalisedText> = {
   invoice: { 'en-GB': 'Invoice', uk: 'Інвойс' },
   session: { 'en-GB': 'Session', uk: 'Сесія' },
   payment: { 'en-GB': 'Payment', uk: 'Платіж' },
+  settlement: { 'en-GB': 'Settlement', uk: 'Розрахунки' },
   ledger: { 'en-GB': 'Ledger', uk: 'Облік' },
 };

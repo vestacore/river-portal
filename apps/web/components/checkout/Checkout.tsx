@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from 'react';
 import { cardBrand, cardErrors, formatCardNumber, testCardOf, type CheckoutTexts } from '@river/psp-checkout';
 import type { InstrumentId } from '@river/psp-facts';
 import type { PayerGesture } from '@river/psp-runtime';
-import { payGesture, payStart, payStatus } from '@/lib/actions/pay';
+import { payBonus, payGesture, payStart, payStatus } from '@/lib/actions/pay';
 import type { PayState } from '@/lib/payState';
 import { Icon } from '../ui/Icon';
 import { FakeQr } from './FakeQr';
@@ -17,6 +17,8 @@ export type CheckoutProps = {
   merchant: { name: string; monogram: string; email: string; phone: string; accent: string };
   invoice: { number: string; amount: string; dueBy: string; paymentFor: string; lines: Array<{ title: string; quantity: number; amount: string; seller: string | null }>; total: string; paid: { label: string; amount: string; rest: string } | null };
   split: Array<{ label: string; role: string; amount: string }> | null;
+  /** Bonus points the payer may use for part of the order, as the merchant's bonus system reports them. */
+  bonus: { balance: string; maxMinor: number; label: string; hint: string; action: string; currency: string } | null;
   instruments: CheckoutInstrument[];
   testCards: Array<{ number: string; label: string }>;
   collectEmail: boolean;
@@ -89,7 +91,7 @@ export function Checkout(props: CheckoutProps) {
           <div className="text-center">
             <span className="mx-auto flex size-14 items-center justify-center border-2 border-teal-600 text-teal-600"><Icon name="check" className="size-8" /></span>
             <h2 className="mt-4 text-2xl font-semibold text-teal-600">{x.success}</h2>
-            <p className="mt-1 text-ink-700">{state.state === 'capture' ? (props.locale === 'uk' ? 'Кошти заблоковано; мерчант спише їх при відвантаженні.' : 'The funds are held; the merchant takes them when the goods ship.') : x.successText}</p>
+            <p className="mt-1 text-ink-700">{state.state === 'capture' ? (props.locale === 'uk' ? 'Кошти заблоковано на картці. Остаточну суму буде списано після комплектації чи відвантаження замовлення, а залишок розблоковано.' : 'The funds are held on your card. The final amount is charged when the order is picked or shipped, and the rest is released.') : x.successText}</p>
             <dl className="mx-auto mt-6 max-w-sm divide-y divide-graphite/15 border-y border-graphite/15 text-left text-[0.9rem]">
               {[[x.paymentMethod, label(state.instrument)], [x.invoiceNumber, invoice.number], [x.paymentId, state.paymentId ?? '—'], [x.receipt, state.receiptId ?? '—']].map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2"><dt className="text-ink-500">{k}</dt><dd className="font-mono text-[0.82rem] text-ink-900">{v}</dd></div>)}
             </dl>
@@ -168,6 +170,7 @@ export function Checkout(props: CheckoutProps) {
         <section className="border border-[#e6e9ef] bg-white p-5">
           {result ?? (
             <>
+              {props.bonus ? <BonusBlock bonus={props.bonus} payKey={props.payKey} locale={props.locale} preview={props.preview ?? false} /> : null}
               <p className="font-semibold">{x.selectMethod}</p>
               {instruments.some((i) => wallets.includes(i.id)) ? (
                 <div className="mt-4 grid gap-2">
@@ -306,6 +309,31 @@ function Modal({ title, bank, children }: { title: string; bank: string; childre
         <p className="annot border-b border-[#e6e9ef] bg-[#f1f4f8] px-5 py-2.5 text-[0.6rem] text-ink-700">{bank}</p>
         <div className="p-5"><h2 className="mb-3 text-lg font-semibold">{title}</h2>{children}</div>
       </div>
+    </div>
+  );
+}
+
+/** Part of the order paid with bonus points: the amount, at most the balance, and one step to take it. */
+function BonusBlock({ bonus, payKey, locale, preview = false }: { bonus: NonNullable<CheckoutProps['bonus']>; payKey: string; locale: 'uk' | 'en-GB'; preview?: boolean }) {
+  const [amount, setAmount] = useState(String(Math.floor(bonus.maxMinor / 100)));
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const take = () => start(async () => {
+    const minor = Math.round(Number(amount.replace(',', '.')) * 100);
+    const state = await payBonus(payKey, minor, locale);
+    if (state.state === 'failed' && state.failure) { setError(state.failure); return; }
+    window.location.reload();
+  });
+  return (
+    <div className="mb-5 border border-[#e6e9ef] bg-[#f6f8fb] p-4">
+      <p className="flex items-center justify-between gap-3 font-semibold"><span className="flex items-center gap-2"><Icon name="sparkle" className="size-4" />{bonus.label}</span><span className="text-[0.85rem] font-normal tabular-nums text-ink-700">{bonus.balance}</span></p>
+      <p className="mt-1 text-[0.78rem] text-ink-500">{bonus.hint}</p>
+      <div className="mt-3 flex items-center gap-2">
+        <input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={preview || pending} aria-label={bonus.label} className="h-10 w-28 border border-[#cfd6e0] bg-white px-3 text-right tabular-nums" />
+        <span className="text-[0.85rem] text-ink-700">{bonus.currency}</span>
+        <button type="button" onClick={take} disabled={preview || pending} className="ml-auto h-10 border border-ink-900 px-4 text-[0.88rem] font-semibold text-ink-900 hover:bg-ink-900 hover:text-white disabled:opacity-50">{bonus.action}</button>
+      </div>
+      {error ? <p role="alert" className="mt-2 text-[0.78rem] text-[#b42318]">{error}</p> : null}
     </div>
   );
 }

@@ -24,7 +24,8 @@ export type SessionView = {
   detail: InstrumentDetail | null;
   risk: { score: number; level: 'low' | 'medium' | 'high'; reasons: string[]; decision: 'pass' | 'review' | 'block' } | null;
   review: { alertId: string; reason: string; status: 'open' | 'cleared' | 'rejected'; by: string | null } | null;
-  route: { rail: Rail; acquirer: string; rule: string } | null;
+  /** The routing decision: the acquirer, the rule or strategy, the card's issuer, whether on-us, and the expected fee. */
+  route: { rail: Rail; acquirer: string; rule: string; strategy: string | null; issuer: string | null; onUs: boolean; feeMinor: number | null } | null;
   consent: FactType | null;
   paymentId: string | null;
   captureMode: 'auto' | 'manual' | null;

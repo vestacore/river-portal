@@ -44,3 +44,16 @@ export type FulfilmentShipped = {
 export type FulfilmentDelivered = {
   orderId: string;
 };
+
+/**
+ * `fulfilment.Picked` — the world (the merchant's order system): the order was picked. Weighed goods
+ * weigh what they weigh, a missing item is taken off, a substitute replaces it; the picked total is what
+ * the payer will be charged.
+ */
+export type FulfilmentPicked = {
+  orderId: string;
+  lines: OrderLine[];
+  totalMinor: number;
+  orderedMinor: number;
+  changes: Array<{ sku: string; kind: 'weight' | 'missing' | 'substitute'; deltaMinor: number }>;
+};

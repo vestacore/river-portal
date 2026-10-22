@@ -15,6 +15,7 @@ export const orderStatusLabels: Record<OrderStatus, LocalisedText> = {
 export const fulfilmentLabels: Record<FulfilmentState, LocalisedText> = {
   none: { 'en-GB': 'Not started', uk: 'Не розпочато' },
   accepted: { 'en-GB': 'In work', uk: 'У роботі' },
+  picked: { 'en-GB': 'Picked', uk: 'Скомплектовано' },
   shipped: { 'en-GB': 'Shipped', uk: 'Відправлено' },
   delivered: { 'en-GB': 'Delivered', uk: 'Доставлено' },
 };

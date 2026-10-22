@@ -62,7 +62,7 @@ export default async function Sandbox({ params, searchParams }: { params: Promis
     `  }'`,
   ];
   const session = scoped(c.w, c.visible).sessions.find((s) => s.outcome === 'succeeded');
-  const auth = '  -H "Authorization: Bearer rp_test_sk_…" \\';
+  const auth = `  -H "Authorization: Bearer ${c.stand === 'psp' ? 'rp' : 'rv'}_test_sk_…" \\`;
 
   const cardColumns: Column<TestCard>[] = [
     { key: 'number', label: t('Card number', 'Номер картки'), cell: (x) => ({ kind: 'mono', value: formatCardNumber(x.number) }) },
@@ -75,11 +75,11 @@ export default async function Sandbox({ params, searchParams }: { params: Promis
   return (
     <>
       <CabinetHead kicker={t('Integration', 'Інтеграція')} title={t('Sandbox', 'Пісочниця')}
-        lead={t('Make a test order and pay it on the demo pay page, the whole river from the source to the mouth. No money moves: the demo accepts only the test cards below, and the banks, wallets, lenders and kiosks are stand-ins — you give their answer with a button.', 'Створіть тестове замовлення й сплатіть його на демо-сторінці оплати — усю ріку від витоку до гирла. Гроші не рухаються: демо приймає лише тестові картки нижче, а банки, гаманці, кредитори й термінали імітовано — їхню відповідь ви даєте кнопкою.')} />
+        lead={t('Make a test order and pay it on the demo pay page, every step from the order to the result. No money moves: the demo accepts only the test cards below, and the banks, wallets, lenders and kiosks are stand-ins — you give their answer with a button.', 'Створіть тестове замовлення й сплатіть його на демо-сторінці оплати — кожен крок від замовлення до результату. Гроші не рухаються: демо приймає лише тестові картки нижче, а банки, гаманці, кредитори й термінали імітовано — їхню відповідь ви даєте кнопкою.')} />
       <Flash query={query} locale={locale} />
       {payKey ? (
         <Panel tone="attention" className="mb-6" title={t('Your test order is ready — its pay link is shown this once', 'Тестове замовлення готове — платіжне посилання показуємо лише цього разу')}
-          note={t('The key in the link is the payer’s authority; the river keeps only its hash. Open it, pay with a test card, and follow the bridges in the cabinet.', 'Ключ у посиланні — повноваження платника; ріка зберігає лише його хеш. Відкрийте посилання, сплатіть тестовою карткою й простежте мости в кабінеті.')}>
+          note={t('The key in the link is the payer’s authority; the platform keeps only its hash. Open it, pay with a test card, and follow the events in the cabinet.', 'Ключ у посиланні — повноваження платника; платформа зберігає лише його хеш. Відкрийте посилання, сплатіть тестовою карткою й простежте події в кабінеті.')}>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             <a href={href(locale, `/pay/${payKey}`)} className="chamfer inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-ink-900 [--cut:7px] [--fill:var(--color-sunrise-500)]">{t('Open the pay page', 'Відкрити сторінку оплати')} →</a>
             {created ? (
@@ -115,10 +115,10 @@ export default async function Sandbox({ params, searchParams }: { params: Promis
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <div>
               <h3 className="font-semibold text-ink-900">1 · {t('The order', 'Замовлення')}</h3>
-              <p className="mt-1 text-[0.88rem] text-ink-700">{t('What is bought and from whom. The split is optional: without it the template of the hierarchy applies. The PSP’s fee is a stream of the delta too; the remainder takes what is left, so the shares always sum to the amount.', 'Що купують і в кого. Розщеплення необов’язкове: без нього діє шаблон ієрархії. Комісія PSP — теж протока дельти; залишок забирає решту, тож частки завжди дорівнюють сумі.')}</p>
+              <p className="mt-1 text-[0.88rem] text-ink-700">{t('What is bought and from whom. The distribution plan is optional: without it the unit’s policies apply. A fee is a share like any other; the remainder takes what is left, so the shares always sum to the amount.', 'Що купують і в кого. План розподілу необов’язковий: без нього діють політики одиниці. Комісія — така сама частка, як інші; залишок забирає решту, тож частки завжди дорівнюють сумі.')}</p>
             </div>
             <CodeBlock code={[
-              'curl https://api.river-pay.example/v1/orders \\',
+              'curl https://api.river.example/v1/orders \\',
               auth,
               '  -H "Idempotency-Key: 7c9e2f4a-order-1042" \\',
               '  -H "Content-Type: application/json" \\',
@@ -130,33 +130,33 @@ export default async function Sandbox({ params, searchParams }: { params: Promis
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <div>
               <h3 className="font-semibold text-ink-900">2 · {t('The invoice', 'Інвойс')}</h3>
-              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The payable claim of the order: how much and by when. Its pay link carries a key shown once; the river keeps only the key’s hash.', 'Вимога до сплати за замовленням: скільки й до коли. Платіжне посилання несе ключ, показаний один раз; ріка зберігає лише його хеш.')}</p>
+              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The payable claim of the order: how much and by when. Its pay link carries a key shown once; the platform keeps only the key’s hash.', 'Вимога до сплати за замовленням: скільки й до коли. Платіжне посилання несе ключ, показаний один раз; платформа зберігає лише його хеш.')}</p>
             </div>
             <CodeBlock code={[
-              'curl https://api.river-pay.example/v1/invoices \\',
+              'curl https://api.river.example/v1/invoices \\',
               auth,
               '  -H "Idempotency-Key: 7c9e2f4a-invoice-1042" \\',
               '  -H "Content-Type: application/json" \\',
               `  -d '{ "orderId": "ord_…", "dueAt": "${dueAt}", "allowPartial": false }'`,
               '',
               '→ 201 Created',
-              JSON.stringify({ invoiceId: 'inv_…', number: `${(sample?.code ?? 'KVM').split('-')[0]}-${c.now.slice(0, 4)}-01042`, amountMinor: 2 * unitMinor, currency, dueAt, payUrl: 'https://river-pay.example/pay/<pay key, shown once>' }, null, 2),
+              JSON.stringify({ invoiceId: 'inv_…', number: `${(sample?.code ?? 'KVM').split('-')[0]}-${c.now.slice(0, 4)}-01042`, amountMinor: 2 * unitMinor, currency, dueAt, payUrl: 'https://pay.example/pay/<pay key, shown once>' }, null, 2),
             ].join('\n')} />
           </section>
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <div>
               <h3 className="font-semibold text-ink-900">3 · {t('The session', 'Сесія')}</h3>
-              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The payer opens the pay link: a session opens — one attempt to pay, its own stream of bridges. A failed attempt leaves the invoice payable; the next one is a new session. Your endpoint hears session.Opened, then capture.Completed and session.Succeeded, or session.Failed.', 'Платник відкриває посилання — відкривається сесія: одна спроба оплати, власний потік мостів. Невдала спроба лишає інвойс до сплати; наступна — нова сесія. Ваша кінцева точка отримає session.Opened, далі capture.Completed і session.Succeeded або session.Failed.')}</p>
+              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The payer opens the pay link: a session opens — one attempt to pay, its own stream of events. A failed attempt leaves the invoice payable; the next one is a new session. Your endpoint hears session.Opened, then capture.Completed and session.Succeeded, or session.Failed.', 'Платник відкриває посилання — відкривається сесія: одна спроба оплати, власний потік подій. Невдала спроба лишає інвойс до сплати; наступна — нова сесія. Ваша кінцева точка отримає session.Opened, далі capture.Completed і session.Succeeded або session.Failed.')}</p>
             </div>
             <CodeBlock code={[
-              `curl https://api.river-pay.example/v1/sessions/${session?.sessionId ?? 'ps_…'} \\`,
+              `curl https://api.river.example/v1/sessions/${session?.sessionId ?? 'ps_…'} \\`,
               auth.replace(/ \\$/, ''),
             ].join('\n')} />
           </section>
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <div>
               <h3 className="font-semibold text-ink-900">4 · {t('The session’s view', 'Проєкція сесії')}</h3>
-              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The answer is the session’s view — a fold of its bridges, and nothing else. Here, the newest attempt that reached the mouth in your reach; its paymentId leads on to the payment.', 'Відповідь — проєкція сесії: згортка її мостів, і нічого більше. Тут — найновіша спроба у ваших межах, що дійшла до гирла; її paymentId веде далі до платежу.')}</p>
+              <p className="mt-1 text-[0.88rem] text-ink-700">{t('The answer is the session’s view — a fold of its events, and nothing else. Here, the newest attempt in your reach that was paid; its paymentId leads on to the payment.', 'Відповідь — проєкція сесії: згортка її подій, і нічого більше. Тут — найновіша сплачена спроба у ваших межах; її paymentId веде далі до платежу.')}</p>
             </div>
             {session ? <JsonBlock label="→ 200 OK" value={session} locale={locale} lines={30} /> : <p className="text-ink-500">{t('No attempt in your reach has reached the mouth yet.', 'У ваших межах жодна спроба ще не дійшла до гирла.')}</p>}
           </section>

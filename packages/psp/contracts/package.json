@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "Contracts with merchants and partners, their tariffs, and the PSP's fee for one payment — stated before anyone pays.",
+  "description": "Agreements and their terms: the acquiring terms that price a card payment — blended, Interchange++ or an on-us rate — and the PSP's tariffs and fee for one payment, stated before anyone pays.",
   "type": "module",
   "exports": {
     ".": "./gate.ts"

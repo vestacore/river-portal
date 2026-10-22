@@ -14,6 +14,8 @@ export type SplitTemplate = {
 export type PlanContext = {
   merchantUnitId: string;
   pspUnitId: string;
+  /** Whose fee the `fee` rule carries: the PSP's (it holds the money) or the acquirer's (it settles to the merchant directly; `pspUnitId` is then `acq:*`, the acquirer the route will choose). */
+  feeRole?: 'psp_fee' | 'acquirer_fee';
   sellerUnitIds: readonly string[];
   commissionBps: number;
   charityBps: number;

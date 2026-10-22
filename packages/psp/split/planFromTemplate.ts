@@ -14,7 +14,7 @@ export function planFromTemplate(template: SplitTemplateId, ctx: PlanContext): S
   }
   if (template === 'franchise' && ctx.franchisorUnitId && ctx.royaltyBps > 0) rules.push({ recipientUnitId: ctx.franchisorUnitId, role: 'partner', basis: 'percent', bps: ctx.royaltyBps, ...hold });
   if (ctx.charityUnitId && ctx.charityBps > 0) rules.push({ recipientUnitId: ctx.charityUnitId, role: 'charity', basis: 'percent', bps: ctx.charityBps });
-  rules.push({ recipientUnitId: ctx.pspUnitId, role: 'psp_fee', basis: 'fee' });
+  rules.push({ recipientUnitId: ctx.pspUnitId, role: ctx.feeRole ?? 'psp_fee', basis: 'fee' });
   rules.push({ recipientUnitId: ctx.merchantUnitId, role: template === 'marketplace' ? 'platform' : 'merchant', basis: 'remainder', ...hold });
   return { templateId: template, rules };
 }

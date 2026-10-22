@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { pickText } from '@river/i18n';
 import { agentCatalogue } from '@river/psp-agents';
 import type { AllocationRole, Currency } from '@river/psp-facts';
@@ -28,6 +29,8 @@ export default async function Payouts({ params, searchParams }: { params: Promis
   const locale = resolveLocale((await params).locale);
   const query = await readQuery(searchParams);
   const c = await cabinet(locale, query.unit, 'payouts.read');
+  // Where the banks settle to the merchant directly, the platform pays nothing out: its money is in the settlements.
+  if (c.stand === 'retail') redirect(c.link(`/settlements${query.unit ? `?unit=${encodeURIComponent(query.unit)}` : ''}`));
   const { t } = c;
   const back = c.link(`/payouts${query.unit ? `?unit=${query.unit}` : ''}`);
   const now = Date.parse(c.now);
@@ -61,7 +64,7 @@ export default async function Payouts({ params, searchParams }: { params: Promis
   const heldRows = payments.filter((p) => held.has(p.paymentId));
   const lostRows = payments.filter((p) => lost.has(p.paymentId));
   const roleLabels: Record<AllocationRole, string> = {
-    merchant: t('merchant', 'мерчант'), seller: t('seller', 'продавець'), platform: t('platform', 'платформа'), psp_fee: t('PSP fee', 'комісія PSP'),
+    merchant: t('merchant', 'мерчант'), seller: t('seller', 'продавець'), platform: t('platform', 'платформа'), psp_fee: t('PSP fee', 'комісія PSP'), acquirer_fee: t('acquirer fee', 'комісія еквайра'),
     charity: t('good cause', 'добра справа'), partner: t('partner', 'партнер'), reserve: t('reserve', 'резерв'),
   };
 

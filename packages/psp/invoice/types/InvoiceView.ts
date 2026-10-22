@@ -14,6 +14,8 @@ export type InvoiceView = {
   updatedAt: string;
   dueAt: string;
   amountMinor: number;
+  /** The amount first claimed, when the claim was adjusted since — to an order's picked total, for example. */
+  originalMinor: number | null;
   currency: Currency;
   allowPartial: boolean;
   payKeyHash: string;

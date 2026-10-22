@@ -1,79 +1,86 @@
-import Link from 'next/link';
 import { pickText, type Locale } from '@river/i18n';
+import { acquirers } from '@river/psp-instruments';
+import type { PaymentView } from '@river/psp-payment';
 import { effectiveFor, type World } from '@river/psp-runtime';
-import { policyValue, findPolicyDefinition } from '@river/psp-units';
-import { splitExample, sinceDays } from '@/lib/figures';
-import { money } from '@/lib/format';
-import { href } from '@/lib/href';
+import { findPolicyDefinition, policyValue } from '@river/psp-units';
+import { sinceDays, splitExample } from '@/lib/figures';
+import { count, money } from '@/lib/format';
 import { lt } from '@/lib/lt';
 import { policyText } from '@/lib/policyText';
-import { DeltaDrawing } from '../river/DeltaDrawing';
-import { ArticleFrame, Figure, Section } from './ArticleFrame';
+import { DeltaDrawing, type DeltaStream } from '../river/DeltaDrawing';
+import { ArticleFrame, Figure, Section, type ArticleWorlds } from './ArticleFrame';
 
-/** Article 01 — split payments: the delta of one payment, its plan from the hierarchy, its laws, its life after. */
-export function SplitArticle({ locale, w }: { locale: Locale; w: World }) {
+const th = 'annot px-3 py-2 text-[0.56rem] font-normal text-ink-500';
+
+/** Article 07 — the distribution of a payment: where it happens, what it is in a group with direct settlement, two payments of one order, a marketplace, its laws, money going back. */
+export function SplitArticle({ locale, worlds }: { locale: Locale; worlds: ArticleWorlds }) {
   const t = lt(locale);
-  const ex = splitExample(w);
-  const unitName = (id: string) => pickText(w.units.find((u) => u.id === id)?.name, locale);
-  const roleWord: Record<string, [string, string]> = { seller: ['seller', 'продавець'], platform: ['marketplace (remainder)', 'маркетплейс (залишок)'], merchant: ['merchant (remainder)', 'мерчант (залишок)'], charity: ['good cause', 'добра справа'], psp_fee: ['PSP fee', 'комісія PSP'], partner: ['franchisor', 'франчайзер'], reserve: ['rolling reserve', 'ковзний резерв'] };
-  const basisWord: Record<string, [string, string]> = { lines: ['its lines less the commission', 'свої позиції мінус комісія'], percent: ['a share of the amount', 'частка суми'], fixed: ['a fixed amount', 'фіксована сума'], fee: ['the tariff’s fee', 'комісія за тарифом'], remainder: ['what is left', 'що залишилося'] };
-  const tone = (role: string) => (role === 'seller' ? 'seller' : role === 'charity' ? 'charity' : role === 'psp_fee' ? 'fee' : role === 'reserve' ? 'reserve' : role === 'platform' ? 'platform' : 'merchant') as 'seller';
-  const units = ['ou-kvitka-market', 'ou-dnipro-travel', 'ou-zerno-if', 'ou-zerno-uzh', 'ou-kvitka-pharmacy', 'ou-amber', 'ou-open-river'];
-  const keys = ['split.template', 'split.commission.bps', 'split.charity.bps', 'settlement.hold.days', 'settlement.reserve.bps'];
+  const r = worlds.retail;
+  const p = worlds.psp;
+  const name = (w: World, id: string) => (id.startsWith('acq:') ? pickText(acquirers.find((a) => a.id === id.slice(4))?.label, locale) : pickText(w.units.find((u) => u.id === id)?.name, locale)) || id;
+  const roleWord: Record<string, [string, string]> = { seller: ['seller', 'продавець'], platform: ['marketplace (remainder)', 'маркетплейс (залишок)'], merchant: ['merchant (remainder)', 'мерчант (залишок)'], charity: ['good cause', 'добра справа'], psp_fee: ['PSP fee', 'комісія PSP'], acquirer_fee: ['acquirer’s fee, kept at settlement', 'комісія еквайра, утримується при розрахунку'], partner: ['franchisor', 'франчайзер'], reserve: ['rolling reserve', 'ковзний резерв'] };
+  const tone = (role: string): DeltaStream['tone'] => (role === 'seller' ? 'seller' : role === 'charity' ? 'charity' : role === 'psp_fee' || role === 'acquirer_fee' ? 'fee' : role === 'reserve' ? 'reserve' : role === 'platform' ? 'platform' : 'merchant');
+  const streams = (w: World, allocations: Array<{ recipientUnitId: string; role: string; amountMinor: number; currency: string }>) => allocations.map((a) => ({ label: a.role === 'psp_fee' ? 'River Pay' : name(w, a.recipientUnitId), role: t(roleWord[a.role]?.[0] ?? a.role, roleWord[a.role]?.[1] ?? a.role), amount: money(a.amountMinor, a.currency, locale), share: a.amountMinor, tone: tone(a.role) }));
+
   const from = sinceDays(30);
-  const byRole = new Map<string, number>();
-  for (const p of w.views.payments.values()) for (const x of p.payouts) if (x.at >= from && p.currency === 'UAH') { const a = p.allocations.find((y) => y.recipientUnitId === x.recipientUnitId && y.rule === x.rule); const role = a?.role ?? 'merchant'; byRole.set(role, (byRole.get(role) ?? 0) + x.amountMinor); }
+  const retailPayment = [...r.views.payments.values()].filter((x) => x.capturedAt && x.capturedAt >= from && x.instrument === 'card' && x.allocations.some((a) => a.role === 'acquirer_fee') && x.capturedMinor < x.amountMinor).at(-1);
+  const retailOrder = retailPayment ? r.views.orders.get(retailPayment.orderId) : undefined;
+  const byOrder = new Map<string, PaymentView[]>();
+  for (const x of r.views.payments.values()) if (x.capturedAt && x.capturedAt >= from) byOrder.set(x.orderId, [...(byOrder.get(x.orderId) ?? []), x]);
+  const tendered = [...byOrder.entries()].filter(([, xs]) => xs.length > 1 && xs.some((x) => x.instrument === 'bonus_points'));
+  const twoPart = tendered.length > 0 ? r.views.orders.get(tendered.at(-1)![0]) : undefined;
+  const twoPayments = twoPart ? byOrder.get(twoPart.orderId) ?? [] : [];
+  const ex = splitExample(p);
+  const units = ['ou-kvitka-market', 'ou-dnipro-travel', 'ou-zerno-if', 'ou-zerno-uzh', 'ou-amber'];
+  const keys = ['split.template', 'split.commission.bps', 'split.charity.bps', 'settlement.hold.days', 'settlement.reserve.bps'];
   return (
-    <ArticleFrame locale={locale} slug="split" sheet="RP-01" title={t('One order, many streams', 'Одне замовлення — багато протоків')}
-      lead={t('In River Pay the split is neither a report made afterwards nor a transfer someone remembers to send. It is a bridge of the payment session itself: at the capture the money divides into streams — sellers, the marketplace, a good cause, the fee — by rules the hierarchy set before anyone paid. Every stream is a share of a real amount, and together they always make up that amount to the last kopiyka.', 'У River Pay розщеплення — не звіт постфактум і не переказ, про який хтось має не забути. Це міст самої платіжної сесії: у момент списання гроші розходяться на протоки — продавцям, маркетплейсу, на добру справу, на комісію — за правилами, які ієрархія задала ще до оплати. Кожен протік — частка реальної суми, а разом вони завжди складають цю суму до копійки.')}
-      cta={{ label: t('Buy and watch it split', 'Купіть і подивіться на розщеплення'), path: '/shop' }}>
-      <Section index="1" title={t('Where the split happens', 'Де відбувається розщеплення')}>
-        <p>{t('A payment session runs from the source — an invoice in front of a payer — to the mouth. At the capture bridge the money is taken; the very next bridge, ', 'Платіжна сесія тече від витоку — інвойсу перед платником — до гирла. На мосту списання гроші взято; одразу наступний міст, ')}<code>split.Allocated</code>{t(', divides it. The figure of the machine writes it from three things it already holds: the captured amount, the order’s split plan, and the fee of the merchant’s active tariff. Nothing is computed later; nothing can drift.', ', розділяє їх. Фігура машини записує його з трьох речей, які вже має: списаної суми, плану розщеплення замовлення та комісії за чинним тарифом мерчанта. Нічого не рахується пізніше; нічого не може розійтися.')}</p>
-        <p>{t('The ledger is not written by anyone: it is a projection of this bridge. The acquirer owes the whole amount; each recipient is owed its share; the PSP has earned its fee — one balanced double entry per split.', 'Облік ніхто не пише: він є проєкцією цього мосту. Еквайр винен усю суму; кожному одержувачу винні його частку; PSP заробив комісію — один збалансований подвійний запис на кожне розщеплення.')}</p>
-        {ex ? (
-          <Figure caption={`${t('A real payment of the demo marketplace', 'Справжній платіж демо-маркетплейсу')} · ${ex.order.reference} · ${t('drawn to scale', 'у масштабі')}`}>
-            <DeltaDrawing total={[t('Captured', 'Списано'), money(ex.payment.capturedMinor, ex.payment.currency, locale)]} streams={ex.payment.allocations.map((a) => ({ label: a.role === 'psp_fee' ? 'River Pay' : unitName(a.recipientUnitId), role: t(roleWord[a.role]![0], roleWord[a.role]![1]), amount: money(a.amountMinor, a.currency, locale), share: a.amountMinor, tone: tone(a.role) }))} />
+    <ArticleFrame locale={locale} slug="split" sheet="RP-07" title={t('The distribution of a payment', 'Розподіл платежу')}
+      lead={t('When a payment is captured, its amount is divided into shares by a plan the structure set before anyone paid: what the unit receives, what the bank keeps as its fee, and — in a marketplace — what each seller, the platform and a good cause receive. The shares are computed in whole kopiykas and always add up to the amount. The ledger is not written by anyone: it is a projection of this division, so it always balances.', 'Коли платіж списано, його суму ділять на частки за планом, який структура задала ще до оплати: що отримує одиниця, що утримує банк як комісію, а в маркетплейсі — що отримує кожен продавець, платформа й добра справа. Частки рахуються в цілих копійках і завжди складаються в суму платежу. Облік ніхто не пише: він є проєкцією цього розподілу, тому завжди збалансований.')}
+      cta={{ label: t('Buy and see the distribution', 'Купіть і подивіться на розподіл'), path: '/shop' }}>
+      <Section index="1" title={t('In a group whose banks settle directly', 'У групі, з якою банки розраховуються напряму')}>
+        <p>{t('In the retail group the platform holds no money. A captured card payment has two shares: the unit’s net and the acquirer’s fee under the group’s agreement. The bank keeps its fee when it settles and credits the net to the group’s account; the platform records what is owed so that reconciliation can check it.', 'У роздрібній групі платформа не тримає коштів. Списаний картковий платіж має дві частки: суму для одиниці й комісію еквайра за договором групи. Банк утримує свою комісію при розрахунку й зараховує решту на рахунок групи; платформа записує, що кому належить, щоб звірка могла це перевірити.')}</p>
+        {retailPayment ? (
+          <Figure caption={`${t('Fig. 7.1 — a card payment of the online shop, captured after picking', 'Рис. 7.1 — картковий платіж інтернет-магазину, списаний після комплектації')}${retailOrder ? ` · ${retailOrder.reference}` : ''} · ${t('drawn to scale', 'у масштабі')}`}>
+            <DeltaDrawing total={[t('Captured', 'Списано'), money(retailPayment.capturedMinor, retailPayment.currency, locale)]} streams={streams(r, retailPayment.allocations)} />
           </Figure>
         ) : null}
+        <p>{t('The ledger reads it as one balanced entry: the acquirer owes the captured amount in clearing; of it, the net is payable to the unit and the fee is the acquirer’s. When the bank’s report and credit arrive, the clearing is closed — or the difference stays visible.', 'Облік читає це як один збалансований запис: еквайр винен списану суму в розрахунках; з неї сума до зарахування належить одиниці, а комісія — еквайру. Коли надходять звіт банку й зарахування, розрахунки закриваються — або різниця лишається на виду.')}</p>
       </Section>
 
-      <Section index="2" title={t('The plan comes from the hierarchy', 'План приходить з ієрархії')}>
-        <p>{t('When an order is created it receives its split plan from the effective policies of the unit that sells: a template (direct, marketplace, agency, franchise), the marketplace’s commission, a share for a good cause and its recipient, how long shares are held and how much is kept as a rolling reserve. A holding sets them once for every shop below it; a merchant may change what is not enforced. Here is what is in effect right now for some of the demo’s merchants:', 'Під час створення замовлення воно отримує план розщеплення з чинних політик одиниці, що продає: шаблон (напряму, маркетплейс, агентська схема, франшиза), комісію маркетплейсу, частку на добру справу та її одержувача, скільки утримувати частки і скільки залишати в ковзному резерві. Холдинг задає їх один раз для всіх точок нижче; мерчант може змінити те, що не закріплено. Ось що діє просто зараз для кількох мерчантів демо:')}</p>
-        <div className="not-prose overflow-x-auto border border-graphite/20">
-          <table className="w-full text-left text-[0.85rem]">
-            <thead><tr className="border-b border-ink-900/80"><th className="annot px-3 py-2 text-[0.58rem] font-normal text-ink-500">{t('Merchant', 'Мерчант')}</th>{keys.map((k) => <th key={k} className="annot px-3 py-2 text-[0.58rem] font-normal text-ink-500">{pickText(findPolicyDefinition(k).label, locale)}</th>)}</tr></thead>
-            <tbody>{units.map((id) => { const e = effectiveFor(w, id); const u = w.units.find((x) => x.id === id)!; return <tr key={id} className="border-b border-graphite/15"><td className="px-3 py-2 text-ink-900">{unitName(id)}</td>{keys.map((k) => <td key={k} className="px-3 py-2 text-ink-700">{policyText(findPolicyDefinition(k), policyValue(e, k), locale, u.currency, unitName)}</td>)}</tr>; })}</tbody>
-          </table>
-        </div>
-        <p>{t('Look at Zerno Uzhhorod: it blocks the inheritance of its holding’s policies, yet still pays the franchise royalty — because the holding enforced the franchise template. That is the hierarchy at work: what must not change is enforced; everything else may be tuned below.', 'Подивіться на «Зерно Ужгород»: воно блокує успадкування політик свого холдингу, але все одно сплачує роялті франшизи — бо холдинг закріпив шаблон франшизи. Так працює ієрархія: те, що не можна змінювати, закріплено; решту можна налаштовувати нижче.')}</p>
-      </Section>
+      {twoPart ? (
+        <Section index="2" title={t('Two payments of one order', 'Два платежі одного замовлення')}>
+          <p>{t(`One order can be paid by several instruments: part with bonus points, the rest by card. Each part is a payment of its own with its own distribution; the order is paid when together they cover the picked amount. In the last 30 days ${count(tendered.length, locale)} online orders were paid this way. For example, order ${twoPart.reference}:`, `Одне замовлення можна сплатити кількома інструментами: частину бонусними балами, решту карткою. Кожна частина — окремий платіж із власним розподілом; замовлення сплачене, коли разом вони покривають суму комплектації. За останні 30 днів так сплачено ${count(tendered.length, locale)} онлайн-замовлень. Наприклад, замовлення ${twoPart.reference}:`)}</p>
+          <ul>{twoPayments.map((x) => <li key={x.paymentId}>{x.instrument === 'bonus_points' ? t('bonus points', 'бонусні бали') : t('card', 'картка')}: <b>{money(x.capturedMinor, x.currency, locale)}</b> — {x.allocations.map((a) => `${name(r, a.recipientUnitId)} ${money(a.amountMinor, a.currency, locale)}`).join(', ')}</li>)}</ul>
+        </Section>
+      ) : null}
 
-      <Section index="3" title={t('The laws of the delta', 'Закони дельти')}>
-        <ul>
-          <li>{t('Every share is computed in whole minor units and rounded down. Exactly one rule takes the remainder, so the shares always sum to the captured amount — no money is made or lost, whatever the amount.', 'Кожна частка рахується в цілих копійках з округленням донизу. Рівно одне правило забирає залишок, тож частки завжди дорівнюють списаній сумі — гроші не з’являються і не зникають, хоч якою була б сума.')}</li>
-          <li>{t('A seller receives its own lines less the commission. A partial capture scales the lines in proportion.', 'Продавець отримує власні позиції мінус комісія. Часткове списання пропорційно масштабує позиції.')}</li>
-          <li>{t('A rolling reserve is carved out of the remainder as its own stream, held for ninety days.', 'Ковзний резерв вирізається із залишку як окремий протік і утримується дев’яносто днів.')}</li>
-          <li>{t('The PSP’s fee is a stream like any other — visible to the merchant always, and to the payer before paying when the unit says so.', 'Комісія PSP — такий самий протік, як інші: мерчант бачить її завжди, а платник — ще до оплати, якщо так вирішила одиниця.')}</li>
-        </ul>
-        {ex ? (
+      {ex ? (
+        <Section index="3" title={t('In a marketplace', 'У маркетплейсі')}>
+          <p>{t('Where the platform is assembled as a payment service provider that holds its merchants’ money, the same division has more shares. A marketplace order of the demo’s PSP assembly: three sellers, a share for a good cause, the marketplace’s commission and the provider’s fee.', 'Там, де платформу зібрано як надавача платіжних послуг, що тримає кошти мерчантів, той самий розподіл має більше часток. Замовлення маркетплейсу з PSP-збірки демо: три продавці, частка на добру справу, комісія маркетплейсу й комісія провайдера.')}</p>
+          <Figure caption={`${t('Fig. 7.2 — the distribution of a marketplace payment', 'Рис. 7.2 — розподіл платежу маркетплейсу')} · ${ex.order.reference} · ${t('drawn to scale', 'у масштабі')}`}>
+            <DeltaDrawing total={[t('Captured', 'Списано'), money(ex.payment.capturedMinor, ex.payment.currency, locale)]} streams={streams(p, ex.payment.allocations)} />
+          </Figure>
+          <p>{t('The plan comes from the effective policies of the unit that sells: a template (direct, marketplace, agency, franchise), the commission, a share for a good cause, how long shares are held and how much is kept as a rolling reserve. In effect now for some of that assembly’s merchants:', 'План береться з чинних політик одиниці, що продає: шаблон (напряму, маркетплейс, агентська схема, франшиза), комісія, частка на добру справу, скільки утримувати частки і скільки залишати в ковзному резерві. Що діє зараз для кількох мерчантів цієї збірки:')}</p>
           <div className="not-prose overflow-x-auto border border-graphite/20">
-            <table className="w-full text-left text-[0.85rem]">
-              <thead><tr className="border-b border-ink-900/80">{[t('Rule', 'Правило'), t('Recipient', 'Одержувач'), t('Basis', 'Основа'), t('Amount', 'Сума')].map((h) => <th key={h} className="annot px-3 py-2 text-[0.58rem] font-normal text-ink-500">{h}</th>)}</tr></thead>
-              <tbody>{ex.payment.allocations.map((a) => { const rule = ex.order.split.rules[a.rule]; return <tr key={`${a.recipientUnitId}${a.rule}`} className="border-b border-graphite/15"><td className="px-3 py-2 font-mono text-[0.78rem]">{a.rule < 0 ? '—' : a.rule}</td><td className="px-3 py-2">{a.role === 'psp_fee' ? 'River Pay' : unitName(a.recipientUnitId)}</td><td className="px-3 py-2 text-ink-700">{rule ? t(basisWord[rule.basis]![0], basisWord[rule.basis]![1]) : t('reserve, from the remainder', 'резерв із залишку')}{rule?.bps !== undefined ? ` · ${rule.bps / 100} %` : ''}</td><td className="px-3 py-2 text-right tabular-nums">{money(a.amountMinor, a.currency, locale)}</td></tr>; })}
-                <tr className="border-t border-ink-900/80"><td colSpan={3} className="px-3 py-2 font-semibold">{t('Sum of the streams', 'Сума протоків')}</td><td className="px-3 py-2 text-right font-semibold tabular-nums">{money(ex.payment.allocations.reduce((s, a) => s + a.amountMinor, 0), ex.payment.currency, locale)}</td></tr></tbody>
+            <table className="w-full min-w-[720px] text-left text-[0.85rem]">
+              <thead><tr className="border-b border-ink-900/80"><th className={th}>{t('Merchant', 'Мерчант')}</th>{keys.map((k) => <th key={k} className={th}>{pickText(findPolicyDefinition(k).label, locale)}</th>)}</tr></thead>
+              <tbody>{units.filter((id) => p.units.some((u) => u.id === id)).map((id) => { const e = effectiveFor(p, id); const u = p.units.find((x) => x.id === id)!; return <tr key={id} className="border-b border-graphite/15"><td className="px-3 py-2 text-ink-900">{name(p, id)}</td>{keys.map((k) => <td key={k} className="px-3 py-2 text-ink-700">{policyText(findPolicyDefinition(k), policyValue(e, k), locale, u.currency, (x) => name(p, x))}</td>)}</tr>; })}</tbody>
             </table>
           </div>
-        ) : null}
+        </Section>
+      ) : null}
+
+      <Section index="4" title={t('The rules of the division', 'Правила розподілу')}>
+        <ul>
+          <li>{t('Every share is computed in whole kopiykas and rounded down. Exactly one rule takes the remainder, so the shares always add up to the captured amount: no money appears or disappears, whatever the amount.', 'Кожна частка рахується в цілих копійках з округленням донизу. Рівно одне правило забирає залишок, тож частки завжди дорівнюють списаній сумі: гроші не з’являються і не зникають, хоч якою була б сума.')}</li>
+          <li>{t('A partial capture — after picking, for instance — scales the plan to the captured amount.', 'Часткове списання — наприклад, після комплектації — масштабує план до списаної суми.')}</li>
+          <li>{t('A fee is a share like any other: always visible to the unit, and to the payer before paying where the unit chooses.', 'Комісія — така сама частка, як інші: одиниця бачить її завжди, а платник — ще до оплати, якщо так вирішила одиниця.')}</li>
+          <li>{t('A rolling reserve, where a provider holds money, is carved out of the remainder as its own share. A retail group whose banks settle directly has none.', 'Ковзний резерв — там, де кошти тримає провайдер, — вирізається із залишку як окрема частка. У роздрібній групі, з якою банки розраховуються напряму, його немає.')}</li>
+        </ul>
       </Section>
 
-      <Section index="4" title={t('When money goes back', 'Коли гроші повертаються')}>
-        <p>{t('A refund or a lost dispute is taken back from the same streams that received the money, in proportion to what each received. The PSP keeps its fee; the merchant’s remainder carries the rounding and, on a full refund, the fee the PSP kept — its balance may go below zero, never the payer’s money. The ledger forms the reversal from the payment’s own stream, so every refund is one more balanced entry.', 'Повернення чи програний спір забирається з тих самих протоків, що отримали гроші, пропорційно до отриманого. PSP залишає собі комісію; залишок мерчанта несе округлення і, при повному поверненні, утриману комісію — його баланс може стати від’ємним, але ніколи не гроші платника. Облік формує сторнування з власного потоку платежу, тож кожне повернення — ще один збалансований запис.')}</p>
-      </Section>
-
-      <Section index="5" title={t('Payouts follow the streams', 'Виплати йдуть за протоками')}>
-        <p>{t('Each stream is paid out to its own recipient on its unit’s schedule — the next day in Ukraine, in two days in Europe — once its hold has passed, in one batch per recipient per day. In the last 30 days the demo paid out, in hryvnias:', 'Кожен протік виплачується власному одержувачу за графіком його одиниці — наступного дня в Україні, через два дні в Європі — щойно мине утримання, одним пакетом на одержувача на день. За останні 30 днів демо виплатило в гривнях:')}</p>
-        <ul>{[...byRole.entries()].sort((a, b) => b[1] - a[1]).map(([role, minor]) => <li key={role}>{t(roleWord[role]?.[0] ?? role, roleWord[role]?.[1] ?? role)}: <b>{money(minor, 'UAH', locale)}</b></li>)}</ul>
-        <p><Link href={href(locale, '/demo')}>{t('Open the operator’s cabinet to see the batches and the ledger', 'Відкрийте кабінет операціоніста, щоб побачити пакети та облік')}</Link>.</p>
+      <Section index="5" title={t('When money goes back', 'Коли гроші повертаються')}>
+        <p>{t('A refund or a lost dispute is taken back from the same shares that received the money, in proportion. The fee is not returned by the bank; the unit’s share carries it. Where the banks settle directly, a refund is netted by the bank in a later settlement batch, and reconciliation checks that it was netted once and in full. The ledger forms the reversal from the payment’s own stream, so every refund is one more balanced entry.', 'Повернення чи програний спір забирається з тих самих часток, що отримали гроші, пропорційно. Банк комісію не повертає; її несе частка одиниці. Там, де банки розраховуються напряму, повернення банк утримує в одному з наступних пакетів розрахунку, а звірка перевіряє, що його утримано один раз і повністю. Облік формує сторнування з власного потоку платежу, тож кожне повернення — ще один збалансований запис.')}</p>
       </Section>
     </ArticleFrame>
   );

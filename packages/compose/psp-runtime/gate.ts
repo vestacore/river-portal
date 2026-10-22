@@ -1,7 +1,28 @@
-// @river/psp-runtime — the PSP demo stand, wired (adr/records/ADR-0026): the world in memory with its
-// history, `appendFacts` as the one writer (it refuses a fact another boundary owns), the stand-in banks,
-// the commands of every cabinet behind their access checks, the swarm, and the clock.
-export type { World, Actor, CommandResult, Persona, Scenario, Waiting, PayerGesture } from './types/World.ts';
+// @river/psp-runtime — the demo stands, wired (adr/records/ADR-0026, ADR-0027): two assemblies of one
+// platform — a retail group whose banks settle to it directly, and a PSP that holds its merchants' money —
+// each a world in memory with its history, `appendFacts` as the one writer (it refuses a fact another
+// boundary owns), the stand-in banks, the commands of every cabinet behind their access checks, the
+// readings of routing, costs and reconciliation, the agents, and the clock.
+export type { World, StandId, Actor, CommandResult, Persona, Scenario, Waiting, PayerGesture } from './types/World.ts';
+export type { StandData } from './types/Stand.ts';
+export { pspStand } from './data/pspStand.ts';
+export { retailStand } from './data/retailStand.ts';
+export { retailStores, regionIssuerMix } from './data/retailStores.ts';
+export { groceryProducts, corporateProducts } from './data/retailCatalogue.ts';
+export type { GroceryProduct } from './data/retailCatalogue.ts';
+export { getWorld } from './getWorld.ts';
+export { seedRetail } from './seedRetail.ts';
+export { reconcileSettlements } from './reconcileSettlements.ts';
+export { simulateRouting } from './simulateRouting.ts';
+export { posOutlook } from './posOutlook.ts';
+export { quoteAcquirers } from './quoteAcquirers.ts';
+export { acquiringTermsFor } from './acquiringTermsFor.ts';
+export { acquiringFeeFor } from './acquiringFeeFor.ts';
+export { recordPicking } from './recordPicking.ts';
+export { reportPicking } from './reportPicking.ts';
+export { requestCapture } from './requestCapture.ts';
+export { creditSettlements } from './creditSettlements.ts';
+export { bonusBalanceOf } from './bonusBalanceOf.ts';
 export type { MerchantPlan, Product } from './data/demoMerchants.ts';
 export { demoPersonas } from './data/demoPeople.ts';
 export { demoMerchants } from './data/demoMerchants.ts';
@@ -32,6 +53,7 @@ export { refundPayment } from './refundPayment.ts';
 export { submitEvidence } from './submitEvidence.ts';
 export { decideReview } from './decideReview.ts';
 export { updateAlert } from './updateAlert.ts';
+export { resolveSettlement } from './resolveSettlement.ts';
 export { decideOnboarding } from './decideOnboarding.ts';
 export { voidInvoice } from './voidInvoice.ts';
 export { remindInvoice } from './remindInvoice.ts';

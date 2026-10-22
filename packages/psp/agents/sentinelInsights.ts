@@ -47,15 +47,20 @@ export function sentinelInsights(input: SwarmInput): InsightDraft[] {
     const usual = median(byMerchant.get(p.merchantId) ?? []);
     if (usual === 0 || p.amountMinor < usual * 8) continue;
     // A hold only means something while a share is still to be paid out.
-    if (payoutsDue(p, '9999-12-31T00:00:00.000Z').length === 0) continue;
+    if (input.settlement !== 'direct' && payoutsDue(p, '9999-12-31T00:00:00.000Z').length === 0) continue;
+    if (input.settlement === 'direct' && now - Date.parse(p.createdAt) > 2 * day) continue;
     out.push({
       agent: 'sentinel', unitId: p.unitId, subject: { kind: 'payment', id: p.paymentId },
       title: { 'en-GB': 'An amount far above the usual', uk: 'Сума значно вища за звичну' },
       finding: { 'en-GB': `${moneyText(p.amountMinor, p.currency)['en-GB']} is ${Math.round(p.amountMinor / usual)}× the merchant’s median payment (${moneyText(usual, p.currency)['en-GB']}).`, uk: `${moneyText(p.amountMinor, p.currency).uk} — у ${Math.round(p.amountMinor / usual)} раз більше за медіанний платіж мерчанта (${moneyText(usual, p.currency).uk}).` },
       evidence: [{ kind: 'payment', id: p.paymentId, note: { 'en-GB': `${p.instrument} · ${p.acquirer}`, uk: `${p.instrument} · ${p.acquirer}` } }],
       confidence: 0.58,
-      proposal: { kind: 'hold_payouts', risk: 'high', params: { paymentId: p.paymentId },
-        effect: { 'en-GB': 'Hold the payouts of this payment until a compliance officer has looked.', uk: 'Утримати виплати за цим платежем, доки офіцер не перевірить.' } },
+      // Where acquirers settle to the merchant directly there is no payout of the platform's to hold: an alert, then.
+      proposal: input.settlement === 'direct'
+        ? { kind: 'open_alert', risk: 'high', params: { paymentId: p.paymentId, sessions: [p.sessionId] },
+          effect: { 'en-GB': 'Open an alert to check the customer and the order before it ships.', uk: 'Відкрити сповіщення, щоб перевірити клієнта й замовлення до відвантаження.' } }
+        : { kind: 'hold_payouts', risk: 'high', params: { paymentId: p.paymentId },
+          effect: { 'en-GB': 'Hold the payouts of this payment until a compliance officer has looked.', uk: 'Утримати виплати за цим платежем, доки офіцер не перевірить.' } },
       consulted: [],
     });
   }

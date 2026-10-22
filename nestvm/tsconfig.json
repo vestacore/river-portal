@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["es2022"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "../..",
+    "outDir": ".dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/core/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/machine/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/session/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/application/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/side/**/*.ts",
+    "../../learning/coagnes/nestvm/lib/entry/create-engine.ts",
+    "../../learning/coagnes/nestvm/lib/entry/handle-request.ts",
+    "../../learning/coagnes/nestvm/lib/entry/world-from-environment.ts",
+    "../../learning/coagnes/nestvm/lib/entry/gate.ts"
+  ]
+}

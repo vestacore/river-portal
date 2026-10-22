@@ -7,6 +7,7 @@ export const refundReasonLabels: Record<RefundReason, LocalisedText> = {
   returned: { 'en-GB': 'Returned by the customer', uk: 'Покупець повернув товар' },
   damaged: { 'en-GB': 'Damaged in transit', uk: 'Пошкоджено під час доставки' },
   not_delivered: { 'en-GB': 'Not delivered', uk: 'Не доставлено' },
+  picked_less: { 'en-GB': 'Picked for less than was paid', uk: 'Скомплектовано на меншу суму, ніж сплачено' },
   duplicate: { 'en-GB': 'Duplicate order', uk: 'Дубль замовлення' },
   cancelled: { 'en-GB': 'Cancelled by the customer', uk: 'Скасовано покупцем' },
   other: { 'en-GB': 'Other', uk: 'Інше' },

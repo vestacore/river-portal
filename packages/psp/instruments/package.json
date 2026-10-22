@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "Payment instruments as first-class citizens: each one's family, rail, capabilities, regions and course — the bridges a successful attempt crosses — plus the acquirers and banks that carry them.",
+  "description": "Payment instruments as first-class citizens: each one's family, rail, capabilities, regions and course — the bridges a successful attempt crosses — the providers that carry them, and a directory of card issuers by BIN.",
   "type": "module",
   "exports": {
     ".": "./gate.ts"

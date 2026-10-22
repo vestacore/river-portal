@@ -1,0 +1,50 @@
+# Controller configuration record — the function host (Vol. 07 §5:
+# "extensions introducing new controllers MUST ship such a record";
+# Vol. 10 §9: "a deterministic pipeline — operator binds discharged by a
+# deterministic function-host controller: the service instruction names the
+# function; the schema fixes its result").
+#
+# Declared-record disambiguation (coagnes/CLAUDE.md §2):
+# 1. Element: the discharge station `controller.function-host` — the lab's
+#    catalogue of pure, versioned functions reached at the membrane:
+#    invoice@1 · screen@1 · route@1 · settle@1 (src/catalogue/). A bind
+#    names one as its instruction (`instruction: route@1`); the host runs
+#    it over the request's bound scope and publishes the result under the
+#    bind's own emit declaration, validated against the bind's schema by
+#    the assembly's hold of the result contract.
+# 2. Server: this file, portal/nestvm/controllers/ — human-owned truth;
+#    src/world/functionHost.ts enacts it.
+# 3. Consumer: the composition root (src/compose.ts) installs it in the
+#    world; the wave log is NOT a consumer of this record — it consumes the
+#    station's answers.
+# 4. Successful inclusion: src/walk.test.ts — every function answers under
+#    its request's uid; an unknown reference is left unclaimed (the
+#    intention stays open on the log, never guessed); a thrown function
+#    resolves as service.failed with the reason.
+controller: function-host
+version: 1
+station: discharge
+deterministic: true
+claims:
+  - kind: domain.fact
+    factType: service.request
+    when: "the request's instruction is a reference of this catalogue (name@N) and its emit declaration is `writes`"
+correlation:
+  field: uid
+  echoed_on: [the answer, service.failed]
+  also: bindId
+answers:
+  - "the request's own emit type: {bindId, uid, result, by: {controller, function}} plus the function's declared top-level marks (band · challenge), which the declared `where` rules of the next knots read (Vol. 05 §3)"
+  - "service.failed {bindId, uid, reason, by} — when the function throws"
+reads:
+  - "the request's bound scope only (Vol. 06 §4.4: the intention is machine-complete); no log, no projection, no environment, no clock"
+refuses:
+  - "to judge or to integrate (Vol. 07 §2.3): a function fills content within the form the bind declared"
+  - "any request whose instruction names no function of the catalogue — left to whichever station claims it, else unclaimed and visible as an open intention"
+catalogue:
+  - { ref: invoice@1, kind: "the payable claim of an order under the terms (id, amount, currency, due date)" }
+  - { ref: screen@1, kind: "the attempt scored under the terms: a band (pass · review · block), a score, the reasons, whether a challenge is due" }
+  - { ref: route@1, kind: "the acquirer that carries the attempt under the strategy in force (least_cost · on_us_first · approval_first), with every alternative priced and its eligibility" }
+  - { ref: settle@1, kind: "the mouth: the fee under the route's terms, balanced postings, the receipt" }
+budgets:
+  answers_per_request: 1

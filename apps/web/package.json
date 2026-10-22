@@ -1,7 +1,7 @@
 {
   "name": "@river/web",
   "version": "0.0.0",
-  "description": "The PSP portal: its showcase and articles, the pay page and six cabinets, on one demo stand.",
+  "description": "The portal of the payment flow orchestration platform: its showcase and articles, the pay page and the cabinets of two assemblies — a retail group and a PSP — on demo stands.",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -29,6 +29,7 @@
     "@river/psp-risk": "0.0.0",
     "@river/psp-runtime": "0.0.0",
     "@river/psp-session": "0.0.0",
+    "@river/psp-settlement": "0.0.0",
     "@river/psp-split": "0.0.0",
     "@river/psp-units": "0.0.0",
     "@river/psp-views": "0.0.0",

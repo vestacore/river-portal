@@ -3,20 +3,22 @@ import { appendFacts } from './appendFacts.ts';
 import { openAlert } from './openAlert.ts';
 import { recordAudit } from './recordAudit.ts';
 import { remindInvoice } from './remindInvoice.ts';
-import type { World } from './types/World.ts';
+import { setPolicy } from './setPolicy.ts';
+import type { Actor, World } from './types/World.ts';
 
 /**
  * Carries out an accepted proposal. What touches money or a person's standing goes through the same
- * doors a person would use; nothing here writes a payment fact a person could not write themselves.
+ * doors a person would use, as the person who accepted it; nothing here writes a fact a person could not
+ * write themselves. A negotiation is a person's task: accepting it records it, nothing more.
  */
-export function applyProposal(world: World, insight: Insight, by: string, at: string): void {
+export function applyProposal(world: World, insight: Insight, by: string, at: string, actor?: Actor): void {
   const p = insight.proposal;
   if (!p) return;
   const params = p.params;
   switch (p.kind) {
     case 'send_reminder': remindInvoice(world, String(params.invoiceId), Number(params.step ?? 0), (params.channel as 'email' | 'sms' | 'messenger') ?? 'email', by, at); break;
     case 'retry_deliveries': {
-      world.counters.fixedKvgEndpoint = 1;
+      world.counters[`fixed:${String(params.endpointId)}`] = 1;
       const ids = new Set((params.deliveries as string[] | undefined) ?? []);
       for (const d of world.deliveries.filter((x) => ids.has(x.id) && x.status === 'failed')) {
         const seq = (world.counters.delivery ?? 0) + 1;
@@ -33,6 +35,19 @@ export function applyProposal(world: World, insight: Insight, by: string, at: st
       break;
     }
     case 'hold_payouts': if (!world.heldPayouts.includes(String(params.paymentId))) world.heldPayouts.push(String(params.paymentId)); break;
+    case 'change_policy': {
+      if (actor) setPolicy(world, actor, { unitId: String(params.unitId), key: String(params.key), value: params.value as string, mode: 'default', note: `Accepted from ${insight.id}` }, at);
+      break;
+    }
+    case 'raise_claim': {
+      const batches = (params.batches as string[] | undefined) ?? [];
+      const each = Math.floor(Number(params.amountMinor ?? 0) / Math.max(1, batches.length));
+      for (const batchId of batches) {
+        if (!world.views.settlements.has(batchId)) continue;
+        appendFacts(world, batchId, [{ type: 'settlement.Resolved', payload: { batchId, resolution: 'claim_raised', amountMinor: each, note: p.effect['en-GB'], by } }], { via: 'door', actor: by, role: actor?.kind === 'person' ? actor.role : 'finance_controller' }, at);
+      }
+      break;
+    }
     case 'shift_route': {
       const entity = String(params.entity);
       world.routeWeights[entity] = { ...(world.routeWeights[entity] ?? {}), [String(params.to)]: 80, [String(params.from)]: 20 };

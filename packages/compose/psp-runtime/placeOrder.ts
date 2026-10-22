@@ -18,7 +18,8 @@ const day = 86_400_000;
  * An order and its invoice, as one door gesture: `order.Created` in the order's stream with the split plan
  * the unit's policies give it, then `invoice.Issued` in the invoice's own stream, with the hash of a new
  * pay key. Refused above the unit's payment limit, for a unit that cannot trade yet, and for a merchant
- * without an active contract — approval at onboarding is not enough: what the PSP charges must be agreed.
+ * without an active contract — approval at onboarding is not enough: what a payment costs must be agreed
+ * (the PSP's tariff, or the merchant's own acquiring terms where acquirers settle to it directly).
  */
 export function placeOrder(world: World, input: { unitId: string; channel: Channel; lines: OrderLine[]; payerRef: string; reference?: string; dueDays?: number; allowPartial?: boolean; send?: 'email' | 'sms' | 'messenger' | 'link' | 'qr' | null }, origin: Origin, at: string): { orderId: string; invoiceId: string; payKey: string } | { error: string } {
   const unit = world.units.find((u) => u.id === input.unitId);
@@ -26,15 +27,18 @@ export function placeOrder(world: World, input: { unitId: string; channel: Chann
   const merchantId = merchantOf(world, unit.id);
   const merchant = world.units.find((u) => u.id === merchantId);
   if (!merchant || merchant.status !== 'active' || unit.status === 'suspended') return { error: 'the merchant cannot take payments yet' };
-  if (!activeTariffOf(world.contracts, world.tariffs, merchantId, at)) return { error: 'the merchant has no active contract' };
   const errors = validateOrderLines(input.lines);
   if (errors.length > 0) return { error: errors.join('; ') };
   const effective = effectiveFor(world, unit.id);
+  // Where the platform holds the money its tariff must be agreed; where acquirers settle directly, the
+  // merchant must have acquiring terms with at least one of them.
+  const direct = policyValue(effective, 'settlement.model') === 'direct';
+  if (direct ? !world.acquiring.some((t) => t.merchantId === merchantId) : !activeTariffOf(world.contracts, world.tariffs, merchantId, at)) return { error: 'the merchant has no active contract' };
   const total = orderTotal(input.lines);
   const limit = policyValue(effective, 'limits.payment.max');
   if (typeof limit === 'number' && total > limit) return { error: 'over the unit’s payment limit' };
   const template = resolvePolicy(world.units, world.settings, unit.id, findPolicyDefinition('split.template'));
-  const split = planForUnit({ merchantUnitId: merchantId, pspUnitId: 'ou-riverpay', lines: input.lines, effective, franchisorUnitId: template.value === 'franchise' ? template.source : null });
+  const split = planForUnit({ merchantUnitId: merchantId, pspUnitId: direct ? 'acq:*' : world.feeRecipient ?? 'acq:*', feeRole: direct ? 'acquirer_fee' : 'psp_fee', lines: input.lines, effective, franchisorUnitId: template.value === 'franchise' ? template.source : null });
   const orderId = newId(world, 'ord');
   const invoiceId = newId(world, 'inv');
   const payKey = randomBytes(12).toString('base64url');

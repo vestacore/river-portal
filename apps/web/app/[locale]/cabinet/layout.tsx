@@ -2,19 +2,20 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { pickText, segmentForLocale } from '@river/i18n';
-import { roleLabels, scopesOf } from '@river/psp-access';
+import { scopesOf } from '@river/psp-access';
 import { agentCatalogue } from '@river/psp-agents';
-import { visibleUnits } from '@river/psp-runtime';
+import { reconcileSettlements, visibleUnits } from '@river/psp-runtime';
 import { CabinetNav } from '@/components/cabinet/CabinetNav';
 import { LanguageSwitcher } from '@/components/site/LanguageSwitcher';
 import { LogoMark } from '@/components/site/LogoMark';
 import { signOut, switchProfile } from '@/lib/actions/demo';
-import { menus, sections } from '@/lib/cabinetNav';
+import { menuOf, sections, standLabels } from '@/lib/cabinetNav';
 import { href } from '@/lib/href';
 import { lt } from '@/lib/lt';
 import { resolveLocale } from '@/lib/resolveLocale';
 import { requireActor } from '@/lib/session';
-import { world } from '@/lib/world';
+import { roleText } from '@/lib/roleText';
+import { standOfPerson, world } from '@/lib/world';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,8 @@ export default async function CabinetLayout({ children, params }: { children: Re
   const locale = resolveLocale((await params).locale);
   const t = lt(locale);
   const actor = await requireActor(locale);
-  const w = world();
+  const stand = standOfPerson(actor.personId);
+  const w = world(stand);
   const now = new Date().toISOString();
   const person = w.people.find((p) => p.id === actor.personId)!;
   const scopes = scopesOf(w.grants, actor.personId, now);
@@ -42,22 +44,25 @@ export default async function CabinetLayout({ children, params }: { children: Re
     reviews: [...w.views.sessions.values()].filter((s) => s.outcome === 'review' && reach.has(s.unitId)).length,
     requests: w.requests.filter((r) => r.status === 'pending' && reach.has(r.unitId)).length,
     agents: w.insights.filter((i) => i.status === 'open' && audience.has(i.agent) && reach.has(i.unitId)).length,
+    settlements: w.views.settlements.size > 0 ? reconcileSettlements(w, now).filter((r) => !['matched', 'resolved', 'awaiting_report', 'awaiting_credit'].includes(r.reconciliation.status) && reach.has(r.view.storeId ?? r.view.merchantId)).length : 0,
   };
-  const groups = menus[actor.role].map((g) => ({
+  const label = (key: keyof typeof sections) => standLabels[stand]?.[key] ?? [sections[key].en, sections[key].uk];
+  const groups = menuOf(stand, actor.role).map((g) => ({
     label: g.group ? t(g.group[0], g.group[1]) : null,
-    items: g.items.map((key) => ({ href: href(locale, `/cabinet${sections[key].path}`), label: t(sections[key].en, sections[key].uk), icon: sections[key].icon, ...(badges[key] ? { badge: badges[key] } : {}) })),
+    items: g.items.map((key) => ({ href: href(locale, `/cabinet${sections[key].path}`), label: t(label(key)[0], label(key)[1]), icon: sections[key].icon, ...(badges[key] ? { badge: badges[key] } : {}) })),
   }));
+  const root = w.units.find((u) => u.parentId === null);
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       <header className="sticky top-0 z-40 border-b border-ink-900 bg-ink-900 text-paper">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5">
-          <Link href={href(locale)} className="flex items-center gap-2.5"><LogoMark className="size-7" /><span className="font-semibold">River Pay</span></Link>
-          <span className="annot hidden text-paper/50 sm:inline">{t('Cabinet', 'Кабінет')} · {t('demo stand', 'демо-стенд')}</span>
+          <Link href={href(locale)} className="flex items-center gap-2.5"><LogoMark className="size-7" /><span className="font-semibold">River</span></Link>
+          <span className="annot hidden text-paper/50 sm:inline">{pickText(root?.name, locale)} · {t('demo stand', 'демо-стенд')}</span>
           <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2">
             <details className="relative">
               <summary className="flex cursor-pointer list-none items-center gap-2 border border-paper/25 px-3 py-1.5 text-[0.85rem] hover:border-paper/60">
                 <span className="font-semibold">{pickText(person.name, locale)}</span>
-                <span className="annot text-[0.6rem] text-sunrise-300">{pickText(roleLabels[actor.role], locale)} · {pickText(unit.name, locale)}</span>
+                <span className="annot text-[0.6rem] text-sunrise-300">{pickText(roleText(stand, actor.role), locale)} · {pickText(unit.name, locale)}</span>
               </summary>
               <div className="absolute right-0 z-50 mt-1 w-80 border border-ink-900 bg-paper p-3 text-ink-900 shadow-none">
                 <p className="annot mb-2 text-[0.6rem] text-ink-500">{t('Profiles of', 'Профілі')} {pickText(person.name, locale)}</p>
@@ -68,7 +73,7 @@ export default async function CabinetLayout({ children, params }: { children: Re
                         <input type="hidden" name="grantId" value={g.id} />
                         <input type="hidden" name="locale" value={segment} />
                         <button type="submit" className={`w-full border px-2.5 py-2 text-left text-[0.85rem] ${g.id === actor.grantId ? 'border-ink-900 bg-paper-deep' : 'border-graphite/20 hover:border-graphite'}`}>
-                          <b className="font-semibold">{pickText(roleLabels[g.role], locale)}</b><span className="annot block text-[0.6rem] text-ink-500">{pickText(w.units.find((u) => u.id === g.unitId)?.name, locale)}</span>
+                          <b className="font-semibold">{pickText(roleText(stand, g.role), locale)}</b><span className="annot block text-[0.6rem] text-ink-500">{pickText(w.units.find((u) => u.id === g.unitId)?.name, locale)}</span>
                         </button>
                       </form>
                     </li>

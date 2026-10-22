@@ -1,5 +1,6 @@
-import type { FulfilmentAccepted, FulfilmentDelivered, FulfilmentShipped, OrderCancelled, OrderCreated } from './OrderFacts.ts';
-import type { InvoiceIssued, InvoiceReminded, InvoiceSent, InvoiceViewed, InvoiceVoided } from './InvoiceFacts.ts';
+import type { FulfilmentAccepted, FulfilmentDelivered, FulfilmentPicked, FulfilmentShipped, OrderCancelled, OrderCreated } from './OrderFacts.ts';
+import type { InvoiceAdjusted, InvoiceIssued, InvoiceReminded, InvoiceSent, InvoiceViewed, InvoiceVoided } from './InvoiceFacts.ts';
+import type { SalesReported, SettlementCredited, SettlementReported, SettlementResolved } from './SettlementFacts.ts';
 import type {
   AddressIssued, AuthenticationChallenged, AuthenticationFailed, AuthenticationPassed, AuthorisationApproved, AuthorisationDeclined,
   AuthorisationExpired, CaptureCompleted, CaptureRequested, CaptureVoided, ChainSeen, CollectionSubmitted, ConfirmationsReached,
@@ -16,11 +17,13 @@ export type PayloadMap = {
   'fulfilment.Accepted': FulfilmentAccepted;
   'fulfilment.Shipped': FulfilmentShipped;
   'fulfilment.Delivered': FulfilmentDelivered;
+  'fulfilment.Picked': FulfilmentPicked;
   'invoice.Issued': InvoiceIssued;
   'invoice.Sent': InvoiceSent;
   'invoice.Viewed': InvoiceViewed;
   'invoice.Reminded': InvoiceReminded;
   'invoice.Voided': InvoiceVoided;
+  'invoice.Adjusted': InvoiceAdjusted;
   'session.Opened': SessionOpened;
   'instrument.Chosen': InstrumentChosen;
   'risk.Scored': RiskScored;
@@ -68,6 +71,10 @@ export type PayloadMap = {
   'dispute.Won': DisputeWon;
   'dispute.Lost': DisputeLost;
   'payout.Sent': PayoutSent;
+  'sales.Reported': SalesReported;
+  'settlement.Reported': SettlementReported;
+  'settlement.Credited': SettlementCredited;
+  'settlement.Resolved': SettlementResolved;
 };
 
 export type FactType = keyof PayloadMap;

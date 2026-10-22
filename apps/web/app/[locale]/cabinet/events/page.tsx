@@ -41,22 +41,23 @@ export default async function Events({ params, searchParams }: { params: Promise
   const about: Record<Boundary, string> = {
     order: t('What is bought, from whom, and how its money will be distributed.', 'Що купують, у кого і як буде розподілено гроші.'),
     invoice: t('The payable claim: how much, by when, and how much is still due.', 'Вимога до сплати: скільки, до коли і скільки ще належить сплатити.'),
-    session: t('One attempt to pay an invoice — the river itself, from unpaid to paid.', 'Одна спроба сплатити інвойс — сама ріка, від несплаченого до сплаченого.'),
-    payment: t('Money an attempt secured, and its life after the mouth: refunds, disputes, payouts.', 'Гроші, які забезпечила спроба, і їхнє життя після гирла: повернення, спори, виплати.'),
+    session: t('One attempt to pay an invoice, from unpaid to paid; the routing decision is one of its events.', 'Одна спроба сплатити інвойс, від несплаченого до сплаченого; рішення маршрутизації — одна з її подій.'),
+    payment: t('Money an attempt secured, and its life after it: refunds, disputes, settlement.', 'Гроші, які забезпечила спроба, і їхнє життя після оплати: повернення, спори, розрахунки.'),
+    settlement: t('What the providers, the merchant’s own systems and the banks report about a day’s batch — reconciled three ways.', 'Що провайдери, власні системи мерчанта й банки повідомляють про пакет дня — звірене трьома способами.'),
   };
   const shown = factCatalogue.filter((d) => (!query.released || (query.released === 'yes') === d.webhook) && (!query.speaker || d.speaker === query.speaker)
     && matches(query.q, d.type, pickText(d.label, locale), pickText(d.meaning, locale)));
   return (
     <>
       <CabinetHead kicker={t('Integration', 'Інтеграція')} title={t('Event catalogue', 'Каталог подій')}
-        lead={t('Facts are the bridges of the river: each says once what happened, and every view is formed from them. A webhook is a released fact — sent as it is stored. Every event id names one fact in its stream, so a receiver deduplicates on it: a retry is the same event, never a new one.', 'Факти — це мости ріки: кожен один раз каже, що сталося, і з них формується кожна проєкція. Вебхук — це випущений факт, надісланий таким, яким його записано. Кожен id події називає один факт у його потоці, тож одержувач усуває дублікати саме за ним: повтор — та сама подія, а не нова.')}
+        lead={t('Events — the bridges on the drawings — each say once what happened, and every view is formed from them. A webhook is a released fact — sent as it is stored. Every event id names one fact in its stream, so a receiver deduplicates on it: a retry is the same event, never a new one.', 'Події — мости на кресленнях — кожна один раз каже, що сталося, і з них формується кожна проєкція. Вебхук — це випущений факт, надісланий таким, яким його записано. Кожен id події називає один факт у його потоці, тож одержувач усуває дублікати саме за ним: повтор — та сама подія, а не нова.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <Panel title={t('What an event carries', 'Що несе подія')} className="mb-6">
         <dl className="grid gap-x-6 gap-y-3 text-[0.88rem] sm:grid-cols-2 xl:grid-cols-5">
           {([
             ['id', t('evt_<stream>_<seq>: names one fact in its stream. Deduplicate on it.', 'evt_<потік>_<номер>: називає один факт у його потоці. Усувайте дублікати за ним.')],
             ['type', t('The fact type, as in this catalogue.', 'Тип факту, як у цьому каталозі.')],
-            ['created', t('When the fact entered the river.', 'Коли факт увійшов у ріку.')],
+            ['created', t('When the event was recorded.', 'Коли подію записано.')],
             ['stream', t('The stream it belongs to: an order, an invoice, a session or a payment.', 'Потік, якому він належить: замовлення, інвойс, сесія чи платіж.')],
             ['data', t('The fact’s payload, exactly as stored — never a card number or a name.', 'Дані факту, точно як записано, — ніколи номер картки чи ім’я.')],
           ] as const).map(([k, v]) => (
@@ -95,7 +96,7 @@ export default async function Events({ params, searchParams }: { params: Promise
                         <dd><Value cell={{ kind: 'tags', items: d.forms.map((p) => ({ label: pickText(projectionLabels[p], locale), tone: p === 'ledger' ? 'accent' as const : undefined })) }} locale={locale} /></dd>
                       </dl>
                       <div className="min-w-0">
-                        {d.webhook ? <Status label={t('released as a webhook', 'випускається як вебхук')} tone="success" /> : <Status label={t('kept inside the river', 'лишається всередині ріки')} tone="neutral" />}
+                        {d.webhook ? <Status label={t('released as a webhook', 'випускається як вебхук')} tone="success" /> : <Status label={t('kept inside the platform', 'лишається всередині платформи')} tone="neutral" />}
                         {d.webhook ? (event && example ? (
                           <details className="mt-2">
                             <summary className="annot cursor-pointer text-[0.6rem] text-river-700 hover:text-ink-900">{t('Example: the newest in your reach', 'Приклад: найновіша у ваших межах')} · {when(example.at, locale)}</summary>

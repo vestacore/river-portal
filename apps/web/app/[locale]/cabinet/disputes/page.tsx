@@ -85,7 +85,7 @@ export default async function Disputes({ params, searchParams }: { params: Promi
             ) : null) }} />
         </div>
       </Panel>
-      <Panel title={t('What the Dispute clerk gathered', 'Що зібрав секретар спорів')} className="mt-6" note={t('Open disputes due within a week, with the evidence the river already holds.', 'Відкриті спори зі строком до тижня — з доказами, які ріка вже містить.')}>
+      <Panel title={t('What the Dispute clerk gathered', 'Що зібрав секретар спорів')} className="mt-6" note={t('Open disputes due within a week, with the evidence the platform’s records already hold: the order, picking, delivery, 3-D Secure.', 'Відкриті спори зі строком до тижня — з доказами, які вже є в записах платформи: замовлення, комплектація, доставка, 3-D Secure.')}>
         {insights.length === 0 ? <p className="text-ink-500">{t('Nothing to raise: no open dispute in your reach is due within a week.', 'Нічого нагального: жоден відкритий спір у ваших межах не має строку до тижня.')}</p> : (
           <div className="space-y-3">{insights.map((i) => <InsightCard key={i.id} insight={i} locale={locale} link={c.link} back={back} canDecide={c.may('agents.decide', i.unitId)} personName={c.personName} />)}</div>
         )}

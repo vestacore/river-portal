@@ -7,7 +7,7 @@ import { policyValue, type EffectivePolicy } from '@river/psp-units';
  * marketplace commission, the share for a good cause and its recipient, the hold; the sellers are those
  * whose lines the order carries.
  */
-export function planForUnit(input: { merchantUnitId: string; pspUnitId: string; lines: readonly OrderLine[]; effective: readonly EffectivePolicy[]; franchisorUnitId: string | null }): SplitPlan {
+export function planForUnit(input: { merchantUnitId: string; pspUnitId: string; feeRole?: 'psp_fee' | 'acquirer_fee'; lines: readonly OrderLine[]; effective: readonly EffectivePolicy[]; franchisorUnitId: string | null }): SplitPlan {
   const template = String(policyValue(input.effective, 'split.template') ?? 'direct') as SplitTemplateId;
   const sellers = [...new Set(input.lines.map((l) => l.sellerUnitId).filter((s): s is string => s !== null))];
   const charityBps = Number(policyValue(input.effective, 'split.charity.bps') ?? 0);
@@ -15,6 +15,7 @@ export function planForUnit(input: { merchantUnitId: string; pspUnitId: string; 
   return planFromTemplate(template, {
     merchantUnitId: input.merchantUnitId,
     pspUnitId: input.pspUnitId,
+    ...(input.feeRole ? { feeRole: input.feeRole } : {}),
     sellerUnitIds: template === 'marketplace' || template === 'agency' ? sellers : [],
     commissionBps: Number(policyValue(input.effective, 'split.commission.bps') ?? 0),
     charityBps: charity && charity !== input.merchantUnitId ? charityBps : 0,

@@ -1,7 +1,7 @@
 import type { LocalisedText } from '@river/i18n';
 import type { Currency, FactType, InstrumentId, Rail } from '@river/psp-facts';
 
-export type InstrumentFamily = 'card' | 'wallet' | 'account' | 'credit' | 'crypto' | 'cash';
+export type InstrumentFamily = 'card' | 'wallet' | 'account' | 'credit' | 'crypto' | 'cash' | 'loyalty';
 
 /** What an instrument can do after the mouth. */
 export type InstrumentCapabilities = {
@@ -40,6 +40,8 @@ export type InstrumentDefinition = {
 export type Acquirer = {
   id: string;
   name: string;
+  /** The provider's name as each language writes it. */
+  label: LocalisedText;
   rails: readonly Rail[];
   regions: readonly ('UA' | 'EU')[];
   approvalBps: number;

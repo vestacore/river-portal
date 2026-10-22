@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { pickText } from '@river/i18n';
 import { agentCatalogue } from '@river/psp-agents';
@@ -7,6 +8,7 @@ import { riverOfSession } from '@river/psp-runtime';
 import { sessionOutcomeLabels } from '@river/psp-session';
 import { CabinetHead } from '@/components/cabinet/CabinetHead';
 import { InsightCard } from '@/components/cabinet/InsightCard';
+import { RoutingDecision } from '@/components/cabinet/routing/RoutingDecision';
 import { FieldGrid } from '@/components/panels/FieldGrid';
 import { Flash } from '@/components/panels/Flash';
 import { Panel } from '@/components/panels/Panel';
@@ -18,6 +20,7 @@ import { cabinet } from '@/lib/cabinet';
 import { instrumentCell } from '@/lib/columns';
 import { money } from '@/lib/format';
 import { resolveLocale } from '@/lib/resolveLocale';
+import { acquirerName } from '@/lib/routing/acquirerName';
 import { readQuery } from '@/lib/table';
 import { sessionTone } from '@/lib/tones';
 
@@ -90,19 +93,19 @@ export default async function SessionPage({ params, searchParams }: { params: Pr
             { label: t('Expires', 'Спливає'), cell: { kind: 'datetime', iso: s.expiresAt } },
             { label: t('Risk', 'Ризик'), cell: s.risk ? { kind: 'bar', share: s.risk.score / 100, label: `${s.risk.score} · ${s.risk.decision}`, tone: s.risk.level === 'high' ? 'danger' : s.risk.level === 'medium' ? 'warning' : 'success' } : { kind: 'empty' } },
             { label: t('Reasons', 'Причини'), cell: s.risk && s.risk.reasons.length ? { kind: 'tags', items: s.risk.reasons.map((r) => ({ label: pickText(riskReasonLabels[r as keyof typeof riskReasonLabels], locale) || r, tone: 'warning' as const })) } : { kind: 'empty' } },
-            { label: t('Route', 'Маршрут'), cell: s.route ? { kind: 'text', value: `${s.route.rail} → ${s.route.acquirer}`, sub: s.route.rule } : { kind: 'empty' } },
+            { label: t('Route', 'Маршрут'), cell: s.route ? { kind: 'text', value: `${s.route.rail} → ${acquirerName(s.route.acquirer, locale)}`, sub: s.route.rule } : { kind: 'empty' } },
             { label: t('Capture', 'Списання'), cell: s.captureMode ? { kind: 'text', value: s.captureMode === 'manual' ? t('manual, at shipment', 'ручне, при відвантаженні') : t('at once', 'одразу') } : { kind: 'empty' } },
             { label: t('Captured', 'Списано'), cell: { kind: 'money', minor: s.capturedMinor, currency: s.currency } },
-            { label: t('PSP fee', 'Комісія PSP'), cell: { kind: 'money', minor: s.feeMinor, currency: s.currency, muted: true } },
+            { label: c.w.feeRecipient === null ? t('Acquirer’s fee', 'Комісія еквайра') : t('PSP fee', 'Комісія PSP'), cell: { kind: 'money', minor: s.feeMinor, currency: s.currency, muted: true } },
           ]} />
         </Panel>
         <div className="space-y-6">
           {payment && payment.allocations.length > 0 ? (
-            <Panel title={t('The delta: where the money went', 'Дельта: куди пішли гроші')} note={t('Formed at the distribution bridge; refunds take back from the same streams.', 'Сформовано на мосту розподілу; повернення забирають з тих самих протоків.')}>
+            <Panel title={t('Distribution: where the money went', 'Розподіл: куди пішли гроші')} note={t('Formed at the distribution event; refunds take back from the same shares.', 'Сформовано подією розподілу; повернення забирають з тих самих часток.')}>
               <ul className="divide-y divide-graphite/15">
                 {payment.allocations.map((a) => (
                   <li key={`${a.recipientUnitId}${a.rule}`} className="flex items-center justify-between gap-3 py-2 text-[0.88rem]">
-                    <span><span className="text-ink-900">{c.unitName(a.recipientUnitId)}</span><span className="annot ml-2 text-[0.58rem] text-ink-500">{a.role}{a.holdUntil ? ` · ${t('held until', 'утримано до')} ${a.holdUntil.slice(0, 10)}` : ''}</span></span>
+                    <span><span className="text-ink-900">{a.recipientUnitId.startsWith('acq:') ? acquirerName(a.recipientUnitId, locale) : c.unitName(a.recipientUnitId)}</span><span className="annot ml-2 text-[0.58rem] text-ink-500">{a.role}{a.holdUntil ? ` · ${t('held until', 'утримано до')} ${a.holdUntil.slice(0, 10)}` : ''}</span></span>
                     <span className="tabular-nums text-ink-900">{money(a.amountMinor, a.currency, locale)}</span>
                   </li>
                 ))}
@@ -110,12 +113,18 @@ export default async function SessionPage({ params, searchParams }: { params: Pr
             </Panel>
           ) : null}
           {insights.length > 0 ? (
-            <Panel title={t('What the swarm saw here', 'Що тут побачив рій')}>
+            <Panel title={t('What the agents saw here', 'Що тут побачили агенти')}>
               <div className="space-y-3">{insights.map((i) => <InsightCard key={i.id} insight={i} locale={locale} link={c.link} back={back} canDecide={c.may('agents.decide', i.unitId)} personName={c.personName} />)}</div>
             </Panel>
           ) : null}
         </div>
       </div>
+      {s.route ? (
+        <Panel title={t('Routing decision', 'Рішення маршрутизації')} note={t('Recorded at the routing bridge with every acquirer that was weighed; a replay of the session routes the same way.', 'Записано на мосту маршрутизації разом з усіма еквайрами, які зважувались; повтор сесії маршрутизує так само.')} className="mt-6"
+          actions={<Link href={c.link('/routes')} className="annot text-[0.6rem] text-river-700 hover:text-ink-900">{t('The routing studio', 'Студія маршрутизації')} →</Link>}>
+          <RoutingDecision c={c} session={s} locale={locale} />
+        </Panel>
+      ) : null}
       <Panel title={t('Every bridge, as stored', 'Кожен міст, як записано')} note={t('The stream of this session: dense numbers, one wave per transaction, and what each fact formed.', 'Потік цієї сесії: щільна нумерація, одна хвиля на транзакцію, і що сформував кожен факт.')} className="mt-6" flush>
         <BridgeTable rows={river.bridges} locale={locale} currency={s.currency} />
       </Panel>

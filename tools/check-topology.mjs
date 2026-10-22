@@ -89,7 +89,7 @@ for (const pkg of packages) {
 
 // ADR-0026: the four boundaries of the PSP share a vocabulary and nothing else. Each may depend on
 // @river/psp-facts and on lower layers, never on another package of its own group.
-const pspBoundaries = ['@river/psp-order', '@river/psp-invoice', '@river/psp-session', '@river/psp-payment'];
+const pspBoundaries = ['@river/psp-order', '@river/psp-invoice', '@river/psp-session', '@river/psp-payment', '@river/psp-settlement'];
 for (const name of pspBoundaries) {
   const pkg = byName.get(name);
   if (!pkg) continue;

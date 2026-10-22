@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "The shared vocabulary of the PSP: the four boundaries, the stages of the river, every fact type with its owner and the projections it forms.",
+  "description": "The shared vocabulary of the platform's payments: the five boundaries, the stages of a payment session, every fact type with its owner and the projections it forms.",
   "type": "module",
   "exports": {
     ".": "./gate.ts"

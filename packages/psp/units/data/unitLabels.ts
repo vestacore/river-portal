@@ -8,6 +8,7 @@ export const unitKindLabels: Record<UnitKind, LocalisedText> = {
   partner: { 'en-GB': 'Partner', uk: 'Партнер' },
   holding: { 'en-GB': 'Holding', uk: 'Холдинг' },
   merchant: { 'en-GB': 'Merchant', uk: 'Мерчант' },
+  region: { 'en-GB': 'Region', uk: 'Регіон' },
   store: { 'en-GB': 'Store', uk: 'Точка продажу' },
   seller: { 'en-GB': 'Seller', uk: 'Продавець' },
 };
@@ -15,6 +16,7 @@ export const unitKindLabels: Record<UnitKind, LocalisedText> = {
 export const policyGroupLabels: Record<PolicyGroup, LocalisedText> = {
   limits: { 'en-GB': 'Limits', uk: 'Ліміти' },
   instruments: { 'en-GB': 'Instruments', uk: 'Інструменти' },
+  routing: { 'en-GB': 'Routing', uk: 'Маршрутизація' },
   risk: { 'en-GB': 'Risk and AML', uk: 'Ризики та фінмоніторинг' },
   capture: { 'en-GB': 'Capture and refunds', uk: 'Списання та повернення' },
   settlement: { 'en-GB': 'Settlement', uk: 'Розрахунки' },

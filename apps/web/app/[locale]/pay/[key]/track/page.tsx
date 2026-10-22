@@ -9,7 +9,7 @@ import { exact, money } from '@/lib/format';
 import { href } from '@/lib/href';
 import { lt } from '@/lib/lt';
 import { resolveLocale } from '@/lib/resolveLocale';
-import { world } from '@/lib/world';
+import { worldOfPayKey } from '@/lib/world';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,14 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 /**
- * The payer's own view of their payment: the river their attempt ran down, bridge by bridge, in plain
- * words — and, where the merchant shows it, where the money went. The pay key is the only authority.
+ * The payer's own view of their payment: the events their attempt passed, in plain words; for an order
+ * captured after picking, what was held, what was charged and what was released; and, where the merchant
+ * shows it, where the money went. The pay key is the only authority.
  */
 export default async function Track({ params }: { params: Promise<{ locale: string; key: string }> }) {
   const { locale: segment, key } = await params;
   const locale = resolveLocale(segment);
   const t = lt(locale);
-  const w = world();
+  const w = worldOfPayKey(key);
   const invoice = invoiceByPayKey(w, key);
   if (!invoice) notFound();
   const sessions = invoice.sessionIds.map((id) => w.views.sessions.get(id)).filter((s) => s !== undefined);
@@ -36,6 +37,10 @@ export default async function Track({ params }: { params: Promise<{ locale: stri
   const labels = Object.fromEntries(factCatalogue.map((d) => [d.type, pickText(d.label, locale)]));
   const stageLabels = { ...Object.fromEntries(stageCatalogue.map((x) => [x.stage, pickText(x.label, locale)])), after: t('closing', 'завершення') };
   const unitName = (id: string) => pickText(w.units.find((u) => u.id === id)?.name, locale);
+  const order = w.views.orders.get(invoice.orderId);
+  const paid = [...w.views.payments.values()].filter((p) => p.orderId === invoice.orderId && p.capturedAt);
+  const card = paid.find((p) => p.captureMode === 'manual' && p.instrument !== 'bonus_points');
+  const points = paid.filter((p) => p.instrument === 'bonus_points').reduce((s, p) => s + p.capturedMinor, 0);
   return (
     <div className="min-h-dvh bg-paper">
       <header className="border-b border-graphite/20 bg-paper-deep">
@@ -47,8 +52,17 @@ export default async function Track({ params }: { params: Promise<{ locale: stri
       </header>
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
         <p className="annot text-sunrise-600">{t('Invoice', 'Рахунок')} {invoice.number} · {money(invoice.amountMinor, invoice.currency, locale)}</p>
-        <h1 className="mt-2 text-3xl font-semibold text-ink-900">{t('Your payment, bridge by bridge', 'Ваш платіж, міст за мостом')}</h1>
-        <p className="mt-2 max-w-3xl text-ink-700">{t('Every step your payment took is a fact written when it happened: the river cannot be rewritten afterwards. Only the last four digits of a card were ever kept.', 'Кожен крок вашого платежу — факт, записаний у мить, коли він стався: ріку неможливо переписати згодом. Від картки збережено лише останні чотири цифри.')}</p>
+        <h1 className="mt-2 text-3xl font-semibold text-ink-900">{t('Your payment, step by step', 'Ваш платіж, крок за кроком')}</h1>
+        <p className="mt-2 max-w-3xl text-ink-700">{t('Every step your payment took is an event recorded when it happened, and the record cannot be rewritten afterwards. Only the last four digits of a card were ever kept.', 'Кожен крок вашого платежу — подія, записана в мить, коли вона сталася, і цей запис неможливо переписати згодом. Від картки збережено лише останні чотири цифри.')}</p>
+        {order?.picked && card ? (
+          <section className="mt-8 max-w-3xl border border-graphite/25 bg-paper-deep p-5">
+            <h2 className="text-lg font-semibold text-ink-900">{t('Your order was picked', 'Ваше замовлення скомплектовано')}</h2>
+            <p className="mt-2 text-[0.95rem] text-ink-700">{t('Weighed goods are charged by their actual weight, and missing items are not charged. That is why the amount held on your card when you paid can differ from the amount charged: the rest of the hold is released, and your bank returns it to your available balance.', 'Ваговий товар оплачується за фактичною вагою, а відсутні позиції не оплачуються. Тому сума, заблокована на картці під час оплати, може відрізнятися від списаної: залишок блокування розблоковано, і банк повертає його на ваш доступний баланс.')}</p>
+            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[[t('Ordered', 'Замовлено'), money(order.totalMinor, order.currency, locale)], [t('Picked', 'Скомплектовано'), money(order.picked.totalMinor, order.currency, locale)], [t('Held on your card', 'Заблоковано на картці'), money(card.amountMinor, card.currency, locale)], [t('Charged to your card', 'Списано з картки'), money(card.capturedMinor, card.currency, locale)], ...(card.amountMinor > card.capturedMinor ? [[t('Released', 'Розблоковано'), money(card.amountMinor - card.capturedMinor, card.currency, locale)]] : []), ...(points > 0 ? [[t('Paid with bonus points', 'Сплачено бонусними балами'), money(points, card.currency, locale)]] : [])].map(([k, v]) => <div key={k} className="border-t border-graphite/30 pt-2"><dt className="annot text-[0.6rem] text-ink-500">{k}</dt><dd className="mt-0.5 text-lg font-semibold tabular-nums text-ink-900">{v}</dd></div>)}
+            </dl>
+          </section>
+        ) : null}
         {river && session ? (
           <>
             <div className="mt-8 overflow-x-auto border border-graphite/25 bg-paper p-3">

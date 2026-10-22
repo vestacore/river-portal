@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { cache } from 'react';
 import { segmentForLocale, type Locale } from '@river/i18n';
 import { personaActor, type Actor } from '@river/psp-runtime';
-import { world } from './world';
+import { standOfPerson, world } from './world';
 
 type PersonActor = Extract<Actor, { kind: 'person' }>;
 
@@ -15,7 +15,7 @@ export const currentActor = cache(async (): Promise<PersonActor | null> => {
     const auth = JSON.parse(raw) as { personaId?: string };
     if (!auth.personaId) return null;
     const grantId = (await cookies()).get('psp-profile')?.value ?? null;
-    return personaActor(world(), auth.personaId, grantId, new Date().toISOString());
+    return personaActor(world(standOfPerson(auth.personaId)), auth.personaId, grantId, new Date().toISOString());
   } catch {
     return null;
   }

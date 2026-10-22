@@ -26,7 +26,7 @@ export default async function Sessions({ params, searchParams }: { params: Promi
   const page = sortAndPage(rows, columns, query);
   return (
     <>
-      <CabinetHead kicker={t('The river', 'Ріка')} title={t('Payment sessions', 'Платіжні сесії')} lead={t('One attempt to pay is one session: its own stream of bridges from the source to the mouth.', 'Одна спроба оплати — одна сесія: власний потік мостів від витоку до гирла.')}
+      <CabinetHead kicker={t('Boundary: payment session', 'Межа: платіжна сесія')} title={t('Payment sessions', 'Платіжні сесії')} lead={t('One attempt to pay is one session: its own stream of events, from the choice of an instrument to the result — the routing decision among them.', 'Одна спроба оплати — одна сесія: власний потік подій від вибору інструменту до результату, серед них — рішення маршрутизації.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <FilterBar locale={locale} query={query} groups={[
         { param: 'outcome', label: t('Outcome', 'Результат'), options: sessionOutcomes.map((o) => ({ value: o, label: pickText(sessionOutcomeLabels[o], locale), count: all.filter((s) => s.outcome === o).length })).filter((o) => o.count > 0) },

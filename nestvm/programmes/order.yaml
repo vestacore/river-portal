@@ -1,0 +1,72 @@
+# The ORDER machine — a records programme (Vol. 09; the CoAgnes loader's
+# subset: block YAML, records of the two registration kinds).
+#
+# Declared-record disambiguation (coagnes/CLAUDE.md §2):
+# 1. Element: the smallest order machine of the lab — one gate knot hearing
+#    the merchant's order and the assembly's terms, and one operator bind
+#    that asks the function host for the invoice (`invoice@1`, a pure
+#    function at the membrane, Vol. 10 §9 "deterministic function host").
+#    The invoice is the order's payable claim: it is released into the log
+#    as the function's delegated publication (Vol. 04 §5.3) and read by the
+#    door's planes, where an attempt machine finds it.
+# 2. Server: this file, portal/nestvm/programmes/ — human-owned truth.
+# 3. Consumer: the door sows these records at the birth of an order's
+#    session (registration precedes the facts that reach it, Vol. 02 §5.1),
+#    then commits `terms.given` and `order.Created`; the wave log consumes
+#    the records themselves.
+# 4. Successful inclusion: `src/walk.test.ts` — an order sown and placed
+#    issues exactly one invoice, with the amount and due date the function
+#    computed from the order and the terms.
+programme: order
+description: An order is placed and its invoice is issued by a pure function at the membrane.
+records:
+  - kind: sys.knot.defined
+    payload:
+      id: order.placed
+      strategy: deterministic
+      config:
+        meta:
+          title: Order
+          gloss: What the merchant asks to be paid for, and the terms the assembly works under.
+        wind:
+          collect:
+            - as: order
+              match_type: order.Created
+              reduce: latest
+            - as: terms
+              match_type: terms.given
+              reduce: latest
+        condition: "order != null && terms != null"
+  - kind: sys.descriptor.defined
+    payload:
+      id: invoice.issue
+      meta:
+        title: Invoice
+        gloss: The payable claim of the order, computed by invoice@1 and released as a fact.
+      operator:
+        on: order.placed
+        on_as: order
+        service:
+          instruction: invoice@1
+          schema:
+            type: object
+            properties:
+              invoiceId:
+                type: string
+              orderId:
+                type: string
+              amountMinor:
+                type: integer
+                minimum: 1
+              currency:
+                type: string
+              dueAt:
+                type: string
+            required:
+              - invoiceId
+              - orderId
+              - amountMinor
+              - currency
+              - dueAt
+          emit:
+            writes: invoice.Issued

@@ -7,7 +7,8 @@ import type { Actor, CommandResult, World } from './types/World.ts';
 
 const needs: Record<ProposalKind, Permission> = {
   open_alert: 'aml.review', hold_payouts: 'aml.review', escalate_alert: 'aml.review', close_alert: 'aml.review',
-  shift_route: 'policies.write', send_reminder: 'orders.write', investigate_break: 'flows.read', prepare_evidence: 'disputes.respond',
+  shift_route: 'policies.write', change_policy: 'routing.write', negotiate_terms: 'costs.read', raise_claim: 'reconciliation.write',
+  send_reminder: 'orders.write', investigate_break: 'flows.read', prepare_evidence: 'disputes.respond',
   retry_deliveries: 'webhooks.manage', fix_endpoint: 'webhooks.manage', prefund_payouts: 'payouts.read',
 };
 
@@ -24,7 +25,7 @@ export function decideInsight(world: World, actor: Actor, insightId: string, acc
   if (actor.kind !== 'person') return { ok: false, error: 'a person decides' };
   insight.decidedBy = actor.personId;
   insight.decidedAt = at;
-  if (accept) { applyProposal(world, insight, actor.personId, at); insight.status = 'applied'; }
+  if (accept) { applyProposal(world, insight, actor.personId, at, actor); insight.status = 'applied'; }
   else insight.status = 'declined';
   recordAudit(world, { personId: actor.personId, role: actor.role, unitId: insight.unitId, action: accept ? 'insight.accept' : 'insight.decline', target: insight.id, detail: insight.title, at });
   return { ok: true, value: { insightId } };

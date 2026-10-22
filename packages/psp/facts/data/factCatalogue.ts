@@ -28,6 +28,9 @@ const listed = [
   d('fulfilment.Delivered', 'order', null, 'world', ['order'], true,
     ['Delivered', 'The carrier reports the goods arrived.'],
     ['Доставлено', 'Перевізник повідомляє, що товар отримано.']),
+  d('fulfilment.Picked', 'order', null, 'world', ['order'], true,
+    ['Picked', 'The merchant’s order system reports the order picked: weighed goods, missing items and substitutes give the amount to charge.'],
+    ['Скомплектовано', 'Система замовлень мерчанта повідомляє, що замовлення зібрано: ваговий товар, відсутні позиції й заміни дають суму до списання.']),
 
   // ── invoice ────────────────────────────────────────────────────────────────────────────────────
   d('invoice.Issued', 'invoice', null, 'door', ['invoice', 'order'], true,
@@ -45,6 +48,9 @@ const listed = [
   d('invoice.Voided', 'invoice', null, 'door', ['invoice', 'order'], true,
     ['Invoice voided', 'The claim is withdrawn; nobody may pay it any more.'],
     ['Інвойс анульовано', 'Вимогу відкликано; сплатити її більше не можна.']),
+  d('invoice.Adjusted', 'invoice', null, 'figure', ['invoice'], true,
+    ['Invoice adjusted', 'The claim follows the order — to its picked total, for example — before the payment is captured.'],
+    ['Інвойс скориговано', 'Вимога слідує за замовленням — наприклад, до суми після комплектації — перед списанням платежу.']),
 
   // ── session: the bridges of one attempt ────────────────────────────────────────────────────────
   d('session.Opened', 'session', 'source', 'door', ['session', 'invoice'], true,
@@ -120,8 +126,8 @@ const listed = [
     ['Credit declined', 'The lender refused credit for this attempt.'],
     ['Кредит відхилено', 'Кредитор відмовив у кредиті для цієї спроби.']),
   d('authorisation.Approved', 'session', 'secured', 'world', ['session', 'payment', 'order'], true,
-    ['Authorised', 'The issuer holds the funds. A payment is born at this bridge.'],
-    ['Авторизовано', 'Емітент заблокував кошти. На цьому мосту народжується платіж.']),
+    ['Authorised', 'The issuer holds the funds. A payment is born at this event.'],
+    ['Авторизовано', 'Емітент заблокував кошти. Цією подією народжується платіж.']),
   d('authorisation.Declined', 'session', 'secured', 'world', ['session'], true,
     ['Declined', 'The issuer or the provider refused. No money moved.'],
     ['Відхилено', 'Емітент чи провайдер відмовив. Гроші не рухалися.']),
@@ -147,8 +153,8 @@ const listed = [
     ['Captured', 'The money is taken. Here the invoice and the order become paid.'],
     ['Списано', 'Гроші списано. Тут інвойс і замовлення стають сплаченими.']),
   d('split.Allocated', 'session', 'distribution', 'figure', ['session', 'payment', 'order', 'ledger'], true,
-    ['Split allocated', 'The delta: who receives how much of the captured amount. It always sums to the amount.'],
-    ['Розщеплення виконано', 'Дельта: хто скільки отримує зі списаної суми. Сума завжди сходиться.']),
+    ['Amount distributed', 'Who receives how much of the captured amount — the unit, the acquirer’s fee, sellers. The shares always sum to the amount.'],
+    ['Суму розподілено', 'Хто скільки отримує зі списаної суми — одиниця, комісія еквайра, продавці. Частки завжди дорівнюють сумі.']),
   d('receipt.Issued', 'session', 'mouth', 'figure', ['session', 'invoice'], true,
     ['Receipt issued', 'What the payer receives back.'],
     ['Квитанцію видано', 'Те, що платник отримує у відповідь.']),
@@ -188,8 +194,22 @@ const listed = [
     ['Dispute lost', 'The scheme decided for the payer; the amount goes back.'],
     ['Спір програно', 'Платіжна система вирішила на користь платника; суму повернено.']),
   d('payout.Sent', 'payment', null, 'world', ['payment', 'ledger'], true,
-    ['Paid out', 'One recipient’s share left for its account in a payout batch.'],
-    ['Виплачено', 'Частка одержувача пішла на його рахунок у пакеті виплат.']),
+    ['Settled', 'One recipient’s share left for its account in a batch — paid out by the platform, or settled by the acquirer to the merchant directly.'],
+    ['Розраховано', 'Частка одержувача пішла на його рахунок у пакеті — виплатою платформи або прямим розрахунком еквайра з мерчантом.']),
+
+  // ── settlement: what the other parties report about a day's batch ────────────────────────────────
+  d('sales.Reported', 'settlement', null, 'world', ['settlement'], false,
+    ['Sales reported', 'The merchant’s tills or order system report the day’s card sales of a store or channel.'],
+    ['Продажі передано', 'Каси чи система замовлень мерчанта передають денні карткові продажі магазину або каналу.']),
+  d('settlement.Reported', 'settlement', null, 'world', ['settlement', 'ledger'], true,
+    ['Settlement reported', 'The provider reports the batch it settles: gross, its fee, refunds and chargebacks deducted, net — with a breakdown by issuer and card product.'],
+    ['Звіт про розрахунок', 'Провайдер звітує про пакет, який розраховує: брутто, його комісія, утримані повернення й чарджбеки, нетто — з розбивкою за емітентами й типами карток.']),
+  d('settlement.Credited', 'settlement', null, 'world', ['settlement'], true,
+    ['Credited', 'The bank statement shows the batch’s money on the merchant’s account.'],
+    ['Зараховано', 'Банківська виписка показує кошти пакета на рахунку мерчанта.']),
+  d('settlement.Resolved', 'settlement', null, 'door', ['settlement'], false,
+    ['Difference resolved', 'A person decides about a difference the reconciliation found: accepted, a claim raised with the provider, corrected or written off.'],
+    ['Розбіжність вирішено', 'Людина вирішує щодо розбіжності, знайденої звіркою: прийнято, подано претензію провайдеру, виправлено або списано.']),
 ] as const;
 
 // Every fact type of the payload map is listed: a type left out fails to compile here, by name.

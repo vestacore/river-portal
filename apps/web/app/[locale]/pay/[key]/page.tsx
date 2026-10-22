@@ -5,7 +5,7 @@ import { payStatus } from '@/lib/actions/pay';
 import { checkoutProps } from '@/lib/checkoutProps';
 import { lt } from '@/lib/lt';
 import { resolveLocale } from '@/lib/resolveLocale';
-import { world } from '@/lib/world';
+import { worldOfPayKey } from '@/lib/world';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +21,7 @@ export default async function PayPage({ params }: { params: Promise<{ locale: st
   const { locale: segment, key } = await params;
   const locale = resolveLocale(segment);
   const t = lt(locale);
-  const w = world();
+  const w = worldOfPayKey(key);
   const invoice = invoiceByPayKey(w, key);
   if (!invoice) {
     return (

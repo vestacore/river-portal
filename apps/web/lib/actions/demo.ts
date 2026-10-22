@@ -4,8 +4,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { signSession } from '@river/identity';
-import { getPspWorld, personaActor } from '@river/psp-runtime';
+import { getWorld, personaActor } from '@river/psp-runtime';
 import { demoSecret } from '@/lib/demoSecret';
+import { standOfPerson } from '@/lib/world';
 
 const segmentOf = (form: FormData) => (String(form.get('locale') ?? 'en-gb') === 'uk' ? 'uk' : 'en-gb');
 const safeNext = (next: string, fallback: string) => (/^\/(en-gb|uk)\/cabinet(\/[\w\-/.?=&%]*)?$/.test(next) ? next : fallback);
@@ -15,7 +16,7 @@ export async function actAs(form: FormData): Promise<void> {
   const secret = demoSecret();
   if (!secret) throw new Error('Demo sign-in is not enabled on this deployment');
   const personId = String(form.get('personId') ?? '');
-  const world = getPspWorld();
+  const world = getWorld(standOfPerson(personId));
   const actor = personaActor(world, personId, String(form.get('grantId') ?? '') || null, new Date().toISOString());
   if (!actor) return;
   const jar = await cookies();
@@ -38,9 +39,10 @@ export async function signOut(form: FormData): Promise<void> {
   redirect(`/${segmentOf(form)}/demo`);
 }
 
-/** Demo: start the stand again — a fresh history, every change made in the cabinets forgotten. */
+/** Demo: start both stands again — fresh histories, every change made in the cabinets forgotten. */
 export async function resetStand(form: FormData): Promise<void> {
-  getPspWorld(true);
+  getWorld('retail', true);
+  getWorld('psp', true);
   revalidatePath('/', 'layout');
   redirect(`/${segmentOf(form)}/demo?reset=1`);
 }

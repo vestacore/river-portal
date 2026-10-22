@@ -5,17 +5,21 @@ import { CabinetHead } from '@/components/cabinet/CabinetHead';
 import { ScopePicker } from '@/components/cabinet/ScopePicker';
 import { TariffSheet } from '@/components/cabinet/access/TariffSheet';
 import { contractTone } from '@/components/cabinet/access/contracts';
+import { AcquiringTermsTable } from '@/components/cabinet/routing/AcquiringTermsTable';
 import { Flash } from '@/components/panels/Flash';
 import { Panel } from '@/components/panels/Panel';
 import { Status } from '@/components/panels/Value';
 import { cabinet } from '@/lib/cabinet';
 import { resolveLocale } from '@/lib/resolveLocale';
+import { acquirerName } from '@/lib/routing/acquirerName';
+import { bankName } from '@/lib/routing/bankName';
 import { readQuery } from '@/lib/table';
 
 /**
  * Every tariff River Pay offers, read as a sheet — the rate of each instrument, the fixed part and the
  * minimum, the fees of refunds, disputes and payouts, the monthly fee — and the units within reach whose
- * contracts charge by it. Those in use come first.
+ * contracts charge by it. Those in use come first. In the retail group's assembly, which has its own
+ * acquiring, the group's terms with each bank instead, by channel.
  */
 export default async function Tariffs({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const locale = resolveLocale((await params).locale);
@@ -24,6 +28,30 @@ export default async function Tariffs({ params, searchParams }: { params: Promis
   const { t } = c;
   const contracts = c.w.contracts.filter((ct) => c.visible.has(ct.unitId));
   const tariffs = c.w.tariffs.map((tariff) => ({ tariff, users: contracts.filter((ct) => ct.tariffId === tariff.id) })).sort((a, b) => Number(b.users.length > 0) - Number(a.users.length > 0));
+  if (c.stand === 'retail') {
+    const terms = c.w.acquiring.filter((x) => c.visible.has(x.merchantId));
+    const providers = [...new Set(terms.map((x) => x.acquirerId))].sort((a, b) => c.w.providers.indexOf(a) - c.w.providers.indexOf(b));
+    return (
+      <>
+        <CabinetHead kicker={t('Contracts', 'Договори')} title={t('Acquiring terms', 'Умови еквайрингу')}
+          lead={t('These are the group’s own agreements with each bank and provider: what a payment costs online and at the tills, and whether the bank’s own cards are priced on-us. The platform prices every routing decision and checks every settlement batch against them; it charges no percentage of its own.', 'Це власні договори групи з кожним банком і провайдером: скільки коштує платіж онлайн і на касах і чи оцінює банк власні картки за ставкою on-us. Платформа оцінює за ними кожне рішення маршрутизації й перевіряє кожен пакет розрахунків; власного відсотка вона не бере.')}
+          actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
+        <Flash query={query} locale={locale} />
+        {providers.length === 0 ? <Panel><p className="text-ink-500">{t('No acquiring terms within your reach.', 'У ваших межах немає умов еквайрингу.')}</p></Panel> : (
+          <div className="space-y-6">
+            {providers.map((id) => {
+              const bank = bankName(id, locale);
+              return (
+                <Panel key={id} id={id} flush title={bank ? `${acquirerName(id, locale)} · ${bank}` : acquirerName(id, locale)} note={<span className="font-mono text-[0.75rem]">{id}</span>}>
+                  <div className="px-1"><AcquiringTermsTable terms={terms.filter((x) => x.acquirerId === id).sort((a, b) => a.channel.localeCompare(b.channel))} c={c} locale={locale} showProvider={false} /></div>
+                </Panel>
+              );
+            })}
+          </div>
+        )}
+      </>
+    );
+  }
   return (
     <>
       <CabinetHead kicker={t('Contracts', 'Договори')} title={t('Tariffs', 'Тарифи')}

@@ -1,19 +1,25 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { Locale } from '@river/i18n';
+import type { World } from '@river/psp-runtime';
 import { href } from '@/lib/href';
 import { lt } from '@/lib/lt';
 import { Container } from '../ui/Container';
 import { Icon } from '../ui/Icon';
 
 export const articles = [
-  { slug: 'split', icon: 'split', en: 'Split payments', uk: 'Розщеплення платежів' },
-  { slug: 'hierarchy', icon: 'tree', en: 'The hierarchy of units', uk: 'Ієрархія одиниць' },
+  { slug: 'routing', icon: 'route', en: 'Routing and cost', uk: 'Маршрутизація і собівартість' },
+  { slug: 'reconciliation', icon: 'scales', en: 'Settlement reconciliation', uk: 'Звірка розрахунків' },
+  { slug: 'lifecycle', icon: 'bridge', en: 'The life of a payment', uk: 'Життя платежу' },
   { slug: 'instruments', icon: 'layers', en: 'Payment instruments', uk: 'Платіжні інструменти' },
-  { slug: 'lifecycle', icon: 'bridge', en: 'Lifecycle and projections', uk: 'Життєвий цикл і проєкції' },
-  { slug: 'agents', icon: 'bot', en: 'The agent swarm', uk: 'Рій агентів' },
-  { slug: 'invoicing', icon: 'invoice', en: 'Invoices, orders, tracking', uk: 'Інвойси, замовлення, відстеження' },
+  { slug: 'hierarchy', icon: 'tree', en: 'Structure and policies', uk: 'Структура і політики' },
+  { slug: 'invoicing', icon: 'invoice', en: 'Orders and invoices', uk: 'Замовлення та інвойси' },
+  { slug: 'split', icon: 'split', en: 'Distribution of a payment', uk: 'Розподіл платежу' },
+  { slug: 'agents', icon: 'bot', en: 'Agents', uk: 'Агенти' },
 ] as const;
+
+/** The worlds an article draws its figures from: the retail group's stand, and the PSP's. */
+export type ArticleWorlds = { retail: World; psp: World };
 
 /**
  * The frame of an article: a drawing sheet's head (number, title, lead), the body in a reading column
@@ -33,7 +39,7 @@ export function ArticleFrame({ locale, slug, sheet, title, lead, children, cta }
       <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_15rem]">
         <article className="min-w-0 space-y-14">{children}</article>
         <aside className="lg:sticky lg:top-28 lg:self-start">
-          <p className="annot mb-3 text-ink-500">{t('The six themes', 'Шість тем')}</p>
+          <p className="annot mb-3 text-ink-500">{t('Articles', 'Статті')}</p>
           <ol className="space-y-1">
             {articles.map((a, i) => (
               <li key={a.slug}>

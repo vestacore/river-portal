@@ -52,7 +52,7 @@ export default async function Keys({ params, searchParams }: { params: Promise<{
   return (
     <>
       <CabinetHead kicker={t('Integration', 'Інтеграція')} title={t('API keys', 'API-ключі')}
-        lead={t('A secret key signs your server’s calls; a publishable key only opens a checkout in the browser. Test keys reach the sandbox, live keys the river itself. A key is shown in full once — afterwards only its prefix and last four remain.', 'Секретний ключ підписує виклики вашого сервера; публічний лише відкриває оплату в браузері. Тестові ключі працюють із пісочницею, бойові — із самою рікою. Ключ показуємо повністю один раз — далі лишаються тільки префікс і чотири останні символи.')}
+        lead={t('A secret key signs your server’s calls; a publishable key only opens a checkout in the browser. Test keys reach the sandbox, live keys the live flows. A key is shown in full once — afterwards only its prefix and last four remain.', 'Секретний ключ підписує виклики вашого сервера; публічний лише відкриває оплату в браузері. Тестові ключі працюють із пісочницею, бойові — з робочими потоками. Ключ показуємо повністю один раз — далі лишаються тільки префікс і чотири останні символи.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <Flash query={query} locale={locale} />
       {once ? (
@@ -89,8 +89,8 @@ export default async function Keys({ params, searchParams }: { params: Promise<{
         ) : null}
         <Panel title={t('Using a key', 'Як користуватися ключем')} note={t('Send the secret key as a bearer token, and an idempotency key with every call that writes: a retried call with the same key returns the first answer and writes nothing twice.', 'Надсилайте секретний ключ як bearer-токен, а з кожним викликом, що записує, — ключ ідемпотентності: повторений виклик із тим самим ключем поверне першу відповідь і нічого не запише вдруге.')}>
           <CodeBlock label="curl" code={[
-            'curl https://api.river-pay.example/v1/orders \\',
-            '  -H "Authorization: Bearer rp_test_sk_…" \\',
+            'curl https://api.river.example/v1/orders \\',
+            `  -H "Authorization: Bearer ${c.stand === 'psp' ? 'rp' : 'rv'}_test_sk_…" \\`,
             '  -H "Idempotency-Key: 5f1c0e7a-order-1042" \\',
             '  -H "Content-Type: application/json" \\',
             '  -d \'{ "unitId": "…", "lines": [ … ] }\'',

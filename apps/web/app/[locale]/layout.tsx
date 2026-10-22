@@ -14,8 +14,8 @@ type Props = { children: ReactNode; params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Omit<Props, 'children'>): Promise<Metadata> {
   const t = lt(resolveLocale((await params).locale));
   return {
-    title: { default: t('River Pay — every payment is a river', 'River Pay — кожен платіж є рікою'), template: '%s · River Pay' },
-    description: t('A payment platform where one attempt to pay is a river from unpaid to paid: split payments, a hierarchy of units, every instrument first-class, agents that propose and people who decide.', 'Платіжна платформа, де одна спроба оплати — це ріка від несплаченого до сплаченого: розщеплення платежів, ієрархія одиниць, усі інструменти рівноправні, агенти пропонують — люди вирішують.'),
+    title: { default: t('River — payment flow orchestration', 'River — оркестрація платіжних потоків'), template: '%s · River' },
+    description: t('A platform that connects a company’s own systems with payment instruments and its banks: routing by approval and cost, on-us, capture after picking, settlement reconciliation, agents that propose and people who decide.', 'Платформа, що з’єднує власні системи компанії з платіжними інструментами та її банками: маршрутизація за схваленням і вартістю, on-us, списання після комплектації, звірка розрахунків, агенти пропонують — люди вирішують.'),
     alternates: { languages: { 'en-GB': '/en-gb', uk: '/uk' } },
     icons: { icon: '/icon.svg' },
   };

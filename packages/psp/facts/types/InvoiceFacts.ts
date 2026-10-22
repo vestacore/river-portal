@@ -46,3 +46,12 @@ export type InvoiceVoided = {
   reason: string;
   by: string;
 };
+
+/** `invoice.Adjusted` — the figure: the claim follows the order, e.g. to its picked total, before anyone is charged. */
+export type InvoiceAdjusted = {
+  invoiceId: string;
+  orderId: string;
+  amountMinor: number;
+  previousMinor: number;
+  reason: 'picked' | 'manual';
+};

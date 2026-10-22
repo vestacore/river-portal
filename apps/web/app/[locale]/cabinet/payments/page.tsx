@@ -24,7 +24,7 @@ export default async function Payments({ params, searchParams }: { params: Promi
   const page = sortAndPage(rows, columns, query);
   return (
     <>
-      <CabinetHead kicker={t('Boundary: payment', 'Межа: платіж')} title={t('Payments', 'Платежі')} lead={t('A payment is born at the bridge where its session secures the funds, becomes money at the capture, is distributed by the split, and lives on in its own stream.', 'Платіж народжується на мосту, де сесія забезпечує кошти, стає грошима при списанні, розподіляється розщепленням і живе далі у власному потоці.')}
+      <CabinetHead kicker={t('Boundary: payment', 'Межа: платіж')} title={t('Payments', 'Платежі')} lead={t('A payment is born at the event where its session secures the funds, becomes money at the capture, is distributed into its shares, and lives on in its own stream: refunds, disputes, settlement.', 'Платіж народжується в події, де сесія забезпечує кошти, стає грошима при списанні, розподіляється на частки й живе далі у власному потоці: повернення, спори, розрахунок.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <FilterBar locale={locale} query={query} groups={[
         { param: 'status', label: t('Status', 'Статус'), options: paymentStatuses.map((s) => ({ value: s, label: pickText(paymentStatusLabels[s], locale), count: all.filter((p) => p.status === s).length })).filter((o) => o.count > 0) },

@@ -127,7 +127,7 @@ export default async function UnitPage({ params, searchParams }: { params: Promi
         </div>
       </div>
       {insights.length > 0 ? (
-        <Panel title={t('What the swarm noticed below', 'Що рій помітив нижче')} className="mt-6">
+        <Panel title={t('What the agents noticed below', 'Що агенти помітили нижче')} className="mt-6">
           <div className="grid gap-3 lg:grid-cols-2">{insights.map((i) => <InsightCard key={i.id} insight={i} locale={locale} link={c.link} back={back} canDecide={c.may('agents.decide', i.unitId)} personName={c.personName} />)}</div>
         </Panel>
       ) : null}

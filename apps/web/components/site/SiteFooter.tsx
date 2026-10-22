@@ -9,17 +9,17 @@ import { LogoMark } from './LogoMark';
 export function SiteFooter({ locale }: { locale: Locale }) {
   const t = lt(locale);
   const columns: Array<[string, Array<[string, string]>]> = [
-    [t('Platform', 'Платформа'), [['/platform/split', t('Split payments', 'Розщеплення платежів')], ['/platform/hierarchy', t('Hierarchy of units', 'Ієрархія одиниць')], ['/platform/instruments', t('Payment instruments', 'Платіжні інструменти')], ['/platform/lifecycle', t('Lifecycle and projections', 'Життєвий цикл і проєкції')], ['/platform/agents', t('Agent swarm', 'Рій агентів')], ['/platform/invoicing', t('Invoices and orders', 'Інвойси та замовлення')]]],
-    [t('For business', 'Для бізнесу'), [['/pricing', t('Pricing', 'Тарифи')], ['/shop', t('Pay a demo invoice', 'Сплатити демо-інвойс')], ['/demo', t('Six cabinets', 'Шість кабінетів')]]],
-    [t('Developers', 'Розробникам'), [['/developers', t('Four entities and their API', 'Чотири сутності та їх API')], ['/developers#events', t('Event catalogue', 'Каталог подій')], ['/cabinet/sandbox', t('Sandbox', 'Пісочниця')]]],
+    [t('Platform', 'Платформа'), [['/platform/routing', t('Routing and cost', 'Маршрутизація і собівартість')], ['/platform/reconciliation', t('Settlement reconciliation', 'Звірка розрахунків')], ['/platform/lifecycle', t('The life of a payment', 'Життя платежу')], ['/platform/instruments', t('Payment instruments', 'Платіжні інструменти')], ['/platform/hierarchy', t('Structure and policies', 'Структура і політики')], ['/platform/invoicing', t('Orders and invoices', 'Замовлення та інвойси')], ['/platform/split', t('Distribution of a payment', 'Розподіл платежу')], ['/platform/agents', t('Agents', 'Агенти')]]],
+    [t('For business', 'Для бізнесу'), [['/pricing', t('What a payment costs', 'Скільки коштує платіж')], ['/shop', t('Pay a demo order', 'Сплатити демо-замовлення')], ['/demo', t('The cabinets', 'Кабінети')]]],
+    [t('Developers', 'Розробникам'), [['/developers', t('The entities and their API', 'Сутності та їх API')], ['/developers#events', t('Event catalogue', 'Каталог подій')], ['/cabinet/sandbox', t('Sandbox', 'Пісочниця')]]],
   ];
   return (
     <footer className="mt-24 border-t-2 border-ink-900 bg-paper-deep">
       <Container className="py-14">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
           <div>
-            <div className="flex items-center gap-3"><LogoMark /><span className="text-lg font-semibold text-ink-900">River Pay</span></div>
-            <p className="mt-4 max-w-sm text-[0.95rem] text-ink-700">{t('A payment platform drawn as a river: one attempt to pay is one river from unpaid to paid.', 'Платіжна платформа, накреслена як ріка: одна спроба оплати — одна ріка від несплаченого до сплаченого.')}</p>
+            <div className="flex items-center gap-3"><LogoMark /><span className="text-lg font-semibold text-ink-900">River</span></div>
+            <p className="mt-4 max-w-sm text-[0.95rem] text-ink-700">{t('A platform for orchestrating payment flows. The drawings show each attempt to pay as a river from unpaid to paid.', 'Платформа оркестрації платіжних потоків. На кресленнях кожна спроба оплати показана рікою від несплаченого до сплаченого.')}</p>
             <p className="annot mt-6 max-w-sm text-ink-500">{t('Demo stand · invented organisations and people · stand-in banks · no money moves', 'Демо-стенд · вигадані організації та люди · банки-імітатори · гроші не рухаються')}</p>
           </div>
           {columns.map(([title, links]) => (

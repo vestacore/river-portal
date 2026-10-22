@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { pickText } from '@river/i18n';
 import { disputeReasonLabels, paymentStatusLabels, refundableMinor, refundReasonLabels, refundReasons, type DisputeLine } from '@river/psp-payment';
 import { riverOfSession } from '@river/psp-runtime';
 import { CabinetHead } from '@/components/cabinet/CabinetHead';
+import { CostOfAcceptance } from '@/components/cabinet/routing/CostOfAcceptance';
 import { FieldGrid } from '@/components/panels/FieldGrid';
 import { Flash } from '@/components/panels/Flash';
 import { Panel } from '@/components/panels/Panel';
@@ -14,6 +16,7 @@ import { cabinet } from '@/lib/cabinet';
 import { instrumentCell } from '@/lib/columns';
 import { day, money } from '@/lib/format';
 import { resolveLocale } from '@/lib/resolveLocale';
+import { acquirerName } from '@/lib/routing/acquirerName';
 import { readQuery } from '@/lib/table';
 import { paymentTone } from '@/lib/tones';
 
@@ -33,7 +36,9 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
   const back = c.link(`/payments/${id}`);
   const refundable = refundableMinor(p);
   const hidden = (n: string, v: string) => <input type="hidden" name={n} value={v} />;
-  const tone = (role: string) => (role === 'seller' ? 'seller' : role === 'charity' ? 'charity' : role === 'psp_fee' ? 'fee' : role === 'reserve' ? 'reserve' : role === 'platform' ? 'platform' : 'merchant') as 'seller';
+  const tone = (role: string) => (role === 'seller' ? 'seller' : role === 'charity' ? 'charity' : role === 'psp_fee' || role === 'acquirer_fee' ? 'fee' : role === 'reserve' ? 'reserve' : role === 'platform' ? 'platform' : 'merchant') as 'seller';
+  const recipient = (id: string) => (id.startsWith('acq:') ? acquirerName(id, locale) : c.unitName(id));
+  const priced = c.stand === 'retail' && p.rail === 'card';
   return (
     <>
       <CabinetHead kicker={`${t('Payment', 'Платіж')} · ${c.unitName(p.unitId)}`} title={<span className="font-mono text-[1.4rem]">{p.paymentId}</span>}
@@ -52,11 +57,11 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
             { label: t('Invoice', 'Інвойс'), cell: { kind: 'mono', value: c.w.views.invoices.get(p.invoiceId)?.number ?? p.invoiceId, href: c.link(`/invoices/${p.invoiceId}`) } },
             { label: t('Order', 'Замовлення'), cell: { kind: 'mono', value: c.w.views.orders.get(p.orderId)?.reference ?? p.orderId, href: c.link(`/orders/${p.orderId}`) } },
             { label: t('Instrument', 'Інструмент'), cell: instrumentCell(ctx, p.instrument, p.detail) },
-            { label: t('Rail · acquirer', 'Рейка · еквайр'), cell: { kind: 'text', value: `${p.rail} · ${p.acquirer}`, sub: p.authCode ? `auth ${p.authCode}` : p.via ?? undefined } },
+            { label: t('Rail · acquirer', 'Рейка · еквайр'), cell: { kind: 'text', value: `${p.rail} · ${acquirerName(p.acquirer, locale)}`, sub: p.authCode ? `auth ${p.authCode}` : p.via ?? undefined } },
             { label: t('Secured', 'Забезпечено'), cell: { kind: 'datetime', iso: p.createdAt } },
             { label: t('Captured', 'Списано'), cell: { kind: 'money', minor: p.capturedMinor, currency: p.currency } },
             { label: t('Captured at', 'Час списання'), cell: { kind: 'datetime', iso: p.capturedAt } },
-            { label: t('PSP fee', 'Комісія PSP'), cell: { kind: 'money', minor: p.feeMinor, currency: p.currency, muted: true } },
+            { label: c.w.feeRecipient === null ? t('Acquirer’s fee', 'Комісія еквайра') : t('PSP fee', 'Комісія PSP'), cell: { kind: 'money', minor: p.feeMinor, currency: p.currency, muted: true } },
             { label: t('Refunded', 'Повернено'), cell: { kind: 'money', minor: p.refundedMinor, currency: p.currency, muted: true } },
             { label: t('Charged back', 'Чарджбек'), cell: { kind: 'money', minor: p.chargebackMinor, currency: p.currency, muted: true } },
             { label: t('Refundable', 'Можна повернути'), cell: { kind: 'money', minor: refundable, currency: p.currency } },
@@ -71,9 +76,14 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
           ) : null}
         </Panel>
         <div className="space-y-6">
-          <Panel title={t('The delta', 'Дельта')}>
-            {p.allocations.length === 0 ? <p className="text-ink-500">{t('Formed at the capture.', 'Формується при списанні.')}</p> : <DeltaDrawing total={[t('Captured', 'Списано'), money(p.capturedMinor, p.currency, locale)]} streams={p.allocations.map((a) => ({ label: c.unitName(a.recipientUnitId), role: `${a.role}${a.holdUntil ? ` · ${t('held until', 'до')} ${a.holdUntil.slice(0, 10)}` : ''}`, amount: money(a.amountMinor, a.currency, locale), share: a.amountMinor, tone: tone(a.role) }))} />}
+          <Panel title={t('Distribution', 'Розподіл')}>
+            {p.allocations.length === 0 ? <p className="text-ink-500">{t('Formed at the capture.', 'Формується при списанні.')}</p> : <DeltaDrawing total={[t('Captured', 'Списано'), money(p.capturedMinor, p.currency, locale)]} streams={p.allocations.map((a) => ({ label: recipient(a.recipientUnitId), role: `${a.role}${a.holdUntil ? ` · ${t('held until', 'до')} ${a.holdUntil.slice(0, 10)}` : ''}`, amount: money(a.amountMinor, a.currency, locale), share: a.amountMinor, tone: tone(a.role) }))} />}
           </Panel>
+          {priced ? (
+            <Panel title={t('Cost of acceptance', 'Собівартість приймання')} note={t('What the acquirer charged for this card under the group’s own terms with it.', 'Скільки еквайр узяв за цю картку за власними умовами групи з ним.')}>
+              <CostOfAcceptance c={c} payment={p} locale={locale} />
+            </Panel>
+          ) : null}
           {p.disputes.length > 0 ? (
             <Panel title={t('Disputes', 'Спори')} tone={p.disputes.some((d) => d.status === 'open') ? 'attention' : 'plain'}>
               <ul className="space-y-3">{p.disputes.map((d) => (
@@ -85,7 +95,7 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
           ) : null}
           {p.payouts.length > 0 ? (
             <Panel title={t('Payouts', 'Виплати')}>
-              <ul className="divide-y divide-graphite/15 text-[0.86rem]">{p.payouts.map((x) => <li key={`${x.batchId}${x.rule}`} className="flex justify-between gap-3 py-1.5"><span>{c.unitName(x.recipientUnitId)} <span className="font-mono text-[0.7rem] text-ink-500">{x.batchId}</span></span><span className="tabular-nums">{money(x.amountMinor, p.currency, locale)}</span></li>)}</ul>
+              <ul className="divide-y divide-graphite/15 text-[0.86rem]">{p.payouts.map((x) => <li key={`${x.batchId}${x.rule}`} className="flex justify-between gap-3 py-1.5"><span className="min-w-0 break-words">{recipient(x.recipientUnitId)} {x.batchId.startsWith('stl_') ? <Link href={c.link(`/settlements/${x.batchId}`)} className="break-all font-mono text-[0.7rem] text-river-700 underline decoration-river-200 underline-offset-2 hover:decoration-river-700">{x.batchId}</Link> : <span className="font-mono text-[0.7rem] text-ink-500">{x.batchId}</span>}</span><span className="tabular-nums">{money(x.amountMinor, p.currency, locale)}</span></li>)}</ul>
             </Panel>
           ) : null}
         </div>

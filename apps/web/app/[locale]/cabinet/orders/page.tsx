@@ -24,7 +24,7 @@ export default async function Orders({ params, searchParams }: { params: Promise
   const channels = [...new Set(all.map((o) => o.channel))];
   return (
     <>
-      <CabinetHead kicker={t('Boundary: order', 'Межа: замовлення')} title={t('Orders', 'Замовлення')} lead={t('The order is its own boundary: lines, the split plan the hierarchy gave it, fulfilment — and its view formed from every bridge that names it.', 'Замовлення — окрема межа: позиції, план розщеплення від ієрархії, виконання — і проєкція з кожного мосту, що його згадує.')}
+      <CabinetHead kicker={t('Boundary: order', 'Межа: замовлення')} title={t('Orders', 'Замовлення')} lead={t('The order is its own boundary: lines, the distribution plan its unit gave it, picking and fulfilment — and its view formed from every event that names it.', 'Замовлення — окрема межа: позиції, план розподілу від одиниці, комплектація й виконання — і проєкція з кожної події, що його згадує.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <FilterBar locale={locale} query={query} groups={[
         { param: 'status', label: t('Status', 'Статус'), options: orderStatuses.map((s) => ({ value: s, label: pickText(orderStatusLabels[s], locale), count: all.filter((o) => o.status === s).length })).filter((o) => o.count > 0) },

@@ -5,6 +5,7 @@ import { acquirers } from '@river/psp-instruments';
 import { allocate } from '@river/psp-split';
 import { isSessionClosed, type SessionView } from '@river/psp-session';
 import { policyValue } from '@river/psp-units';
+import { acquiringFeeFor } from './acquiringFeeFor.ts';
 import { appendFacts } from './appendFacts.ts';
 import { effectiveFor } from './effectiveFor.ts';
 import { newId } from './newId.ts';
@@ -140,7 +141,7 @@ export function driveSession(world: World, sessionId: string, at: string): Waiti
           return 'review';
         }
         const paymentId = newId(world, 'pay');
-        const via = session.instrument === 'installments' || session.instrument === 'bnpl' ? 'lender' : session.instrument === 'stablecoin' ? 'chain' : session.instrument === 'voucher' ? 'kiosk' : session.instrument === 'bank_transfer' ? 'statement' : 'rail';
+        const via = session.instrument === 'installments' || session.instrument === 'bnpl' ? 'lender' : session.instrument === 'stablecoin' ? 'chain' : session.instrument === 'voucher' ? 'kiosk' : session.instrument === 'bank_transfer' ? 'statement' : session.instrument === 'bonus_points' ? 'loyalty' : 'rail';
         step([{ type: 'funds.Received', payload: {
           sessionId, paymentId, invoiceId: session.invoiceId, orderId: session.orderId, unitId: session.unitId, merchantId: session.merchantId,
           instrument: session.instrument, detail: session.detail ?? {}, rail: session.route.rail, acquirer, amountMinor: taken ?? session.amountMinor, currency: session.currency,
@@ -163,26 +164,33 @@ export function driveSession(world: World, sessionId: string, at: string): Waiti
 }
 
 /**
- * From the capture to the mouth, the same for every instrument: the fee, the split, the receipt, success.
- * What is captured is what the payment secured — less than the attempt asked for when a person took a
- * transfer that fell short; the invoice then stays partly due.
+ * From the capture to completion, the same for every instrument: the fee, the split, the receipt, success.
+ * What is captured is what the payment secured — or less, when the order system asked for the picked total
+ * (the rest of the hold is released), or when a person took a transfer that fell short. The fee is the
+ * PSP's tariff where the platform holds the money, and the acquirer's price under the merchant's own terms
+ * where the acquirer settles to the merchant directly; then the split's fee share is the acquirer's.
  */
 function settleCapture(world: World, session: SessionView, at: string): void {
   const order = world.views.orders.get(session.orderId);
   const paymentId = session.paymentId;
   if (!order || !paymentId || !session.instrument || !session.route) return;
-  const amountMinor = world.views.payments.get(paymentId)?.amountMinor ?? session.amountMinor;
-  const tariff = activeTariffOf(world.contracts, world.tariffs, session.merchantId, at);
-  const feeMinor = tariff ? feeFor(tariff, session.instrument, amountMinor) : 0;
-  const effective = effectiveFor(world, session.unitId);
-  const allocations = allocate({
-    amountMinor, currency: session.currency, orderTotalMinor: order.totalMinor, lines: order.lines, plan: order.split, feeMinor, at,
-    reserveBps: Number(policyValue(effective, 'settlement.reserve.bps') ?? 0), reserveDays: 90,
-  });
+  const secured = world.views.payments.get(paymentId)?.amountMinor ?? session.amountMinor;
+  const asked = world.scenarios.get(session.sessionId)?.captureAmountMinor;
+  const amountMinor = asked !== undefined ? Math.max(0, Math.min(asked, secured)) : secured;
+  const releasedMinor = secured - amountMinor;
   const acquirer = session.route.acquirer;
+  const effective = effectiveFor(world, session.unitId);
+  const direct = policyValue(effective, 'settlement.model') === 'direct';
+  const tariff = direct ? null : activeTariffOf(world.contracts, world.tariffs, session.merchantId, at);
+  const feeMinor = direct ? acquiringFeeFor(world, session, acquirer, amountMinor) : tariff ? feeFor(tariff, session.instrument, amountMinor) : 0;
+  const plan = direct ? { ...order.split, rules: order.split.rules.map((r) => (r.basis === 'fee' ? { ...r, recipientUnitId: `acq:${acquirer}`, role: 'acquirer_fee' as const } : r)) } : order.split;
+  const allocations = allocate({
+    amountMinor, currency: session.currency, orderTotalMinor: order.picked?.totalMinor ?? order.totalMinor, lines: order.picked?.lines ?? order.lines, plan, feeMinor, at,
+    reserveBps: direct ? 0 : Number(policyValue(effective, 'settlement.reserve.bps') ?? 0), reserveDays: 90,
+  });
   const push = session.route.rail !== 'card' && session.route.rail !== 'wallet';
   appendFacts(world, session.sessionId, [
-    { type: 'capture.Completed', payload: { sessionId: session.sessionId, paymentId, invoiceId: session.invoiceId, orderId: session.orderId, merchantId: session.merchantId, acquirer, amountMinor, currency: session.currency, feeMinor } },
+    { type: 'capture.Completed', payload: { sessionId: session.sessionId, paymentId, invoiceId: session.invoiceId, orderId: session.orderId, merchantId: session.merchantId, acquirer, amountMinor, currency: session.currency, feeMinor, ...(releasedMinor > 0 ? { releasedMinor } : {}) } },
   ], push ? figure('flow') : world_(acquirer), at);
   appendFacts(world, session.sessionId, [
     { type: 'split.Allocated', payload: { sessionId: session.sessionId, paymentId, orderId: session.orderId, acquirer, amountMinor, currency: session.currency, allocations } },

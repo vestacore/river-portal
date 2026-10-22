@@ -2,8 +2,8 @@ import type { OrderLine } from '@river/psp-facts';
 import { placeOrder } from './placeOrder.ts';
 import type { World } from './types/World.ts';
 
-/** The units a public visitor can buy from in the demo shop: a marketplace, a charity, a bike shop. */
-const shops = new Set(['ou-kvitka-web', 'ou-open-river', 'ou-baltic-bikes-web', 'ou-dnipro-travel-web', 'ou-amber']);
+/** The units a public visitor can buy from in the demo shops: the retail group's web shop; a marketplace, a charity, a bike shop of the PSP. */
+const shops = new Set(['rt-web', 'ou-kvitka-web', 'ou-open-river', 'ou-baltic-bikes-web', 'ou-dnipro-travel-web', 'ou-amber']);
 
 /**
  * An order from the demo shop, placed as the merchant's own server would place it through the API — the

@@ -80,4 +80,10 @@ export const instrumentCatalogue: readonly InstrumentDefinition[] = [
     settlementDays: 3, typicalFeeBps: 35, fixedFeeMinor: 0,
     label: t('SEPA Direct Debit', 'Пряме списання SEPA'), description: t('A mandate to collect from the payer’s account; for subscriptions.', 'Мандат на списання з рахунку платника; для підписок.'),
     payerHint: t('Sign a mandate with your IBAN.', 'Підпишіть мандат зі своїм IBAN.') },
+  { id: 'bonus_points', family: 'loyalty', rail: 'loyalty', push: false,
+    course: ['consent.Granted', 'funds.Received', 'capture.Completed'],
+    capabilities: { refunds: true, partialRefunds: true, recurring: false, manualCapture: false, disputes: false, split: false }, regions: ['UA'], currencies: ['UAH'],
+    settlementDays: 0, typicalFeeBps: 0, fixedFeeMinor: 0,
+    label: t('Bonus points', 'Бонусні бали'), description: t('Points of the merchant’s own bonus programme, redeemed through its bonus system; the rest of the order is paid with another instrument.', 'Бали власної бонусної програми мерчанта, що списуються через його бонусну систему; решту замовлення сплачують іншим інструментом.'),
+    payerHint: t('Confirm with the code from the app.', 'Підтвердьте кодом із застосунку.') },
 ];

@@ -1,6 +1,6 @@
 import type { LocalisedText } from '@river/i18n';
 
-export const policyGroups = ['limits', 'instruments', 'risk', 'capture', 'settlement', 'split', 'checkout', 'invoices', 'agents'] as const;
+export const policyGroups = ['limits', 'instruments', 'routing', 'risk', 'capture', 'settlement', 'split', 'checkout', 'invoices', 'agents'] as const;
 export type PolicyGroup = (typeof policyGroups)[number];
 
 export type PolicyValue = number | string | boolean | string[] | number[] | null;

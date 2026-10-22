@@ -21,3 +21,13 @@ test('the pay page offers what the unit allows, in its currency and region, in i
   assert.equal(findInstrument('voucher').push, true);
   assert.throws(() => findInstrument('cheque'));
 });
+
+test('a card is known by its BIN: issuer, scheme and product, and whether it is domestic', async () => {
+  const { cardProfileOf, issuerOfBin } = await import('./gate.ts');
+  assert.equal(issuerOfBin('424242')?.issuer.id, 'bank-dnipro', 'the pay page’s 4242 test card is Bank Dnipro’s');
+  assert.equal(issuerOfBin('424491')?.product, 'premium', 'the longest range wins');
+  assert.equal(issuerOfBin('999999'), null);
+  assert.deepEqual(cardProfileOf({ brand: 'mastercard', bin: '555555', issuerCountry: 'UA' }, 'UA'), { issuer: 'bank-stepove', scheme: 'mastercard', product: 'debit', domestic: true });
+  assert.deepEqual(cardProfileOf({ brand: 'visa', bin: '400000', issuerCountry: 'DE' }, 'UA'), { issuer: null, scheme: 'visa', product: 'other', domestic: false }, 'a German card in a Ukrainian range is foreign');
+  assert.equal(acquirersFor('card', 'UA', ['acq-dnipro', 'acq-stepove']).map((a) => a.id).join(','), 'acq-dnipro,acq-stepove', 'only the connections a stand has');
+});

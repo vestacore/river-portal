@@ -1,12 +1,12 @@
 import type { LocalisedText } from '@river/i18n';
 
 /** The roles of the cabinets. A grant gives one role at one unit, and with it the unit's whole subtree. */
-export const pspRoles = ['hierarchy_admin', 'operator', 'compliance_officer', 'access_manager', 'checkout_designer', 'integrator', 'merchant_owner', 'auditor'] as const;
+export const pspRoles = ['hierarchy_admin', 'operator', 'compliance_officer', 'access_manager', 'checkout_designer', 'integrator', 'payments_manager', 'finance_controller', 'merchant_owner', 'auditor'] as const;
 export type PspRole = (typeof pspRoles)[number];
 
 export const permissions = [
   'flows.read', 'orders.write', 'payments.capture', 'payments.refund', 'disputes.respond', 'payouts.read',
-  'units.write', 'policies.write', 'rules.write',
+  'units.write', 'policies.write', 'rules.write', 'routing.write', 'costs.read', 'reconciliation.write',
   'aml.read', 'aml.review',
   'contracts.read', 'contracts.write', 'grants.read', 'grants.write',
   'checkout.read', 'checkout.write',

@@ -13,7 +13,7 @@ const words: Record<string, [string, string]> = {
   rejected: ['Rejected: the attempt stops here.', 'Відхилено: спроба зупиняється тут.'],
   taken: ['Taken: what arrived is received and captured; anything short stays due on the invoice.', 'Прийнято: те, що надійшло, зараховано й списано; нестача лишається до сплати за інвойсом.'],
   returned: ['Returned to the payer; the attempt ends here.', 'Повернуто платнику; спроба завершується тут.'],
-  updated: ['Updated.', 'Оновлено.'], decided: ['Decided.', 'Вирішено.'], voided: ['Voided.', 'Анульовано.'], reminded: ['A reminder went out.', 'Нагадування надіслано.'],
+  updated: ['Updated.', 'Оновлено.'], decided: ['Decided.', 'Вирішено.'], picked: ['Picking recorded: the picked amount is captured and the rest of the hold released.', 'Комплектацію записано: суму комплектації списано, залишок блокування розблоковано.'], voided: ['Voided.', 'Анульовано.'], reminded: ['A reminder went out.', 'Нагадування надіслано.'],
   moved: ['Moved along.', 'Переміщено.'], saved: ['Saved.', 'Збережено.'], cleared_policy: ['Cleared.', 'Скинуто.'], created: ['Created.', 'Створено.'],
   granted: ['Granted.', 'Надано.'], revoked: ['Revoked.', 'Відкликано.'], approved: ['Approved and granted.', 'Схвалено й надано.'], sent: ['Sent.', 'Надіслано.'],
 };
@@ -21,6 +21,8 @@ const words: Record<string, [string, string]> = {
 /** Why a command refused, in words: the runtime's reason stays beside it, as it came. */
 const refusals: Array<[RegExp, string, string]> = [
   [/^nothing_to_decide$/, 'There is nothing left to decide here.', 'Тут уже нічого вирішувати.'],
+  [/^resolution_required$/, 'Choose a decision for the difference.', 'Оберіть рішення щодо розбіжності.'],
+  [/^invalid_amount$/, 'The amount does not look right: enter it in hryvnias, zero or more.', 'Сума виглядає некоректно: вкажіть її в гривнях, нуль або більше.'],
   [/^not_found$/, 'It is not there any more.', 'Цього вже немає.'],
   [/^no [a-z.]+ at \S+ in this profile$/, 'This profile has no right to do that here.', 'Цей профіль не має права робити це тут.'],
   [/^this profile is not active$/, 'This profile is no longer active.', 'Цей профіль більше не діє.'],
@@ -30,6 +32,7 @@ const refusals: Array<[RegExp, string, string]> = [
   [/^only an administrator grants administration$/, 'Only an administrator grants the administrator’s role.', 'Роль адміністратора надає лише адміністратор.'],
   [/^not yours to decide$/, 'A request is decided by someone other than the person who asked.', 'Запит вирішує не та людина, що його подала.'],
   [/^already decided$/, 'It has already been decided.', 'Це вже вирішено.'],
+  [/^already picked$/, 'The order has already been picked.', 'Замовлення вже скомплектовано.'],
   [/is not a step$/, 'A contract cannot take that step from where it stands today.', 'Договір не може зробити цей крок зі свого сьогоднішнього стану.'],
   [/^the merchant has no active contract$/, 'The merchant has no active contract, so it cannot take payments.', 'Мерчант не має чинного договору, тож не може приймати платежі.'],
   [/^the merchant cannot take payments yet$/, 'The merchant cannot take payments yet.', 'Мерчант ще не може приймати платежі.'],

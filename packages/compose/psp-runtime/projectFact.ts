@@ -4,10 +4,11 @@ import { postingsOf } from '@river/psp-ledger';
 import { orderProjector } from '@river/psp-order';
 import { paymentProjector } from '@river/psp-payment';
 import { sessionProjector } from '@river/psp-session';
+import { settlementProjector } from '@river/psp-settlement';
 import type { World } from './types/World.ts';
 
 /**
- * Runs one fact through every projection that hears it — the four boundaries' views and the ledger.
+ * Runs one fact through every projection that hears it — the boundaries' views and the ledger.
  * Each boundary forms its own view; nothing else may change them.
  */
 export function projectFact(world: World, fact: PspFact): void {
@@ -22,6 +23,7 @@ export function projectFact(world: World, fact: PspFact): void {
   fold(world.views.invoices, invoiceProjector);
   fold(world.views.sessions, sessionProjector);
   fold(world.views.payments, paymentProjector);
+  fold(world.views.settlements, settlementProjector);
   const postings = postingsOf(fact);
   if (postings.length > 0) world.journal.push({ stream: fact.stream, seq: fact.seq, type: fact.type, at: fact.at, postings });
 }

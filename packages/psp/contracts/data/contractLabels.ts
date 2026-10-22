@@ -12,6 +12,8 @@ export const contractStatusLabels: Record<ContractStatus, LocalisedText> = {
 };
 
 export const contractKindLabels: Record<ContractKind, LocalisedText> = {
+  acquiring_agreement: { 'en-GB': 'Acquiring agreement', uk: 'Договір еквайрингу' },
+  platform_agreement: { 'en-GB': 'Platform agreement', uk: 'Договір про платформу' },
   merchant_agreement: { 'en-GB': 'Merchant agreement', uk: 'Договір з мерчантом' },
   marketplace_addendum: { 'en-GB': 'Marketplace addendum (split)', uk: 'Додаток для маркетплейсу (розщеплення)' },
   partner_agreement: { 'en-GB': 'Partner agreement', uk: 'Партнерський договір' },

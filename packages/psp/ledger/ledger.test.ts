@@ -40,3 +40,24 @@ test('a reserve share is kept in its own account and leaves it when it is paid o
   assert.equal(after.find((b) => b.account === 'reserve:shop')?.balanceMinor, 0, 'the reserve is empty once paid out');
   assert.equal(after.find((b) => b.account === 'payable:shop')?.balanceMinor, 0, 'and the merchant’s payable was never touched by it');
 });
+
+test('settled directly by the acquirer: it keeps its fee, and nets refunds from the next batch', () => {
+  const shares: Allocation[] = [
+    { recipientUnitId: 'shop', role: 'merchant', amountMinor: 9_890, currency: 'UAH', rule: 0, holdUntil: null },
+    { recipientUnitId: 'acq:acq-x', role: 'acquirer_fee', amountMinor: 110, currency: 'UAH', rule: 1, holdUntil: null },
+  ];
+  const journal = [
+    postingsOf(fact('split.Allocated', { sessionId: 's', paymentId: 'p', orderId: 'o', acquirer: 'acq-x', amountMinor: 10_000, currency: 'UAH', allocations: shares })),
+    postingsOf(fact('payout.Sent', { paymentId: 'p', batchId: 'stl_1', acquirer: 'acq-x', rule: 0, recipientUnitId: 'shop', amountMinor: 9_890, currency: 'UAH' })),
+    postingsOf(fact('payout.Sent', { paymentId: 'p', batchId: 'stl_1', acquirer: 'acq-x', rule: 1, recipientUnitId: 'acq:acq-x', amountMinor: 110, currency: 'UAH' })),
+  ];
+  const settled = balancesOf(journal.flat());
+  assert.equal(settled.find((b) => b.account === 'clearing:acq-x')?.balanceMinor, 0, 'the acquirer owes nothing once it settled and kept its fee');
+  assert.equal(settled.find((b) => b.account === 'acquirer-fees:acq-x')?.balanceMinor, 0);
+  journal.push(postingsOf(fact('refund.Completed', { paymentId: 'p', refundId: 'r', invoiceId: 'i', orderId: 'o', acquirer: 'acq-x', amountMinor: 2_000, currency: 'UAH', allocations: [{ ...shares[0]!, amountMinor: -2_000 }] })));
+  journal.push(postingsOf(fact('settlement.Reported', { batchId: 'stl_2', provider: 'acq-x', merchantId: 'shop', storeId: null, channel: 'online', businessDate: '2026-10-11', valueDate: '2026-10-12', currency: 'UAH', count: 0, grossMinor: 0, feeMinor: 0, refundsMinor: 2_000, chargebacksMinor: 0, netMinor: -2_000, lines: [] })));
+  for (const entry of journal) assert.equal(isBalanced(entry), true);
+  const after = balancesOf(journal.flat());
+  assert.equal(after.find((b) => b.account === 'clearing:acq-x')?.balanceMinor, 0, 'the refund the acquirer paid out came back from the next batch');
+  assert.equal(after.find((b) => b.account === 'payable:shop')?.balanceMinor, 0);
+});

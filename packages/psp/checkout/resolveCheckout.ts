@@ -26,10 +26,11 @@ export function resolveCheckout(input: {
     supportEmail: input.supportEmail,
     supportPhone: input.supportPhone,
     accent: String(policyValue(input.effective, 'checkout.accent') ?? '#0d378c'),
-    instruments: instrumentsFor(allowed, order, input.currency, input.region).map((d) => d.id as InstrumentId),
+    instruments: instrumentsFor(allowed, order, input.currency, input.region).map((d) => d.id as InstrumentId).filter((id) => id !== 'bonus_points'),
     collectEmail: policyValue(input.effective, 'checkout.collect.email') !== false,
     sessionMinutes: Number(policyValue(input.effective, 'checkout.session.minutes') ?? 30),
     showSplit: policyValue(input.effective, 'checkout.showSplit') === true,
+    loyalty: policyValue(input.effective, 'checkout.loyalty') === true && allowed.includes('bonus_points'),
     languages: languages.length > 0 ? languages : ['uk', 'en-GB'],
     returnUrl: input.returnUrl,
   };

@@ -31,9 +31,9 @@ export function FilterBar({ locale, query, groups, search = true }: { locale: Lo
         </div>
       ))}
       {search ? (
-        <form className="ml-auto flex items-center gap-2" role="search">
+        <form className="ml-auto flex w-full min-w-0 items-center gap-2 sm:w-auto" role="search">
           {Object.entries(query).filter(([k, v]) => v && k !== 'q' && k !== 'page').map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}
-          <input name="q" defaultValue={query.q ?? ''} placeholder={t('Search: id, reference, name', 'Пошук: id, номер, назва')} className="w-64 border border-graphite/30 bg-paper px-3 py-1.5 text-[0.85rem] placeholder:text-ink-300 focus:border-ink-900 focus:outline-none" />
+          <input name="q" defaultValue={query.q ?? ''} placeholder={t('Search: id, reference, name', 'Пошук: id, номер, назва')} className="w-full min-w-0 border border-graphite/30 bg-paper px-3 py-1.5 sm:w-64 text-[0.85rem] placeholder:text-ink-300 focus:border-ink-900 focus:outline-none" />
           <button type="submit" className="annot border border-ink-900 px-2.5 py-1.5 text-ink-900 hover:bg-ink-900 hover:text-paper">{t('Find', 'Знайти')}</button>
         </form>
       ) : null}

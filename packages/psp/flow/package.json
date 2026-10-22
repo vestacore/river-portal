@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "The figure of one attempt: the pure decisions that move a session along the river — screening, routing, the payer's consent, the course of its instrument, the split at capture.",
+  "description": "The figure of one attempt: the pure decisions that move a session along — screening, routing by strategy, quotes and an approval threshold, the payer's consent, the course of its instrument, the split at capture.",
   "type": "module",
   "exports": {
     ".": "./gate.ts"

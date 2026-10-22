@@ -81,7 +81,7 @@ export default async function AlertPage({ params, searchParams }: { params: Prom
         </div>
       </div>
       {insights.length > 0 ? (
-        <Panel title={t('What the swarm saw here', 'Що тут побачив рій')} className="mt-6">
+        <Panel title={t('What the agents saw here', 'Що тут побачили агенти')} className="mt-6">
           <div className="space-y-3">{insights.map((i) => <InsightCard key={i.id} insight={i} locale={locale} link={c.link} back={back} canDecide={c.may('agents.decide', i.unitId)} personName={c.personName} />)}</div>
         </Panel>
       ) : null}

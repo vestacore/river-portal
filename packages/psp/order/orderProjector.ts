@@ -9,7 +9,7 @@ function statusOf(view: OrderView): OrderStatus {
   if (Object.keys(view.disputes).length > 0) return 'disputed';
   if (view.paidMinor > 0 && returned >= view.paidMinor) return 'refunded';
   if (returned > 0) return 'partially_refunded';
-  if (view.paidMinor >= view.totalMinor && view.paidMinor > 0) return 'paid';
+  if (view.paidMinor >= (view.picked?.totalMinor ?? view.totalMinor) && view.paidMinor > 0) return 'paid';
   if (view.paidMinor > 0) return 'partially_paid';
   if (held > 0) return 'authorised';
   return 'awaiting_payment';
@@ -33,6 +33,7 @@ function step(view: OrderView, fact: PspFact): OrderView {
     case 'fulfilment.Accepted': v.fulfilment = 'accepted'; break;
     case 'fulfilment.Shipped': v.fulfilment = 'shipped'; v.tracking = { carrier: fact.payload.carrier, ref: fact.payload.trackingRef }; break;
     case 'fulfilment.Delivered': v.fulfilment = 'delivered'; break;
+    case 'fulfilment.Picked': v.fulfilment = 'picked'; v.picked = { lines: fact.payload.lines, totalMinor: fact.payload.totalMinor, changes: fact.payload.changes }; break;
     case 'invoice.Issued': if (!v.invoiceIds.includes(fact.payload.invoiceId)) v.invoiceIds = [...v.invoiceIds, fact.payload.invoiceId]; break;
     case 'invoice.Voided': break;
     case 'authorisation.Approved':
@@ -74,7 +75,7 @@ export const orderProjector: Projector<OrderView> = {
         orderId: p.orderId, unitId: p.unitId, merchantId: p.merchantId, reference: p.reference, channel: p.channel, createdAt: fact.at, updatedAt: fact.at,
         currency: p.currency, lines: p.lines, totalMinor: p.totalMinor, payerRef: p.payerRef, split: p.split, captureMode: p.captureMode,
         invoiceIds: [], paymentIds: [], held: {}, paidMinor: 0, refundedMinor: 0, chargebackMinor: 0, disputes: {},
-        status: 'awaiting_payment', fulfilment: 'none', tracking: null, allocations: [], cancelled: null,
+        status: 'awaiting_payment', fulfilment: 'none', tracking: null, picked: null, allocations: [], cancelled: null,
         timeline: [{ at: fact.at, type: fact.type, stream: fact.stream, seq: fact.seq }],
       };
     }

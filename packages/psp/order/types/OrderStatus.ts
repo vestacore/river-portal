@@ -3,5 +3,5 @@ export const orderStatuses = ['awaiting_payment', 'authorised', 'partially_paid'
 export type OrderStatus = (typeof orderStatuses)[number];
 
 /** Where an order stands with its goods. */
-export const fulfilmentStates = ['none', 'accepted', 'shipped', 'delivered'] as const;
+export const fulfilmentStates = ['none', 'accepted', 'picked', 'shipped', 'delivered'] as const;
 export type FulfilmentState = (typeof fulfilmentStates)[number];

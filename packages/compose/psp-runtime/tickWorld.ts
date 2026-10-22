@@ -1,3 +1,4 @@
+import { creditSettlements } from './creditSettlements.ts';
 import { expireInvoices } from './expireInvoices.ts';
 import { expireSessions } from './expireSessions.ts';
 import { refreshSwarm } from './refreshSwarm.ts';
@@ -8,7 +9,8 @@ const last = new WeakMap<World, { tick: number; swarmVersion: number }>();
 
 /**
  * The clock of a live demo, run when someone looks: attempts nobody finished are closed, checkouts left
- * unpaid are withdrawn, due shares are paid out, and the swarm takes another look when the world has changed. At most every twenty seconds.
+ * unpaid are withdrawn, due shares are settled, banks credit what was reported, and the agents take another
+ * look when the world has changed. At most every twenty seconds.
  */
 export function tickWorld(world: World, at: string): void {
   const now = Date.parse(at);
@@ -18,6 +20,7 @@ export function tickWorld(world: World, at: string): void {
   expireSessions(world, at);
   expireInvoices(world, at);
   runPayouts(world, at);
+  creditSettlements(world, at);
   if (world.version !== state.swarmVersion) { refreshSwarm(world, at); state.swarmVersion = world.version; }
   last.set(world, state);
 }

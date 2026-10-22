@@ -30,6 +30,8 @@ export type OrderView = {
   status: OrderStatus;
   fulfilment: FulfilmentState;
   tracking: { carrier: string; ref: string } | null;
+  /** What was picked, when the merchant's order system reported it: the amount to charge, and what changed. */
+  picked: { lines: OrderLine[]; totalMinor: number; changes: Array<{ sku: string; kind: 'weight' | 'missing' | 'substitute'; deltaMinor: number }> } | null;
   allocations: Allocation[];
   cancelled: { reason: string; by: string } | null;
   timeline: Array<{ at: string; type: FactType; stream: string; seq: number }>;

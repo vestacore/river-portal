@@ -1,0 +1,24 @@
+{
+  "unitId": "u-online",
+  "merchantId": "m-yarmarok-online",
+  "currency": "UAH",
+  "invoiceTtlHours": 72,
+  "strategy": "on_us_first",
+  "minApprovalBps": 9000,
+  "screening": {
+    "reviewAtMinor": 500000,
+    "blockAtMinor": 2000000,
+    "challengeAboveMinor": 150000,
+    "blockedPayers": ["payer-blocked"]
+  },
+  "acquirers": [
+    { "id": "acq-dnipro", "bank": "Bank Dnipro (demo)", "rateBps": 150, "fixedMinor": 0, "onUsBps": 90, "approvalBps": 9400 },
+    { "id": "acq-polissia", "bank": "Polissia Bank (demo)", "rateBps": 130, "fixedMinor": 50, "onUsBps": 80, "approvalBps": 9100 },
+    { "id": "acq-south", "bank": "South Bank (demo)", "rateBps": 110, "fixedMinor": 100, "approvalBps": 8700 }
+  ],
+  "issuers": [
+    { "bin": "411111", "bank": "Bank Dnipro (demo)", "ownAcquirer": "acq-dnipro" },
+    { "bin": "520000", "bank": "Polissia Bank (demo)", "ownAcquirer": "acq-polissia" },
+    { "bin": "400000", "bank": "Another Bank (demo)", "ownAcquirer": null }
+  ]
+}

@@ -8,6 +8,8 @@ export const roleLabels: Record<PspRole, LocalisedText> = {
   access_manager: { 'en-GB': 'Contracts and access manager', uk: 'Менеджер договорів і доступів' },
   checkout_designer: { 'en-GB': 'Pay page designer', uk: 'Дизайнер сторінки оплати' },
   integrator: { 'en-GB': 'Integrator', uk: 'Інтегратор' },
+  payments_manager: { 'en-GB': 'Payments manager: routing and costs', uk: 'Менеджер платежів: маршрутизація і витрати' },
+  finance_controller: { 'en-GB': 'Finance controller: reconciliation', uk: 'Фінансовий контролер: звірка' },
   merchant_owner: { 'en-GB': 'Merchant owner', uk: 'Власник мерчанта' },
   auditor: { 'en-GB': 'Auditor', uk: 'Аудитор' },
 };

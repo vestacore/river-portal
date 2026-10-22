@@ -4,11 +4,11 @@ import type { Projection } from '@river/psp-facts';
 export const agentIds = ['sentinel', 'router', 'reconciler', 'collector', 'analyst', 'clerk', 'copilot', 'treasurer'] as const;
 export type AgentId = (typeof agentIds)[number];
 
-export const proposalKinds = ['open_alert', 'hold_payouts', 'shift_route', 'send_reminder', 'investigate_break', 'escalate_alert', 'close_alert', 'prepare_evidence', 'retry_deliveries', 'fix_endpoint', 'prefund_payouts'] as const;
+export const proposalKinds = ['open_alert', 'hold_payouts', 'shift_route', 'change_policy', 'negotiate_terms', 'send_reminder', 'investigate_break', 'raise_claim', 'escalate_alert', 'close_alert', 'prepare_evidence', 'retry_deliveries', 'fix_endpoint', 'prefund_payouts'] as const;
 export type ProposalKind = (typeof proposalKinds)[number];
 
 /** Who reads an agent's insights: the cabinets, by role name. */
-export type Audience = 'hierarchy_admin' | 'operator' | 'compliance_officer' | 'access_manager' | 'checkout_designer' | 'integrator' | 'merchant_owner' | 'auditor';
+export type Audience = 'hierarchy_admin' | 'operator' | 'compliance_officer' | 'access_manager' | 'checkout_designer' | 'integrator' | 'payments_manager' | 'finance_controller' | 'merchant_owner' | 'auditor';
 
 /**
  * One agent of the swarm. It reads projections — never a stream of money directly — and writes only
@@ -18,7 +18,7 @@ export type AgentDefinition = {
   id: AgentId;
   name: LocalisedText;
   role: LocalisedText;
-  watches: readonly (Projection | 'alerts' | 'onboarding' | 'webhooks' | 'routes')[];
+  watches: readonly (Projection | 'alerts' | 'onboarding' | 'webhooks' | 'routes' | 'costs')[];
   proposes: readonly ProposalKind[];
   audience: readonly Audience[];
   glyph: string;
@@ -48,7 +48,11 @@ export type InsightDraft = {
   confidence: number;
   proposal: Proposal | null;
   consulted: Array<{ agent: AgentId; note: LocalisedText }>;
-  /** Findings of one series replace each other: a newer one supersedes the last one still open (a forecast of its day). */
+  /**
+   * Findings of one series describe one standing condition — a forecast of its day, a cheaper route, a
+   * batch's difference. A newer one supersedes the one still open, and when a round no longer finds the
+   * condition, the open finding is superseded too.
+   */
   series?: string;
 };
 

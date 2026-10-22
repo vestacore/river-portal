@@ -3,7 +3,7 @@ import { checkoutTexts, testCards } from '@river/psp-checkout';
 import { activeTariffOf, feeFor } from '@river/psp-contracts';
 import { findInstrument } from '@river/psp-instruments';
 import type { InvoiceView } from '@river/psp-invoice';
-import { checkoutFor, merchantOf, type World } from '@river/psp-runtime';
+import { bonusBalanceOf, checkoutFor, merchantOf, type World } from '@river/psp-runtime';
 import { allocate } from '@river/psp-split';
 import type { CheckoutProps } from '@/components/checkout/Checkout';
 import { day, money } from './format';
@@ -39,6 +39,11 @@ export function checkoutProps(w: World, invoice: InvoiceView, payKey: string, lo
       lines: order.lines.map((l) => ({ title: pickText(l.title as never, locale), quantity: l.quantity, amount: money(l.totalMinor, invoice.currency, locale), seller: l.sellerUnitId ? unitName(l.sellerUnitId) : null })),
     },
     split,
+    bonus: (() => {
+      const balance = config.loyalty ? bonusBalanceOf(w, order.payerRef) : 0;
+      const maxMinor = Math.min(balance, due - 100);
+      return config.loyalty && maxMinor >= 100 ? { balance: `${locale === 'uk' ? 'На рахунку' : 'Balance'} ${money(balance, invoice.currency, locale)}`, maxMinor, label: locale === 'uk' ? 'Бонусні бали' : 'Bonus points', hint: locale === 'uk' ? 'Списати бали за частину замовлення; решту сплатите іншим способом. 1 бал = 1 ₴.' : 'Use points for part of the order and pay the rest another way. One point is worth UAH 1.', action: locale === 'uk' ? 'Списати' : 'Use points', currency: '₴' } : null;
+    })(),
     instruments: config.instruments.map((id) => { const d = findInstrument(id); return { id, label: pickText(d.label, locale), hint: pickText(d.payerHint, locale), icon: instrumentIcon(id) }; }),
     testCards: testCards.map((c) => ({ number: c.number, label: pickText(c.label, locale) })),
     collectEmail: config.collectEmail,

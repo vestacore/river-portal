@@ -7,7 +7,8 @@ import type { Allocation } from '@river/psp-facts';
  * payer's money. Amounts are negative: they are taken back from each stream of the delta.
  */
 export function reverseShares(allocations: readonly Allocation[], returnedMinor: number): Allocation[] {
-  const giving = allocations.filter((a) => a.role !== 'psp_fee' && a.amountMinor > 0);
+  // Neither the PSP nor the acquirer gives its fee back on a refund; the merchant's side carries it.
+  const giving = allocations.filter((a) => a.role !== 'psp_fee' && a.role !== 'acquirer_fee' && a.amountMinor > 0);
   const base = giving.reduce((s, a) => s + a.amountMinor, 0);
   const total = allocations.reduce((s, a) => s + Math.max(0, a.amountMinor), 0);
   if (returnedMinor > total) throw new Error(`Cannot give back ${returnedMinor} of ${total}`);

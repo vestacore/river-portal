@@ -20,7 +20,7 @@ export type Tariff = {
 export const contractStatuses = ['draft', 'sent', 'signed', 'active', 'suspended', 'terminated', 'expired'] as const;
 export type ContractStatus = (typeof contractStatuses)[number];
 
-export type ContractKind = 'merchant_agreement' | 'marketplace_addendum' | 'partner_agreement' | 'nonprofit_agreement' | 'data_processing';
+export type ContractKind = 'merchant_agreement' | 'marketplace_addendum' | 'partner_agreement' | 'nonprofit_agreement' | 'data_processing' | 'acquiring_agreement' | 'platform_agreement';
 
 /** A contract with a unit of the hierarchy. Signatories are named by role and initials only. */
 export type Contract = {

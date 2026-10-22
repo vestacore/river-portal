@@ -5,7 +5,7 @@ import { visibleUnits, type Actor, type World } from '@river/psp-runtime';
 import { href } from './href';
 import { lt } from './lt';
 import { requireActor } from './session';
-import { world } from './world';
+import { standOfPerson, world } from './world';
 
 type PersonActor = Extract<Actor, { kind: 'person' }>;
 
@@ -16,7 +16,8 @@ type PersonActor = Extract<Actor, { kind: 'person' }>;
  */
 export async function cabinet(locale: Locale, focusUnitId?: string | null, permission?: Permission) {
   const actor: PersonActor = await requireActor(locale);
-  const w: World = world();
+  const stand = standOfPerson(actor.personId);
+  const w: World = world(stand);
   const now = new Date().toISOString();
   const visible = visibleUnits(w, actor, focusUnitId);
   const focus = focusUnitId && visible.has(focusUnitId) ? focusUnitId : actor.unitId;
@@ -25,5 +26,5 @@ export async function cabinet(locale: Locale, focusUnitId?: string | null, permi
   const unitName = (id: string) => pickText(w.units.find((u) => u.id === id)?.name, locale) || id;
   const personName = (id: string) => pickText(w.people.find((p) => p.id === id)?.name, locale) || (id === 'policy' ? lt(locale)('the unit’s policy', 'політика одиниці') : id);
   const link = (path: string) => href(locale, `/cabinet${path}`);
-  return { actor, w, now, visible, focus, may, unitName, personName, link, t: lt(locale) };
+  return { actor, stand, w, now, visible, focus, may, unitName, personName, link, t: lt(locale) };
 }

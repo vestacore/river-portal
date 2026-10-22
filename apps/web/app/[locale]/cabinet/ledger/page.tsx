@@ -1,5 +1,6 @@
 import { pickText } from '@river/i18n';
 import { factDefinition, type Posting } from '@river/psp-facts';
+import { acquirers } from '@river/psp-instruments';
 import { balancesOf, isBalanced, type Balance, type JournalEntry } from '@river/psp-ledger';
 import { CabinetHead } from '@/components/cabinet/CabinetHead';
 import { ScopePicker } from '@/components/cabinet/ScopePicker';
@@ -32,8 +33,14 @@ export default async function Ledger({ params, searchParams }: { params: Promise
     if (unitId && c.visible.has(unitId)) entries.push({ ...e, unitId });
   }
   entries.sort((a, b) => b.at.localeCompare(a.at) || b.seq - a.seq);
+  // The retail group's banks settle to it directly: its accounts read as what each bank owes and keeps, and what is due to whom.
+  const retail = c.stand === 'retail';
+  const provider = (id: string) => pickText(acquirers.find((a) => a.id === id)?.label, locale) || id;
   const account = (name: string) => {
     const [kind, id = ''] = name.split(':');
+    if (retail && kind === 'clearing') return t(`Clearing with ${provider(id)}`, `Кліринг із «${provider(id)}»`);
+    if (retail && kind === 'acquirer-fees') return t(`Fees kept by ${provider(id)}`, `Комісії «${provider(id)}»`);
+    if (retail && kind === 'payable') return t(`Due to ${c.unitName(id)}`, `Належить: ${c.unitName(id)}`);
     if (name === 'revenue:psp-fees') return t('Revenue · PSP fees', 'Дохід · комісії PSP');
     if (kind === 'payable') return `${t('Payable', 'До виплати')} · ${c.unitName(id)}`;
     if (kind === 'reserve') return `${t('Reserve', 'Резерв')} · ${c.unitName(id)}`;
@@ -64,7 +71,9 @@ export default async function Ledger({ params, searchParams }: { params: Promise
   return (
     <>
       <CabinetHead kicker={t('After the mouth', 'Після гирла')} title={t('Ledger', 'Облік')}
-        lead={t('Water is neither made nor lost inside the river. The split, every refund, every lost dispute and every payout forms a balanced double entry; nobody posts by hand.', 'Вода в ріці не з’являється і не зникає. Розщеплення, кожне повернення, кожен програний спір і кожна виплата формують збалансовану подвійну проводку; вручну ніхто нічого не проводить.')}
+        lead={retail
+          ? t('The split of every payment, every refund, every lost dispute and every bank’s settlement forms a balanced double entry; nobody posts by hand. The platform holds no money here: the ledger follows what each bank owes for captured payments until it settles them to the group’s accounts.', 'Розщеплення кожного платежу, кожне повернення, кожен програний спір і кожен розрахунок банку формують збалансовану подвійну проводку; вручну ніхто нічого не проводить. Платформа тут не тримає грошей: облік стежить за тим, що кожен банк винен за списані платежі, доки не перерахує їх на рахунки групи.')
+          : t('Water is neither made nor lost inside the river. The split, every refund, every lost dispute and every payout forms a balanced double entry; nobody posts by hand.', 'Вода в ріці не з’являється і не зникає. Розщеплення, кожне повернення, кожен програний спір і кожна виплата формують збалансовану подвійну проводку; вручну ніхто нічого не проводить.')}
         actions={<ScopePicker w={c.w} rootId={c.actor.unitId} focus={c.focus} locale={locale} query={query} />} />
       <Panel title={t('Conservation', 'Збереження')} className="mb-6"
         note={t('The ledger is a projection: replaying the facts gives the same journal. Each entry balances on its own, so every part of the ledger — this scope included — balances too.', 'Облік — це проєкція: якщо відтворити факти, вийде той самий журнал. Кожна проводка збалансована сама собою, тож збалансована й будь-яка частина обліку — зокрема в цих межах.')}>
@@ -107,7 +116,9 @@ export default async function Ledger({ params, searchParams }: { params: Promise
             ) }} />
         </div>
       </Panel>
-      <Panel title={t('Balances', 'Сальдо рахунків')} className="mt-6" flush note={t('Debits less credits, per account and currency. A credit balance is owed to someone or earned: a recipient’s payable, a reserve, the PSP’s revenue. A debit balance on a clearing account is what an acquirer still holds for the PSP.', 'Дебет мінус кредит — за рахунком і валютою. Кредитове сальдо — те, що належить комусь або зароблено: до виплати одержувачу, резерв, дохід PSP. Дебетове сальдо на рахунку клірингу — те, що еквайр ще тримає для PSP.')}>
+      <Panel title={t('Balances', 'Сальдо рахунків')} className="mt-6" flush note={retail
+        ? t('Debits less credits, per account and currency. A debit balance on a clearing account is what a bank owes for payments captured and not yet settled; the credit balances beside it are the share due to the merchant and the fee the bank keeps. Once the bank settles, all of them are back to zero.', 'Дебет мінус кредит — за рахунком і валютою. Дебетове сальдо на рахунку клірингу — те, що банк винен за списані, але ще не розраховані платежі; кредитові сальдо поруч — частка, що належить мерчанту, і комісія, яку банк утримує. Щойно банк розрахується, усі вони повертаються до нуля.')
+        : t('Debits less credits, per account and currency. A credit balance is owed to someone or earned: a recipient’s payable, a reserve, the PSP’s revenue. A debit balance on a clearing account is what an acquirer still holds for the PSP.', 'Дебет мінус кредит — за рахунком і валютою. Кредитове сальдо — те, що належить комусь або зароблено: до виплати одержувачу, резерв, дохід PSP. Дебетове сальдо на рахунку клірингу — те, що еквайр ще тримає для PSP.')}>
         <div className="px-1"><DataTable columns={balanceColumns} rows={balances} locale={locale} query={{}} pageSize={Math.max(1, balances.length)} empty={t('No balances in this scope yet.', 'У цих межах сальдо ще немає.')} /></div>
       </Panel>
     </>
